@@ -1,0 +1,20 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ui:NavigationView
+        AlwaysShowHeader="False"
+        IsBackEnabled="{Binding #FrameView.CanGoBack}"
+        IsSettingsVisible="False"
+        Name="NavView"
+        PaneDisplayMode="Left">
+        <ui:Frame Name="FrameView" />
+    </ui:NavigationView>
+</UserControl>
