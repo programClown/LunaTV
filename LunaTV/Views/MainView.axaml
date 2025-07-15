@@ -12,21 +12,9 @@
         <ui:NavigationView PaneDisplayMode="Left" x:Name="NaviView">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
-                    Content="Menu Item1"
-                    IconSource="{StaticResource BmpIcon}"
-                    Tag="SamplePage1" />
-                <ui:NavigationViewItem
-                    Content="Menu Item2"
-                    IconSource="Save"
-                    Tag="SamplePage2" />
-                <ui:NavigationViewItem
-                    Content="Menu Item3"
-                    IconSource="Refresh"
-                    Tag="SamplePage3" />
-                <ui:NavigationViewItem
-                    Content="Menu Item4"
-                    IconSource="Download"
-                    Tag="SamplePage4" />
+                    Content="无限影视"
+                    IconSource="{StaticResource TvMenuIcon}"
+                    Tag="lunaTv" />
             </ui:NavigationView.MenuItems>
         </ui:NavigationView>
     </Grid>

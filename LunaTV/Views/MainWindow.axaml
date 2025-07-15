@@ -1,5 +1,5 @@
 <u:UrsaWindow
-    Icon="/Assets/avalonia-logo.ico"
+    Icon="/Assets/logo.png"
     Title="LunaTV"
     WindowStartupLocation="CenterScreen"
     d:DesignHeight="450"
@@ -21,7 +21,7 @@
             <u:Avatar
                 Classes="ExtraSmall"
                 Margin="4,0"
-                Source="/Assets/avalonia-logo.ico" />
+                Source="/Assets/logo.png" />
             <TextBlock
                 FontWeight="ExtraBold"
                 HorizontalAlignment="Left"
