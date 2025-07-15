@@ -11,6 +11,7 @@ using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using LunaTV.ViewModels;
 using LunaTV.Views;
@@ -30,6 +31,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        RequestedThemeVariant = ThemeVariant.Dark;
     }
 
     public override void OnFrameworkInitializationCompleted()
