@@ -27,9 +27,11 @@ sealed class Program
                 services.AddViews();
             }).Build();
         ServiceLocator.Host = host;
-
+        
+#pragma warning disable CA1416
         return AppBuilder.Configure<App>()
             .UseManagedSystemDialogs()
+#pragma warning restore CA1416
             .UsePlatformDetect()
             .With(new Win32PlatformOptions())
             .With(new FontManagerOptions

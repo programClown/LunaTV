@@ -7,15 +7,36 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <ui:NavigationView PaneDisplayMode="Left" x:Name="NaviView">
+        <ui:NavigationView
+            AlwaysShowHeader="True"
+            PaneDisplayMode="Left"
+            x:Name="NaviView">
+            <ui:NavigationView.Resources>
+                <!-- <SolidColorBrush Color="Transparent" x:Key="NavigationViewContentBackground" /> -->
+                <SolidColorBrush Color="Red" x:Key="NavigationViewContentGridBorderBrush" />
+                <!-- <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness> -->
+            </ui:NavigationView.Resources>
+            <!-- <ui:NavigationView.Styles> -->
+            <!--     <Style Selector="ui|NavigationViewItem uip|NavigationViewItemPresenter"> -->
+            <!--         ~1~ <Setter Property="Width" Value="72" /> @1@ -->
+            <!--         <Setter Property="MinHeight" Value="48" /> -->
+            <!--         <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" /> -->
+            <!--         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" /> -->
+            <!--     </Style> -->
+            <!--     <Style Selector="ui|NavigationViewItem uip|NavigationViewItemPresenter /template/ ContentPresenter TextBlock"> -->
+            <!--         <Setter Property="FontSize" Value="16" /> -->
+            <!--     </Style> -->
+            <!-- </ui:NavigationView.Styles> -->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     Content="无限影视"
                     IconSource="{StaticResource TvMenuIcon}"
                     Tag="lunaTv" />
             </ui:NavigationView.MenuItems>
+            <ui:Frame DataContext="{x:Null}" x:Name="frame" />
         </ui:NavigationView>
     </Grid>
 
