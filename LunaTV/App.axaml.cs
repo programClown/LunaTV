@@ -1,25 +1,23 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Core.Plugins;
 using Avalonia.Input.Platform;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using LunaTV.ViewModels;
 using LunaTV.Views;
 using Ursa.Controls;
 
 namespace LunaTV;
 
-public partial class App : Application
+public class App : Application
 {
     [NotNull] public static Visual? VisualRoot { get; internal set; }
     public static WindowNotificationManager? Notification { get; set; }
@@ -71,7 +69,7 @@ public partial class App : Application
 
             var window = ServiceLocator.GetRequiredService<MainWindow>();
             desktop.MainWindow = window;
-            window.DataContext = ServiceLocator.GetRequiredService<MainViewModel>();
+            // window.DataContext = ServiceLocator.GetRequiredService<MainViewModel>();
             VisualRoot = window;
             Notification = new WindowNotificationManager(TopLevel);
             Toast = new WindowToastManager(TopLevel);
@@ -81,8 +79,8 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
         {
-            var view =  ServiceLocator.GetRequiredService<MainView>();
-            view.DataContext = ServiceLocator.GetRequiredService<MainViewModel>();
+            var view = ServiceLocator.GetRequiredService<MainView>();
+            // view.DataContext = ServiceLocator.GetRequiredService<MainViewModel>();
             singleView.MainView = view;
 
             VisualRoot = view.Parent as MainWindow;

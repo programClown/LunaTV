@@ -1,7 +1,5 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.Messaging;
-using LunaTV.Services;
-using LunaTV.Services.Impl;
 using LunaTV.ViewModels;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +24,6 @@ public static class ServiceCollectionExtenstion
             new Lazy<MainWindow>(provider.GetRequiredService<MainWindow>));
         serviceCollection.AddSingleton<Lazy<MainView>>(provider =>
             new Lazy<MainView>(provider.GetRequiredService<MainView>));
-        serviceCollection.AddSingleton<INavigationService, DefaultNavigationService>();
         serviceCollection.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
     }
 
@@ -36,10 +33,24 @@ public static class ServiceCollectionExtenstion
     /// <param name="serviceCollection"></param>
     public static void AddViewModels(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<MainViewModel>();
-
         // page view model
         serviceCollection.AddTransient<TVShowViewModel>();
+        serviceCollection.AddTransient<InnovationPlazaViewModel>();
+        serviceCollection.AddTransient<SettingsViewModel>();
+        serviceCollection.AddSingleton<MainViewModel>(provider =>
+            new MainViewModel
+            {
+                Pages =
+                {
+                    provider.GetRequiredService<TVShowViewModel>(),
+                    provider.GetRequiredService<InnovationPlazaViewModel>()
+                },
+                FooterPages =
+                {
+                    provider.GetRequiredService<SettingsViewModel>()
+                }
+            }
+        );
     }
 
     /// <summary>
@@ -49,5 +60,7 @@ public static class ServiceCollectionExtenstion
     public static void AddViews(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<TVShowView>();
+        serviceCollection.AddTransient<InnovationPlazaView>();
+        serviceCollection.AddSingleton<SettingsView>();
     }
 }
