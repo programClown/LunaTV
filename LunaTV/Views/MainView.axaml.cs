@@ -32,12 +32,16 @@ public partial class MainView : UserControl
         NavigationService.Instance.SetFrame(FrameView);
 
         NaviView.ItemInvoked += OnNaviViewItemInvoked;
-
-        vm.Loaded();
-        FrameView.NavigateFromObject(NaviView.MenuItemsSource.ElementAt(0), new FrameNavigationOptions
+        
+        Dispatcher.UIThread.Invoke((() =>
         {
-            TransitionInfoOverride = new BetterEntranceNavigationTransition()
-        });
+            vm.Loaded();
+            FrameView.NavigateFromObject(NaviView.MenuItemsSource.ElementAt(0), new FrameNavigationOptions
+            {
+                TransitionInfoOverride = new BetterEntranceNavigationTransition()
+            });
+        }));
+        
     }
 
 
