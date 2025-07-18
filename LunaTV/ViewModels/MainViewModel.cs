@@ -59,6 +59,7 @@ public class NavigationFactory : INavigationPageFactory
             var notFound = new TextBlock { Text = "View not found for " + viewTypeName };
             if (viewType is null || ServiceLocator.GetRequiredService(viewType) is not Control view) return notFound;
 
+            view.DataContext = target;
             return view;
         }
 
