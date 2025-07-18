@@ -5,4 +5,4 @@
 - [LibreTV](https://github.com/LibreSpark/LibreTV)
 - [LibreTV-App](https://github.com/KeyRotate/LibreTV-App)
 
-![tvshow.png](screenshots/tvshow.png)
+![tvshow.png](screenshots/tvshow.jpg)
