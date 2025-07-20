@@ -7,5 +7,54 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    Welcome to search!
+
+    <StackPanel Spacing="10">
+        <TextBox
+            Classes="clearButton Large"
+            Text=""
+            Watermark="爸爸快来"
+            Width="400">
+            <TextBox.InnerRightContent>
+                <Button
+                    Classes="Large"
+                    Content="搜索"
+                    Margin="0,0,-10,0" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+        <DockPanel HorizontalAlignment="Center" Width="400">
+            <TextBlock
+                Classes="Tertiary Small"
+                DockPanel.Dock="Left"
+                FontSize="12"
+                Text="最近搜索："
+                VerticalAlignment="Center" />
+            <Button
+                Classes="Tertiary Small"
+                Content="清楚搜索历史"
+                FontSize="12"
+                HorizontalAlignment="Right"
+                Theme="{DynamicResource BorderlessButton}" />
+        </DockPanel>
+        <WrapPanel
+            DockPanel.Dock="Bottom"
+            HorizontalAlignment="Center"
+            ItemSpacing="4">
+            <Panel>
+                <Button Content="搜索结果1" FontSize="24" />
+                <Button
+                    Content="x"
+                    Height="4"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top" />
+            </Panel>
+
+            <Button Content="搜索结果2" />
+            <Button Content="搜索结果3" />
+            <Button Content="搜索结果4" />
+            <Button Content="搜索结果5" />
+        </WrapPanel>
+
+
+    </StackPanel>
+
 </UserControl>

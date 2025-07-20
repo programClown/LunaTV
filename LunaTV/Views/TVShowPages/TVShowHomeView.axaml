@@ -117,16 +117,22 @@
                     <DataTemplate DataType="tvvm:MovieCardItem">
 
                         <Button
+                            Classes="MovieCard"
                             Command="{Binding SearchCommand}"
                             CommandParameter="{Binding Name}"
-                            Margin="8"
+                            Margin="0,8"
                             Theme="{DynamicResource BorderlessButton}">
                             <Button.Styles>
-                                <Style Selector="Button:pointerover">
+                                <Style Selector="Button.MovieCard:pointerover">
                                     <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                                         <Setter Property="Background" Value="Transparent" />
                                     </Style>
                                     <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                                </Style>
+                                <Style Selector="Button.MovieCard:pressed">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
                                 </Style>
                             </Button.Styles>
                             <StackPanel HorizontalAlignment="Left">
@@ -139,6 +145,7 @@
                                     <StackPanel
                                         HorizontalAlignment="Left"
                                         Orientation="Horizontal"
+                                        Spacing="4"
                                         VerticalAlignment="Bottom">
                                         <fa:SymbolIcon
                                             FontSize="18"
@@ -148,8 +155,8 @@
                                     </StackPanel>
                                 </Panel>
                                 <Button
-                                    Classes="Tertiary"
                                     Content="{Binding Name}"
+                                    Foreground="{DynamicResource SemiBlue9}"
                                     HorizontalAlignment="Stretch" />
                             </StackPanel>
                         </Button>
@@ -157,7 +164,7 @@
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Margin="0" />
+                        <WrapPanel Margin="16,0" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
