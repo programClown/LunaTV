@@ -28,10 +28,10 @@ public partial class TVShowViewModel : PageViewModelBase
         {
             DataContext = new TVShowSearchViewModel()
         },
-        ["筛选"] = new TVShowFilterView
-        {
-            DataContext = new TVShowFilterViewModel()
-        },
+        // ["筛选"] = new TVShowFilterView
+        // {
+        //     DataContext = new TVShowFilterViewModel()
+        // },
         ["历史"] = new TVShowHistoryView
         {
             DataContext = new TVShowHistoryViewModel()
@@ -60,11 +60,11 @@ public partial class TVShowViewModel : PageViewModelBase
                 Name = "搜索",
                 Data = App.TopLevel.TryFindResource("SemiIconSearch", out var value2) ? (StreamGeometry)value2 : null,
             },
-            new()
-            {
-                Name = "筛选",
-                Data = App.TopLevel.TryFindResource("SemiIconFilter", out var value3) ? (StreamGeometry)value3 : null,
-            },
+            // new()
+            // {
+            //     Name = "筛选",
+            //     Data = App.TopLevel.TryFindResource("SemiIconFilter", out var value3) ? (StreamGeometry)value3 : null,
+            // },
             new()
             {
                 Name = "历史",

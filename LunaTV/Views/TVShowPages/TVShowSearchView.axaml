@@ -3,14 +3,17 @@
     d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="LunaTV.Views.TVShowPages.TVShowSearchView"
+    x:DataType="tvvm:TVShowSearchViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <StackPanel Spacing="10">
         <TextBox
             Classes="clearButton Large"
+            Margin="0,30,0,0"
             Text=""
             Watermark="爸爸快来"
             Width="400">
@@ -21,6 +24,7 @@
                     Margin="0,0,-10,0" />
             </TextBox.InnerRightContent>
         </TextBox>
+
         <DockPanel HorizontalAlignment="Center" Width="400">
             <TextBlock
                 Classes="Tertiary Small"
@@ -30,29 +34,44 @@
                 VerticalAlignment="Center" />
             <Button
                 Classes="Tertiary Small"
-                Content="清楚搜索历史"
+                Command="{Binding ClearAllHistoriesCommand}"
+                Content="清除搜索历史"
                 FontSize="12"
                 HorizontalAlignment="Right"
                 Theme="{DynamicResource BorderlessButton}" />
         </DockPanel>
-        <WrapPanel
-            DockPanel.Dock="Bottom"
-            HorizontalAlignment="Center"
-            ItemSpacing="4">
-            <Panel>
-                <Button Content="搜索结果1" FontSize="24" />
-                <Button
-                    Content="x"
-                    Height="4"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top" />
-            </Panel>
 
-            <Button Content="搜索结果2" />
-            <Button Content="搜索结果3" />
-            <Button Content="搜索结果4" />
-            <Button Content="搜索结果5" />
-        </WrapPanel>
+        <ItemsControl ItemsSource="{Binding HistoryMovies}" Margin="200,0,200,0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Classes="Small"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).SearchCommand}"
+                            CommandParameter="{Binding}"
+                            Content="{Binding}"
+                            CornerRadius="4,0,0,4" />
+                        <Button
+                            Classes="Small"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).DeleteHistotyCommand}"
+                            CommandParameter="{Binding}"
+                            CornerRadius="0,4,4,0"
+                            DockPanel.Dock="Right">
+                            <PathIcon
+                                Classes="Small"
+                                Data="{DynamicResource SemiIconClose}"
+                                Theme="{DynamicResource InnerPathIcon}" />
+                        </Button>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
 
     </StackPanel>

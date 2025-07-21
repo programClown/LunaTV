@@ -1,4 +1,6 @@
-﻿using LunaTV.ViewModels.Base;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using LunaTV.ViewModels.Base;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
