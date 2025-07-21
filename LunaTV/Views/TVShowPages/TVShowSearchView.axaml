@@ -8,6 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:u="https://irihi.tech/ursa"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <StackPanel Spacing="10">
@@ -41,7 +42,7 @@
                 Theme="{DynamicResource BorderlessButton}" />
         </DockPanel>
 
-        <ItemsControl ItemsSource="{Binding HistoryMovies}" Margin="200,0,200,0">
+        <ItemsControl ItemsSource="{Binding HistoryMovies}" Width="600">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
@@ -73,6 +74,73 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <ScrollViewer Margin="20">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding SearchResults}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="tvvm:SearchResult">
+
+                        <Button
+                            Classes="MovieCard"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).PlayCommand}"
+                            CommandParameter="{Binding Name}"
+                            Margin="8,8"
+                            Padding="0"
+                            Theme="{DynamicResource OutlineButton}">
+                            <Button.Styles>
+                                <Style Selector="Button.MovieCard:pointerover">
+                                    <!-- <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter"> -->
+                                    <!--     <Setter Property="Background" Value="Transparent" /> -->
+                                    <!-- </Style> -->
+                                    <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                                </Style>
+                                <!-- <Style Selector="Button.MovieCard:pressed"> -->
+                                <!--     <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter"> -->
+                                <!--         <Setter Property="Background" Value="Transparent" /> -->
+                                <!--     </Style> -->
+                                <!-- </Style> -->
+                            </Button.Styles>
+                            <StackPanel
+                                HorizontalAlignment="Left"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <Image
+                                    Height="150"
+                                    Source="avares://LunaTV/Assets/nomedia.png"
+                                    Stretch="Fill"
+                                    Width="100" />
+                                <DockPanel VerticalSpacing="8" Width="120">
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        FontSize="16"
+                                        Text="{Binding Name}" />
+                                    <StackPanel
+                                        DockPanel.Dock="Top"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                        <u:DualBadge Classes="Blue" Content="{Binding Tag}" />
+                                        <u:DualBadge Classes="Purple" Content="{Binding Year}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        FontSize="12"
+                                        Text="{Binding Descriptor}" />
+                                    <TextBlock
+                                        DockPanel.Dock="Bottom"
+                                        FontSize="12"
+                                        Text="{Binding MovieSource}"
+                                        VerticalAlignment="Bottom" />
+                                </DockPanel>
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Margin="16,0" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
 
     </StackPanel>
 
