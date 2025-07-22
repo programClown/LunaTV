@@ -19,7 +19,7 @@
 
     <Application.Styles>
         <StyleInclude Source="/Styles/Style.axaml" />
-        <styling:FluentAvaloniaTheme CustomAccentColor="DodgerBlue" UseSystemFontOnWindows="True" />
+        <styling:FluentAvaloniaTheme UseSystemFontOnWindows="True" />
         <semi:SemiTheme Locale="zh-CN" />
         <semi:SemiPopupAnimations />
         <u-semi:SemiTheme Locale="zh-CN" />

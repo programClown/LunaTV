@@ -83,6 +83,7 @@
                             Classes="MovieCard"
                             Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).PlayCommand}"
                             CommandParameter="{Binding Name}"
+                            Foreground="{DynamicResource SemiBlue9Color}"
                             Margin="8,8"
                             Padding="0"
                             Theme="{DynamicResource OutlineButton}">
