@@ -28,9 +28,22 @@
         <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="1.12.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-preview.5.25277.114"/>
         <PackageReference Include="Semi.Avalonia" Version="11.2.1.9"/>
+        <PackageReference Include="LibVLCSharp.Avalonia" Version="3.9.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Condition="$([MSBuild]::IsOsPlatform('Windows'))" Include="VideoLAN.LibVLC.Windows" Version="3.0.21"/>
+        <PackageReference Condition="$([MSBuild]::IsOsPlatform('OSX'))" Include="VideoLAN.LibVLC.Mac" Version="3.1.3.1"/>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Models\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Views\Media\VideoPlayer.axaml.cs">
+            <DependentUpon>VideoPlayer.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 </Project>

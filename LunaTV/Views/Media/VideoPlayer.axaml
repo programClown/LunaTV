@@ -1,0 +1,40 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.Media.VideoPlayer"
+    x:DataType="vmm:VideoPlayerViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
+    xmlns:vmm="using:LunaTV.ViewModels.Media"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.DataContext>
+        <vmm:VideoPlayerViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <Label Grid.Row="0" HorizontalAlignment="Center">Video Player</Label>
+
+        <vlc:VideoView
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            MediaPlayer="{Binding MediaPlayer}"
+            PointerEntered="VideoViewOnPointerEntered"
+            PointerExited="VideoViewOnPointerExited"
+            VerticalAlignment="Stretch">
+            <Panel Name="ControlsPanel">
+                <StackPanel
+                    Background="#900000FF"
+                    Orientation="Horizontal"
+                    Spacing="20"
+                    VerticalAlignment="Bottom">
+                    <Button Command="{Binding Play}" Margin="20">Play</Button>
+                    <Button Command="{Binding Stop}" Margin="20">Stop</Button>
+                </StackPanel>
+            </Panel>
+        </vlc:VideoView>
+    </Grid>
+</UserControl>
