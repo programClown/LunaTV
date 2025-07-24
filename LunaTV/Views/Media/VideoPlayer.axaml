@@ -5,18 +5,24 @@
     x:Class="LunaTV.Views.Media.VideoPlayer"
     x:DataType="vmm:VideoPlayerViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:converters="clr-namespace:LunaTV.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
     xmlns:vmm="using:LunaTV.ViewModels.Media"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Design.DataContext>
-        <vmm:VideoPlayerViewModel />
-    </Design.DataContext>
+    <UserControl.Resources>
+        <converters:TimeSpanToMinutesSecondsConverter x:Key="TimeSpanToMinutesSecondsConverter" />
+    </UserControl.Resources>
 
     <Grid RowDefinitions="Auto, *, Auto">
-        <Label Grid.Row="0" HorizontalAlignment="Center">Video Player</Label>
+        <TextBlock
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            Margin="0,10,0,0"
+            Text="{Binding VideoName}" />
 
         <vlc:VideoView
             Grid.Row="1"
@@ -25,16 +31,76 @@
             PointerEntered="VideoViewOnPointerEntered"
             PointerExited="VideoViewOnPointerExited"
             VerticalAlignment="Stretch">
-            <Panel Name="ControlsPanel">
-                <StackPanel
-                    Background="#900000FF"
-                    Orientation="Horizontal"
-                    Spacing="20"
-                    VerticalAlignment="Bottom">
-                    <Button Command="{Binding Play}" Margin="20">Play</Button>
-                    <Button Command="{Binding Stop}" Margin="20">Stop</Button>
-                </StackPanel>
-            </Panel>
+            <Border
+                Grid.Row="2"
+                Margin="20"
+                Name="ControlsPanel">
+                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+
+                        <Button Theme="{DynamicResource BorderlessButton}">
+                            <fa:SymbolIcon FontSize="18" Symbol="PreviousFilled" />
+                        </Button>
+                        <Button Command="{Binding PlayCommand}" Theme="{DynamicResource BorderlessButton}">
+                            <fa:SymbolIcon FontSize="18" Symbol="{Binding PlayIcon}" />
+                        </Button>
+                        <Button Theme="{DynamicResource BorderlessButton}">
+                            <fa:SymbolIcon FontSize="18" Symbol="NextFilled" />
+                        </Button>
+
+                    </StackPanel>
+
+                    <Grid
+                        ColumnDefinitions="40,*,40"
+                        Grid.Column="1"
+                        Margin="40,0">
+                        <!--  Current Position Display  -->
+                        <TextBlock
+                            Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            Text="{Binding SeekPosition, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
+                            VerticalAlignment="Center" />
+
+                        <!--  Seek Slider  -->
+                        <Slider
+                            Grid.Column="1"
+                            IsHitTestVisible="{Binding CanInteractSeekSlider}"
+                            Margin="10,0"
+                            Maximum="{Binding MaximumSeekValue}"
+                            Minimum="0"
+                            Value="{Binding SeekPosition, Mode=TwoWay}"
+                            VerticalAlignment="Center" />
+
+                        <!--  Maximum Duration Display  -->
+                        <TextBlock
+                            Grid.Column="2"
+                            HorizontalAlignment="Right"
+                            Text="{Binding MaximumSeekValue, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
+                            VerticalAlignment="Center" />
+                    </Grid>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button
+                            Background="Transparent"
+                            Command="{Binding MuteCommand}"
+                            Margin="10,0">
+                            <fa:SymbolIcon FontSize="18" Symbol="{Binding MuteIcon}" />
+                        </Button>
+
+                        <Slider
+                            IsEnabled="{Binding !IsMuted}"
+                            Margin="0,0,20,0"
+                            Maximum="1"
+                            Minimum="0"
+                            Value="{Binding Volume, Mode=TwoWay}"
+                            VerticalAlignment="Center"
+                            Width="150" />
+                    </StackPanel>
+                </Grid>
+
+            </Border>
         </vlc:VideoView>
+
+
     </Grid>
 </UserControl>

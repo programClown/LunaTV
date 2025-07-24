@@ -1,6 +1,9 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Threading;
 using LunaTV.ViewModels.Media;
+using Ursa.Controls;
 
 namespace LunaTV.Views.Media;
 
