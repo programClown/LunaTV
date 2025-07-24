@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -31,7 +32,9 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty] private Symbol _muteIcon = Symbol.Speaker2Filled;
     [ObservableProperty] private float _volume;
-
+    
+    [ObservableProperty] private string _videoPath;
+    
     [RelayCommand]
     private void Play()
     {
@@ -40,10 +43,15 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(VideoPath))
+        {
+            return;
+        }
+
         if (!IsPlay)
         {
             using var media = new LibVLCSharp.Shared.Media(_libVlc,
-                new Uri("D:\\\\迅雷下载\\\\[电影天堂www.dytt89.com]第九区BD国英双语双字.mkv"));
+                VideoPath);
             MediaPlayer.Play(media);
             PlayIcon = Symbol.PauseFilled;
         }
@@ -56,7 +64,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         IsPlay = !IsPlay;
     }
 
-    private void Stop()
+    public void Stop()
     {
         MediaPlayer.Stop();
     }
@@ -80,5 +88,17 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         }
 
         IsMuted = !IsMuted;
+    }
+    
+    partial void OnVideoPathChanged(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        VideoPath = value;
+        VideoName = value.Split(".").LastOrDefault();
+        Play();
     }
 }

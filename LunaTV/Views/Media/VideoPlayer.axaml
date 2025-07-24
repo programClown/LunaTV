@@ -30,6 +30,7 @@
             MediaPlayer="{Binding MediaPlayer}"
             PointerEntered="VideoViewOnPointerEntered"
             PointerExited="VideoViewOnPointerExited"
+            PointerPressed="VideoViewOnPointerPressed"
             VerticalAlignment="Stretch">
             <Border
                 Grid.Row="2"
