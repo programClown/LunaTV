@@ -17,7 +17,7 @@
         <converters:TimeSpanToMinutesSecondsConverter x:Key="TimeSpanToMinutesSecondsConverter" />
     </UserControl.Resources>
 
-    <Grid RowDefinitions="Auto, *, Auto">
+    <Grid RowDefinitions="Auto, *">
         <TextBlock
             Grid.Row="0"
             HorizontalAlignment="Center"
@@ -32,10 +32,7 @@
             PointerExited="VideoViewOnPointerExited"
             PointerPressed="VideoViewOnPointerPressed"
             VerticalAlignment="Stretch">
-            <Border
-                Grid.Row="2"
-                Margin="20"
-                Name="ControlsPanel">
+            <Border Margin="20" Name="ControlsPanel">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
 

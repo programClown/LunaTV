@@ -18,5 +18,6 @@ public partial class PlayerWindow : UrsaWindow
     {
         VideoPlayer.Close();
         base.OnClosed(e);
+        (App.VisualRoot as MainWindow)?.Show();
     }
 }

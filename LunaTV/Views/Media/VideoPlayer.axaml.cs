@@ -25,7 +25,7 @@ public partial class VideoPlayer : UserControl
     {
         ControlsPanel.IsVisible = false;
     }
-    
+
     public void Close()
     {
         var vm = DataContext as VideoPlayerViewModel;
@@ -35,24 +35,25 @@ public partial class VideoPlayer : UserControl
 
     private async void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-            FilePickerFileType VideoAll = new FilePickerFileType("All Videos")
+        var videoAll = new FilePickerFileType("All Videos")
         {
             Patterns = new string[6] { "*.mp4", "*.mkv", "*.avi", "*.mov", "*.wmv", "*.flv" },
             AppleUniformTypeIdentifiers = new string[1] { "public.video" },
             MimeTypes = new string[1] { "video/*" }
         };
-    
-        var file= await App.StorageProvider?.OpenFilePickerAsync(new FilePickerOpenOptions()
+
+
+        var file = await (this.Parent as Window)?.StorageProvider?.OpenFilePickerAsync(new FilePickerOpenOptions()
         {
             Title = "打开文件",
-            FileTypeFilter = new []
+            FileTypeFilter = new[]
             {
                 FilePickerFileTypes.All,
-                VideoAll,
+                videoAll,
             },
             AllowMultiple = false,
         });
-        
+
         if (file.Count > 0)
         {
             var vm = DataContext as VideoPlayerViewModel;

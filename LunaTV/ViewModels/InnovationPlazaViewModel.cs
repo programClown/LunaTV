@@ -20,7 +20,7 @@ public partial class InnovationPlazaViewModel : PageViewModelBase
     private void PlayVideo()
     {
         var win = new PlayerWindow();
-
+        (App.VisualRoot as MainWindow)?.Hide();
         win.Show();
     }
 }
