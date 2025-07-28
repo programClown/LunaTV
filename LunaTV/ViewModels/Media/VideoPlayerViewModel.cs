@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,32 +12,32 @@ namespace LunaTV.ViewModels.Media;
 
 public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 {
-    private readonly LibVLC _libVlc = new LibVLC();
+    private readonly LibVLC _libVlc = new();
 
     public MediaPlayer MediaPlayer { get; }
-
-    public string VideoName { set; get; } = "xxxxxx";
 
     public VideoPlayerViewModel()
     {
         MediaPlayer = new MediaPlayer(_libVlc);
+        MediaPlayer.PositionChanged += MediaPlayerOnPositionChanged;
     }
 
     public bool IsPlay { get; set; }
     public bool IsMuted { get; set; }
 
+    [ObservableProperty] private string _videoName = "xxxxxx";
     [ObservableProperty] private Symbol _playIcon = Symbol.PlayFilled;
     [ObservableProperty] private double _seekPosition = 0;
     [ObservableProperty] private bool _canInteractSeekSlider = true;
-    [ObservableProperty] private double _maximumSeekValue;
+    [ObservableProperty] private double _maximumSeekValue = 0;
 
     [ObservableProperty] private Symbol _muteIcon = Symbol.Speaker2Filled;
-    [ObservableProperty] private float _volume;
-    
+    [ObservableProperty] private float _volume = 0.5f;
+
     [ObservableProperty] private string _videoPath;
-    
+
     [RelayCommand]
-    private void Play()
+    private async void Play()
     {
         if (Design.IsDesignMode)
         {
@@ -52,6 +53,16 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         {
             using var media = new LibVLCSharp.Shared.Media(_libVlc,
                 VideoPath);
+
+            await media.Parse();
+
+            if (media.IsParsed)
+            {
+                await Task.Delay(300);
+            }
+
+            MaximumSeekValue = media.Duration / 1000;
+
             MediaPlayer.Play(media);
             PlayIcon = Symbol.PauseFilled;
         }
@@ -88,8 +99,9 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         }
 
         IsMuted = !IsMuted;
+        MediaPlayer.Mute = IsMuted;
     }
-    
+
     partial void OnVideoPathChanged(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -98,7 +110,34 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         }
 
         VideoPath = value;
-        VideoName = value.Split(".").LastOrDefault();
+        VideoName = value.Substring(value.LastIndexOf('\\') + 1);
         Play();
+    }
+
+    private bool _noAction = false;
+
+    partial void OnSeekPositionChanged(double value)
+    {
+        // if (MediaPlayer.IsSeekable)
+        // {
+        //     _noAction = true;
+        //     MediaPlayer.SeekTo(TimeSpan.FromSeconds(value));
+        //     _noAction = false;
+        // }
+    }
+
+    private void MediaPlayerOnPositionChanged(object? sender, MediaPlayerPositionChangedEventArgs e)
+    {
+        if (_noAction) return;
+        SeekPosition = e.Position * MaximumSeekValue;
+    }
+
+
+    partial void OnVolumeChanged(float value)
+    {
+        if (MediaPlayer.IsSeekable)
+        {
+            MediaPlayer.Volume = (int)(value * 100);
+        }
     }
 }

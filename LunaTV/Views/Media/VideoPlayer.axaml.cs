@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -12,29 +13,26 @@ public partial class VideoPlayer : UserControl
 {
     public VideoPlayer()
     {
-        InitializeComponent();
         DataContext = new VideoPlayerViewModel();
-    }
-
-    private void VideoViewOnPointerEntered(object sender, PointerEventArgs e)
-    {
-        ControlsPanel.IsVisible = true;
-    }
-
-    private void VideoViewOnPointerExited(object sender, PointerEventArgs e)
-    {
-        ControlsPanel.IsVisible = false;
+        InitializeComponent();
     }
 
     public void Close()
     {
         var vm = DataContext as VideoPlayerViewModel;
         vm?.Stop();
-        // vm?.Dispose();
     }
 
     private async void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        var vm = DataContext as VideoPlayerViewModel;
+        if (vm.MediaPlayer.IsPlaying)
+        {
+            ControlsPanel.IsVisible = !ControlsPanel.IsVisible;
+            base.OnPointerPressed(e);
+            return;
+        }
+
         var videoAll = new FilePickerFileType("All Videos")
         {
             Patterns = new string[6] { "*.mp4", "*.mkv", "*.avi", "*.mov", "*.wmv", "*.flv" },
@@ -48,16 +46,18 @@ public partial class VideoPlayer : UserControl
             Title = "打开文件",
             FileTypeFilter = new[]
             {
-                FilePickerFileTypes.All,
                 videoAll,
+                FilePickerFileTypes.All,
             },
             AllowMultiple = false,
         });
 
         if (file.Count > 0)
         {
-            var vm = DataContext as VideoPlayerViewModel;
             vm.VideoPath = file[0].Path.LocalPath;
+            vm.VideoName = vm.VideoPath.Substring(vm.VideoPath.LastIndexOf('\\'));
         }
+
+        base.OnPointerPressed(e);
     }
 }

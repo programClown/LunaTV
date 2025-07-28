@@ -11,12 +11,12 @@ public class TimeSpanToMinutesSecondsConverter : IValueConverter
         if (value is double seconds)
         {
             var time = TimeSpan.FromSeconds(seconds);
-            return time.ToString(@"mm\:ss");
+            return time.ToString(@"hh\:mm\:ss");
         }
 
         if (value is TimeSpan timeSpan)
         {
-            return $"{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
+            return $"{timeSpan.Hours:D2}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
         }
 
         return "00:00";

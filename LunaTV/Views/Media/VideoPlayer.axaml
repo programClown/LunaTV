@@ -18,6 +18,7 @@
     </UserControl.Resources>
 
     <Grid RowDefinitions="Auto, *">
+
         <TextBlock
             Grid.Row="0"
             HorizontalAlignment="Center"
@@ -28,11 +29,13 @@
             Grid.Row="1"
             HorizontalAlignment="Stretch"
             MediaPlayer="{Binding MediaPlayer}"
-            PointerEntered="VideoViewOnPointerEntered"
-            PointerExited="VideoViewOnPointerExited"
             PointerPressed="VideoViewOnPointerPressed"
             VerticalAlignment="Stretch">
-            <Border Margin="20" Name="ControlsPanel">
+
+            <Border
+                IsVisible="False"
+                Margin="20"
+                Name="ControlsPanel">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
 
@@ -49,7 +52,7 @@
                     </StackPanel>
 
                     <Grid
-                        ColumnDefinitions="40,*,40"
+                        ColumnDefinitions="60,*,60"
                         Grid.Column="1"
                         Margin="40,0">
                         <!--  Current Position Display  -->
