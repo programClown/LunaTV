@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -37,7 +38,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     [ObservableProperty] private string _videoPath;
 
     [RelayCommand]
-    private async void Play()
+    private async Task Play()
     {
         if (Design.IsDesignMode)
         {
@@ -51,25 +52,33 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
         if (!IsPlay)
         {
-            using var media = new LibVLCSharp.Shared.Media(_libVlc,
-                VideoPath);
-
-            await media.Parse();
-
-            if (media.IsParsed)
+            if (!MediaPlayer.IsSeekable)
             {
-                await Task.Delay(300);
+                using var media = new LibVLCSharp.Shared.Media(_libVlc,
+                    VideoPath);
+
+                await media.Parse();
+
+                if (media.IsParsed)
+                {
+                    await Task.Delay(300);
+                }
+
+                MaximumSeekValue = media.Duration / 1000.0;
+
+                MediaPlayer.Play(media);
+            }
+            else
+            {
+                MediaPlayer.Play();
             }
 
-            MaximumSeekValue = media.Duration / 1000;
-
-            MediaPlayer.Play(media);
             PlayIcon = Symbol.PauseFilled;
         }
         else
         {
             PlayIcon = Symbol.PlayFilled;
-            Stop();
+            Pause();
         }
 
         IsPlay = !IsPlay;
@@ -77,7 +86,13 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     public void Stop()
     {
+        IsPlay = false;
         MediaPlayer.Stop();
+    }
+
+    public void Pause()
+    {
+        MediaPlayer.Pause();
     }
 
     public void Dispose()
@@ -111,24 +126,21 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
         VideoPath = value;
         VideoName = value.Substring(value.LastIndexOf('\\') + 1);
-        Play();
+        Task.Run(async () => await Play());
     }
-
-    private bool _noAction = false;
 
     partial void OnSeekPositionChanged(double value)
     {
         // if (MediaPlayer.IsSeekable)
         // {
-        //     _noAction = true;
+        //     MediaPlayer.PositionChanged -= MediaPlayerOnPositionChanged;
         //     MediaPlayer.SeekTo(TimeSpan.FromSeconds(value));
-        //     _noAction = false;
+        //     MediaPlayer.PositionChanged += MediaPlayerOnPositionChanged;
         // }
     }
 
     private void MediaPlayerOnPositionChanged(object? sender, MediaPlayerPositionChangedEventArgs e)
     {
-        if (_noAction) return;
         SeekPosition = e.Position * MaximumSeekValue;
     }
 
