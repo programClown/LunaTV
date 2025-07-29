@@ -1,7 +1,11 @@
-﻿using Avalonia.Controls;
+﻿using System.Runtime.CompilerServices;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using LunaTV.ViewModels.Media;
+using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
 
 namespace LunaTV.Views.Media;
 
@@ -53,7 +57,6 @@ public partial class VideoPlayer : UserControl
         if (file.Count > 0)
         {
             _viewModel.VideoPath = file[0].Path.LocalPath;
-            _viewModel.VideoName = _viewModel.VideoPath.Substring(_viewModel.VideoPath.LastIndexOf('\\'));
         }
 
         base.OnPointerPressed(e);

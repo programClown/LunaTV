@@ -9,5 +9,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:LunaTV.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Button Command="{Binding PlayVideoCommand}" Content="点我放电影" />
+    <StackPanel Spacing="10">
+        <Button Command="{Binding PlayVideoCommand}" Content="点我放电影" />
+        <Button Command="{Binding TestWindowCommand}" Content="点我测试" />
+    </StackPanel>
+
 </UserControl>

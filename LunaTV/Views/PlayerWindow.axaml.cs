@@ -1,17 +1,17 @@
 ﻿using System;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using Ursa.Controls;
 
 namespace LunaTV.Views;
 
 public partial class PlayerWindow : UrsaWindow
 {
+    public static Window? Window;
+
     public PlayerWindow()
     {
         InitializeComponent();
+        Window = this;
     }
 
     protected override void OnClosed(EventArgs e)

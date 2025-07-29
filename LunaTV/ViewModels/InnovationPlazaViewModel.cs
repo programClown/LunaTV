@@ -23,4 +23,12 @@ public partial class InnovationPlazaViewModel : PageViewModelBase
         (App.VisualRoot as MainWindow)?.Hide();
         win.Show();
     }
+
+    [RelayCommand]
+    private void TestWindow()
+    {
+        var win = new TestWindow();
+        (App.VisualRoot as MainWindow)?.Hide();
+        win.Show();
+    }
 }

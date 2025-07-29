@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using LibVLCSharp.Shared;
 using LunaTV.ViewModels.Base;
+using LunaTV.Views;
+using Ursa.Controls;
+using Dialog = LibVLCSharp.Shared.Dialog;
 
 namespace LunaTV.ViewModels.Media;
 
@@ -109,6 +112,10 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void Previous()
     {
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            await MessageBox.ShowAsync(PlayerWindow.Window, "Previous", "Previous");
+        });
     }
 
     [RelayCommand]
@@ -139,7 +146,6 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
             return;
         }
 
-        VideoPath = value;
         VideoName = value.Substring(value.LastIndexOf('\\') + 1);
         Task.Run(async () => await Play());
     }
