@@ -1,32 +1,30 @@
-﻿using System;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
-using Avalonia.Threading;
 using LunaTV.ViewModels.Media;
-using Ursa.Controls;
 
 namespace LunaTV.Views.Media;
 
 public partial class VideoPlayer : UserControl
 {
+    VideoPlayerViewModel _viewModel;
+
     public VideoPlayer()
     {
-        DataContext = new VideoPlayerViewModel();
         InitializeComponent();
+
+        _viewModel = new VideoPlayerViewModel();
+        DataContext = _viewModel;
     }
 
     public void Close()
     {
-        var vm = DataContext as VideoPlayerViewModel;
-        vm?.Stop();
+        _viewModel.Stop();
     }
 
     private async void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        var vm = DataContext as VideoPlayerViewModel;
-        if (vm.MediaPlayer.IsPlaying)
+        if (_viewModel.MediaPlayer.IsPlaying)
         {
             ControlsPanel.IsVisible = !ControlsPanel.IsVisible;
             base.OnPointerPressed(e);
@@ -54,8 +52,8 @@ public partial class VideoPlayer : UserControl
 
         if (file.Count > 0)
         {
-            vm.VideoPath = file[0].Path.LocalPath;
-            vm.VideoName = vm.VideoPath.Substring(vm.VideoPath.LastIndexOf('\\'));
+            _viewModel.VideoPath = file[0].Path.LocalPath;
+            _viewModel.VideoName = _viewModel.VideoPath.Substring(_viewModel.VideoPath.LastIndexOf('\\'));
         }
 
         base.OnPointerPressed(e);

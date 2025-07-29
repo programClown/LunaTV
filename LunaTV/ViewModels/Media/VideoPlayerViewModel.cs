@@ -31,11 +31,11 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     [ObservableProperty] private double _seekPosition = 0;
     [ObservableProperty] private bool _canInteractSeekSlider = true;
     [ObservableProperty] private double _maximumSeekValue = 0;
-
     [ObservableProperty] private Symbol _muteIcon = Symbol.Speaker2Filled;
     [ObservableProperty] private float _volume = 0.5f;
-
     [ObservableProperty] private string _videoPath;
+    private bool _isUpdatingFromMedia;
+    private bool _isUserSeeking;
 
     [RelayCommand]
     private async Task Play()
@@ -86,8 +86,13 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     public void Stop()
     {
-        IsPlay = false;
         MediaPlayer.Stop();
+        IsPlay = false;
+        MaximumSeekValue = 0;
+        SeekPosition = 0;
+        _isUserSeeking = false;
+        _isUpdatingFromMedia = false;
+        PlayIcon = Symbol.PlayFilled;
     }
 
     public void Pause()
@@ -99,6 +104,16 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     {
         MediaPlayer?.Dispose();
         _libVlc?.Dispose();
+    }
+
+    [RelayCommand]
+    private void Previous()
+    {
+    }
+
+    [RelayCommand]
+    private void Next()
+    {
     }
 
     [RelayCommand]
@@ -131,17 +146,23 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     partial void OnSeekPositionChanged(double value)
     {
-        // if (MediaPlayer.IsSeekable)
-        // {
-        //     MediaPlayer.PositionChanged -= MediaPlayerOnPositionChanged;
-        //     MediaPlayer.SeekTo(TimeSpan.FromSeconds(value));
-        //     MediaPlayer.PositionChanged += MediaPlayerOnPositionChanged;
-        // }
+        _isUserSeeking = true;
+
+        if (MediaPlayer.IsSeekable && !_isUpdatingFromMedia)
+        {
+            MediaPlayer.SeekTo(TimeSpan.FromSeconds(value));
+        }
+
+        _isUserSeeking = false;
     }
 
     private void MediaPlayerOnPositionChanged(object? sender, MediaPlayerPositionChangedEventArgs e)
     {
+        if (_isUserSeeking) return;
+
+        _isUpdatingFromMedia = true;
         SeekPosition = e.Position * MaximumSeekValue;
+        _isUpdatingFromMedia = false;
     }
 
 
