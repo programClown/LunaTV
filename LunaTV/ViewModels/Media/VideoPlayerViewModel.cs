@@ -114,13 +114,17 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     {
         Dispatcher.UIThread.Invoke(async () =>
         {
-            await MessageBox.ShowAsync(PlayerWindow.Window, "Previous", "Previous");
+            await MessageBox.ShowAsync(PlayerWindow.Window, "前面没有了", "打住！", MessageBoxIcon.Warning);
         });
     }
 
     [RelayCommand]
     private void Next()
     {
+        Dispatcher.UIThread.Invoke(async () =>
+        {
+            await MessageBox.ShowAsync(PlayerWindow.Window, "后边没有了", "打住！", MessageBoxIcon.Warning);
+        });
     }
 
     [RelayCommand]
