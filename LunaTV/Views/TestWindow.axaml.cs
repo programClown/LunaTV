@@ -14,12 +14,9 @@ namespace LunaTV.Views;
 
 public partial class TestWindow : UrsaWindow
 {
-    public static WindowNotificationManager NotificationManager;
-
     public TestWindow()
     {
         InitializeComponent();
-        NotificationManager = new WindowNotificationManager(this);
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
@@ -27,7 +24,6 @@ public partial class TestWindow : UrsaWindow
         // NotificationManager.Position = NotificationPosition.TopCenter;
         //
         // NotificationManager.Show(new Notification("哈哈", "niubi"), NotificationType.Success);
-
-        Dispatcher.UIThread.Invoke(async () => { await MessageBox.ShowAsync(this, "Previous", "Previous"); });
+        Dispatcher.UIThread.Invoke(async () => await MessageBox.ShowAsync(this, "da1231", "1231"));
     }
 }

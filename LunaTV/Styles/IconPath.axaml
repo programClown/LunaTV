@@ -29,4 +29,7 @@
 
     <ui:SymbolIconSource Symbol="Settings" x:Key="SettingsIcon" />
     <ui:SymbolIconSource Symbol="SettingsFilled" x:Key="SettingsIconFilled" />
+
+    <ui:SymbolIconSource Symbol="ColorFill" x:Key="ColorFillIcon" />
+    <ui:SymbolIconSource Symbol="ColorFillFilled" x:Key="ColorFillIconFilled" />
 </ResourceDictionary>

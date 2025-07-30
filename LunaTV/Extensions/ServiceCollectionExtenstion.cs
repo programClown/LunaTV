@@ -37,13 +37,15 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddTransient<TVShowViewModel>();
         serviceCollection.AddTransient<InnovationPlazaViewModel>();
         serviceCollection.AddTransient<SettingsViewModel>();
+        serviceCollection.AddTransient<PlaygroundViewModel>();
         serviceCollection.AddSingleton<MainViewModel>(provider =>
             new MainViewModel
             {
                 Pages =
                 {
                     provider.GetRequiredService<TVShowViewModel>(),
-                    provider.GetRequiredService<InnovationPlazaViewModel>()
+                    provider.GetRequiredService<InnovationPlazaViewModel>(),
+                    provider.GetRequiredService<PlaygroundViewModel>()
                 },
                 FooterPages =
                 {
@@ -62,5 +64,6 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddTransient<TVShowView>();
         serviceCollection.AddTransient<InnovationPlazaView>();
         serviceCollection.AddSingleton<SettingsView>();
+        serviceCollection.AddSingleton<PlaygroundView>();
     }
 }
