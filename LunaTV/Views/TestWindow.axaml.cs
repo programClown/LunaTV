@@ -6,6 +6,8 @@ using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using LunaTV.Base.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Ursa.Controls;
 using Notification = Ursa.Controls.Notification;
 using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
@@ -25,5 +27,15 @@ public partial class TestWindow : UrsaWindow
         //
         // NotificationManager.Show(new Notification("哈哈", "niubi"), NotificationType.Success);
         Dispatcher.UIThread.Invoke(async () => await MessageBox.ShowAsync(this, "da1231", "1231"));
+
+        var sh = new SearchHistory
+        {
+            MovieName = "xuehaiqingshen",
+            CreateTime = DateTime.Now,
+        };
+
+        var freesql =
+            ServiceLocator.Host.Services.GetRequiredService<IFreeSql>();
+        freesql.Insert<SearchHistory>(sh).ExecuteAffrows();
     }
 }

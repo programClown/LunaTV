@@ -21,24 +21,18 @@ sealed class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
-        Func<IServiceProvider, IFreeSql> fsqlFactory = r =>
-        {
-            IFreeSql fsql = new FreeSql.FreeSqlBuilder()
-                .UseConnectionString(FreeSql.DataType.Sqlite, @"Data Source=lunatv.db")
-                .UseAdoConnectionPool(true)
-                .UseMonitorCommand(cmd => Console.WriteLine($"Sql：{cmd.CommandText}"))
-                .UseAutoSyncStructure(true) //自动同步实体结构到数据库，只有CRUD时才会生成表
-                .Build();
-            return fsql;
-        };
-
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
                 services.AddViewModels();
                 services.AddServices();
                 services.AddViews();
-                services.AddSingleton<IFreeSql>(fsqlFactory);
+                services.AddSingleton<IFreeSql>(r => new FreeSql.FreeSqlBuilder()
+                    .UseConnectionString(FreeSql.DataType.Sqlite, @"Data Source=lunatv.db")
+                    .UseAdoConnectionPool(true)
+                    .UseMonitorCommand(cmd => Trace.WriteLine($"Sql：{cmd.CommandText}"))
+                    .UseAutoSyncStructure(true) //自动同步实体结构到数据库，只有CRUD时才会生成表
+                    .Build());
             }).Build();
         ServiceLocator.Host = host;
 
