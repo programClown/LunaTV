@@ -48,7 +48,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nodify.Avalonia\Nodify.Avalonia.Shared\Nodify.Avalonia.Shared.csproj" />
-      <ProjectReference Include="..\Nodify.Avalonia\Nodify.Avalonia\Nodify.Avalonia.csproj" />
+        <ProjectReference Include="..\LunaTV.Base\LunaTV.Base.csproj"/>
+        <ProjectReference Include="..\Nodify.Avalonia\Nodify.Avalonia.Shared\Nodify.Avalonia.Shared.csproj"/>
+        <ProjectReference Include="..\Nodify.Avalonia\Nodify.Avalonia\Nodify.Avalonia.csproj"/>
     </ItemGroup>
 </Project>
