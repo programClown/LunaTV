@@ -24,6 +24,8 @@ public class App : Application
     public static WindowToastManager? Toast { get; set; }
     public static IStorageProvider? StorageProvider { get; internal set; }
     public static TopLevel TopLevel => TopLevel.GetTopLevel(VisualRoot)!;
+
+    public static IServiceProvider Services => ServiceLocator.Host.Services;
     [NotNull] public static IClipboard? Clipboard { get; internal set; }
 
     public override void Initialize()

@@ -6,8 +6,10 @@ using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using Microsoft.Extensions.DependencyInjection;
+using SqlSugar;
 using Ursa.Controls;
 using Notification = Ursa.Controls.Notification;
 using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
@@ -28,14 +30,12 @@ public partial class TestWindow : UrsaWindow
         // NotificationManager.Show(new Notification("哈哈", "niubi"), NotificationType.Success);
         Dispatcher.UIThread.Invoke(async () => await MessageBox.ShowAsync(this, "da1231", "1231"));
 
-        var sh = new SearchHistory
+        var sugarRepository = App.Services.GetRequiredService<SugarRepository<SearchHistory>>();
+        sugarRepository.InsertOrUpdate(new SearchHistory()
         {
-            MovieName = "xuehaiqingshen",
+            Id = 1,
+            MovieName = "血海神抽",
             CreateTime = DateTime.Now,
-        };
-
-        var freesql =
-            ServiceLocator.Host.Services.GetRequiredService<IFreeSql>();
-        freesql.Insert<SearchHistory>(sh).ExecuteAffrows();
+        });
     }
 }

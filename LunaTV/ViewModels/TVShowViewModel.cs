@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using LunaTV.Base.Api;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.TVShowPages;
 using LunaTV.Views.TVShowPages;
@@ -13,6 +17,7 @@ namespace LunaTV.ViewModels;
 
 public partial class TVShowViewModel : PageViewModelBase
 {
+    private readonly IWebApi _webApi;
     public override string Title => "无限影视";
 
     public override IconSource IconSource { set; get; } =
@@ -46,8 +51,10 @@ public partial class TVShowViewModel : PageViewModelBase
     [ObservableProperty] private TVMenuItem? _selectedItem;
     [ObservableProperty] private UserControl? _pageContent;
 
-    public TVShowViewModel()
+    public TVShowViewModel(IWebApi webApi)
     {
+        _webApi = webApi;
+
         Items = new ObservableCollection<TVMenuItem>()
         {
             new()
@@ -86,10 +93,12 @@ public partial class TVShowViewModel : PageViewModelBase
     }
 
     [RelayCommand]
-    private void ToView(string content)
+    private async void ToView(string content)
     {
         if (string.IsNullOrEmpty(content)) return;
         PageContent = _viewDictionary[content];
+        // var list = await _webApi.GetPlayList();
+        // Console.WriteLine(list);
     }
 }
 

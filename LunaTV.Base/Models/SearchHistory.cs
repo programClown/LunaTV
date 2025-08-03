@@ -1,10 +1,11 @@
-﻿using FreeSql.DataAnnotations;
+﻿using SqlSugar;
 
 namespace LunaTV.Base.Models;
 
+[SugarTable("search_history")]
 public class SearchHistory
 {
-    [Column(IsIdentity = true, IsPrimary = true)]
+    [SugarColumn(IsIdentity = true, IsPrimaryKey = true)]
     public int Id { get; set; }
 
     public string MovieName { get; set; }

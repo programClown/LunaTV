@@ -1,10 +1,8 @@
 ﻿using Avalonia;
 using System;
-using System.Diagnostics;
 using Avalonia.Dialogs;
 using Avalonia.Media;
 using LunaTV.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace LunaTV;
@@ -27,12 +25,7 @@ sealed class Program
                 services.AddViewModels();
                 services.AddServices();
                 services.AddViews();
-                services.AddSingleton<IFreeSql>(r => new FreeSql.FreeSqlBuilder()
-                    .UseConnectionString(FreeSql.DataType.Sqlite, @"Data Source=lunatv.db")
-                    .UseAdoConnectionPool(true)
-                    .UseMonitorCommand(cmd => Trace.WriteLine($"Sql：{cmd.CommandText}"))
-                    .UseAutoSyncStructure(true) //自动同步实体结构到数据库，只有CRUD时才会生成表
-                    .Build());
+                services.AddDb();
             }).Build();
         ServiceLocator.Host = host;
 
