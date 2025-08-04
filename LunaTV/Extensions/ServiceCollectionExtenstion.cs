@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.Messaging;
 using LunaTV.Base.Api;
+using LunaTV.Base.Constants;
 using LunaTV.Base.DB;
 using LunaTV.Constants;
 using LunaTV.ViewModels;
@@ -72,6 +73,11 @@ public static class ServiceCollectionExtenstion
             {
                 c.BaseAddress = new Uri("https://movie.douban.com");
                 c.Timeout = TimeSpan.FromHours(1);
+                c.DefaultRequestHeaders.Add("Accept", "application/json, text/plain, */*");
+                c.DefaultRequestHeaders.Add("User-Agent", UserAgent.GetRandomUserAgent());
+                c.DefaultRequestHeaders.Add("Referer", "https://movie.douban.com/");
+                c.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+                c.Timeout = TimeSpan.FromSeconds(20);
             })
             .AddStandardResilienceHandler(options =>
                 {
