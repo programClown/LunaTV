@@ -6,6 +6,7 @@ using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using LunaTV.Base.Constants;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,5 +38,7 @@ public partial class TestWindow : UrsaWindow
             MovieName = "血海神抽",
             CreateTime = DateTime.Now,
         });
+
+        Console.Write(ApiSourceInfo.ApiSitesConfig.Count);
     }
 }
