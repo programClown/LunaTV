@@ -38,10 +38,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Models\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Update="Views\Media\VideoPlayer.axaml.cs">
             <DependentUpon>VideoPlayer.axaml</DependentUpon>
             <SubType>Code</SubType>

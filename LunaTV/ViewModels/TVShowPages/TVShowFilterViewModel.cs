@@ -44,53 +44,14 @@ public partial class TVShowFilterViewModel : ViewModelBase
         SelectedCountryItem = CountryItems[0];
         SelectedSortItem = SortItems[0];
 
-        MovieCardItems = new ObservableCollection<MovieCardItem>
+        MovieCardItems = new ObservableCollection<MovieCardItem>();
+        for (int i = 0; i < 100; i++)
         {
-            new()
+            MovieCardItems.Add(new MovieCardItem
             {
                 Name = "国家宝藏",
                 Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-            new()
-            {
-                Name = "国家宝藏",
-                Score = 7.5,
-            },
-        };
+            });
+        }
     }
 }
