@@ -5,6 +5,7 @@
     x:Class="LunaTV.Views.TVShowPages.TVShowHomeView"
     x:DataType="vm:TVShowHomeViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
     xmlns:converters="clr-namespace:LunaTV.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
@@ -225,8 +226,8 @@
                                             <Image
                                                 Height="240"
                                                 Name="MovieImage"
-                                                Source="{Binding Image}"
-                                                Stretch="Fill" />
+                                                Stretch="Fill"
+                                                asyncImageLoader:ImageLoader.Source="{Binding Image}" />
                                             <StackPanel
                                                 HorizontalAlignment="Left"
                                                 Orientation="Horizontal"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -60,7 +61,8 @@ public partial class TVShowHomeViewModel : ViewModelBase
             return;
         }
 
-        var sts = await App.Services.GetRequiredService<IWebApi>().FetchDoubanSubjectsByTag("movie", "战争", "recommend");
+        var sts = await App.Services.GetRequiredService<IWebApi>()
+            .FetchDoubanSubjectsByTag("movie", "战争", "recommend", page_limit: 16);
         var json = JsonSerializer.Deserialize<DoubanSubjectsResponse>(sts,
             new JsonSerializerOptions
             {
@@ -72,16 +74,16 @@ public partial class TVShowHomeViewModel : ViewModelBase
             MovieCardItems.Clear();
             foreach (var item in json.Subjects)
             {
+                var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
+                Console.WriteLine(stdCover);
                 MovieCardItems.Add(new MovieCardItem
                 {
                     Name = item.Title,
-                    // Image = new Bitmap(AssetLoader.Open(new Uri(item.Cover))),
+                    Image = stdCover,
                     Score = double.Parse(item.Rate),
                 });
             }
         }
-
-        Console.WriteLine(MovieCardItems.Count);
     }
 }
 
@@ -89,7 +91,7 @@ public partial class MovieCardItem : ViewModelBase
 {
     [ObservableProperty] private string? _name;
 
-    [ObservableProperty] private Bitmap? _image;
+    [ObservableProperty] private string? _image;
 
     [ObservableProperty] private double _score;
 

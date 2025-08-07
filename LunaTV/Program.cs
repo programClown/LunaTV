@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using System;
+using AsyncImageLoader;
+using AsyncImageLoader.Loaders;
 using Avalonia.Dialogs;
 using Avalonia.Media;
 using LunaTV.Extensions;
