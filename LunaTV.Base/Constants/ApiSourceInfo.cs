@@ -103,6 +103,16 @@ public record ApiSourceInfo(
                 null)
         },
         {
+            "iqiyi",
+            new ApiSourceInfo(
+                "https://www.iqiyizyapi.com",
+                "爱奇艺",
+                null,
+                ApiType.Json,
+                null,
+                null)
+        },
+        {
             "wolong",
             new ApiSourceInfo(
                 "https://wolongzyw.com",
@@ -217,6 +227,16 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://ikunzyapi.com",
                 "iKun资源",
+                null,
+                ApiType.Json,
+                null,
+                null)
+        },
+        {
+            "lzi",
+            new ApiSourceInfo(
+                "https://cj.lziapi.com",
+                "量子资源站",
                 null,
                 ApiType.Json,
                 null,
