@@ -25,14 +25,14 @@ public partial class MainView : UserControl
     {
         base.OnAttachedToVisualTree(e);
 
-        var vm = ServiceLocator.Host.Services.GetRequiredService<MainViewModel>();
+        var vm = App.Services.GetRequiredService<MainViewModel>();
         DataContext = vm;
 
         FrameView.NavigationPageFactory = vm.NavigationFactory;
         NavigationService.Instance.SetFrame(FrameView);
 
         NaviView.ItemInvoked += OnNaviViewItemInvoked;
-        
+
         Dispatcher.UIThread.Invoke((() =>
         {
             vm.Loaded();
@@ -41,7 +41,6 @@ public partial class MainView : UserControl
                 TransitionInfoOverride = new BetterEntranceNavigationTransition()
             });
         }));
-        
     }
 
 

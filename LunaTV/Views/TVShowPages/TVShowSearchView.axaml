@@ -1,48 +1,50 @@
 ﻿<UserControl
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    mc:Ignorable="d"
     x:Class="LunaTV.Views.TVShowPages.TVShowSearchView"
-    x:DataType="tvvm:TVShowSearchViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="tvvm:TVShowSearchViewModel"
+    mc:Ignorable="d">
 
     <StackPanel Spacing="10">
         <TextBox
-            Classes="clearButton Large"
+            Width="400"
             Margin="0,30,0,0"
-            Text=""
-            Watermark="爸爸快来"
-            Width="400">
+            Classes="clearButton Large"
+            Text="{Binding InputMovieTvName}"
+            Watermark="爸爸快来">
             <TextBox.InnerRightContent>
                 <Button
+                    Margin="0,0,-10,0"
                     Classes="Large"
-                    Content="搜索"
-                    Margin="0,0,-10,0" />
+                    Command="{Binding Search}"
+                    CommandParameter="{Binding InputMovieTvName}"
+                    Content="搜索" />
             </TextBox.InnerRightContent>
         </TextBox>
 
-        <DockPanel HorizontalAlignment="Center" Width="400">
+        <DockPanel Width="400" HorizontalAlignment="Center">
             <TextBlock
+                VerticalAlignment="Center"
                 Classes="Tertiary Small"
                 DockPanel.Dock="Left"
                 FontSize="12"
-                Text="最近搜索："
-                VerticalAlignment="Center" />
+                Text="最近搜索：" />
             <Button
+                HorizontalAlignment="Right"
                 Classes="Tertiary Small"
                 Command="{Binding ClearAllHistoriesCommand}"
                 Content="清除搜索历史"
                 FontSize="12"
-                HorizontalAlignment="Right"
                 Theme="{DynamicResource BorderlessButton}" />
         </DockPanel>
 
-        <ItemsControl ItemsSource="{Binding HistoryMovies}" Width="600">
+        <ItemsControl Width="600" ItemsSource="{Binding HistoryMovies}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
@@ -53,7 +55,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button
                             Classes="Small"
-                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).SearchCommand}"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).Search}"
                             CommandParameter="{Binding}"
                             Content="{Binding}"
                             CornerRadius="4,0,0,4" />
@@ -80,12 +82,12 @@
                     <DataTemplate DataType="tvvm:SearchResult">
 
                         <Button
+                            Margin="8,8"
+                            Padding="0"
                             Classes="MovieCard"
                             Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).PlayCommand}"
                             CommandParameter="{Binding Name}"
                             Foreground="{DynamicResource SemiBlue9Color}"
-                            Margin="8,8"
-                            Padding="0"
                             Theme="{DynamicResource OutlineButton}">
                             <Button.Styles>
                                 <Style Selector="Button.MovieCard:pointerover">
@@ -105,11 +107,11 @@
                                 Orientation="Horizontal"
                                 Spacing="8">
                                 <Image
+                                    Width="100"
                                     Height="150"
                                     Source="avares://LunaTV/Assets/nomedia.png"
-                                    Stretch="Fill"
-                                    Width="100" />
-                                <DockPanel VerticalSpacing="8" Width="120">
+                                    Stretch="Fill" />
+                                <DockPanel Width="120" VerticalSpacing="8">
                                     <TextBlock
                                         DockPanel.Dock="Top"
                                         FontSize="16"
@@ -126,10 +128,10 @@
                                         FontSize="12"
                                         Text="{Binding Descriptor}" />
                                     <TextBlock
+                                        VerticalAlignment="Bottom"
                                         DockPanel.Dock="Bottom"
                                         FontSize="12"
-                                        Text="{Binding MovieSource}"
-                                        VerticalAlignment="Bottom" />
+                                        Text="{Binding MovieSource}" />
                                 </DockPanel>
                             </StackPanel>
                         </Button>

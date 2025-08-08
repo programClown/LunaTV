@@ -93,12 +93,15 @@ public partial class TVShowViewModel : PageViewModelBase
     }
 
     [RelayCommand]
-    private async void ToView(string content)
+    private void ToView(string content)
     {
         if (string.IsNullOrEmpty(content)) return;
         PageContent = _viewDictionary[content];
-        // var list = await _webApi.GetPlayList();
-        // Console.WriteLine(list);
+    }
+
+    public UserControl GetControl(string name)
+    {
+        return _viewDictionary[name];
     }
 }
 

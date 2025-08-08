@@ -50,7 +50,7 @@ public partial class TVShowFilterViewModel : ViewModelBase
             MovieCardItems.Add(new MovieCardItem
             {
                 Name = "国家宝藏",
-                Score = 7.5,
+                Score = "7.5",
             });
         }
     }

@@ -13,7 +13,9 @@ using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.Api;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
+using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
+using Nodify.Avalonia.Shared;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
@@ -27,26 +29,36 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
     [ObservableProperty] private ObservableCollection<string> _doubanTags;
     [ObservableProperty] private string? _selectedTagItem;
+    [ObservableProperty] private bool _movieChecked = true;
+    private string _switchMovieOrTv = "movie";
+    private int _pageStart = 0;
+    private const int PageSize = 16;
+    private bool _isTagChanged2Refresh = false; //标签改变的时候要不要更新
 
     [ObservableProperty] private ObservableCollection<MovieCardItem> _movieCardItems;
+    [ObservableProperty] private string? _searchInputText;
 
     public TVShowHomeViewModel()
     {
-        SwitchMovieOrTv("电影");
-
+        DoubanTags = new ObservableCollection<string>();
         MovieCardItems = new ObservableCollection<MovieCardItem>();
+        _ = SwitchMovieOrTv("电影");
     }
 
     [RelayCommand]
     private async Task SwitchMovieOrTv(string tag)
     {
+        _isTagChanged2Refresh = false;
+        DoubanTags.Clear();
         if (tag == "电影")
         {
-            DoubanTags = new ObservableCollection<string>(_defaultMovieTags);
+            DoubanTags.AddRange(_defaultMovieTags);
+            _switchMovieOrTv = "movie";
         }
         else if (tag == "电视")
         {
-            DoubanTags = new ObservableCollection<string>(_defaultTvTags);
+            DoubanTags.AddRange(_defaultTvTags);
+            _switchMovieOrTv = "tv";
         }
 
         SelectedTagItem = DoubanTags.FirstOrDefault();
@@ -62,7 +74,8 @@ public partial class TVShowHomeViewModel : ViewModelBase
         }
 
         var sts = await App.Services.GetRequiredService<IWebApi>()
-            .FetchDoubanSubjectsByTag("movie", "战争", "recommend", page_limit: 16);
+            .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", page_limit: PageSize,
+                page_start: _pageStart);
         var json = JsonSerializer.Deserialize<DoubanSubjectsResponse>(sts,
             new JsonSerializerOptions
             {
@@ -75,15 +88,69 @@ public partial class TVShowHomeViewModel : ViewModelBase
             foreach (var item in json.Subjects)
             {
                 var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
-                Console.WriteLine(stdCover);
+                // Console.WriteLine(stdCover);
                 MovieCardItems.Add(new MovieCardItem
                 {
                     Name = item.Title,
                     Image = stdCover,
-                    Score = double.Parse(item.Rate),
+                    Score = string.IsNullOrEmpty(item.Rate) ? "暂无" : item.Rate,
                 });
             }
         }
+
+        _isTagChanged2Refresh = true;
+    }
+
+    partial void OnSelectedTagItemChanged(string? value)
+    {
+        if (_isTagChanged2Refresh)
+            RefreshMovieCardsAsync().GetAwaiter();
+    }
+
+    [RelayCommand]
+    private async Task MoreMovieOrTv()
+    {
+        _isTagChanged2Refresh = false;
+        _pageStart += PageSize;
+        if (_pageStart > 9 * PageSize)
+        {
+            _pageStart = 0;
+        }
+
+        await RefreshMovieCardsAsync();
+    }
+
+    [RelayCommand]
+    private async Task BackHome()
+    {
+        MovieChecked = true;
+        await SwitchMovieOrTv("电影");
+    }
+
+    [RelayCommand]
+    private void NaviSearch(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        var mvm = App.Services.GetRequiredService<MainViewModel>();
+        if (mvm.Pages[0] is TVShowViewModel tvvm)
+        {
+            tvvm.SelectedItem = tvvm.Items[1];
+            var sview = tvvm.GetControl(tvvm.SelectedItem.Name) as TVShowSearchView;
+            // var svm = sview?.DataContext as TVShowSearchViewModel;
+            if (sview?.DataContext is TVShowSearchViewModel svm)
+            {
+                svm.InputMovieTvName = text;
+                svm.Search(text);
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void NaviHistory()
+    {
+        var mvm = App.Services.GetRequiredService<MainViewModel>();
+        if (mvm.Pages[0] is TVShowViewModel tvvm)
+            tvvm.SelectedItem = tvvm.Items[2];
     }
 }
 
@@ -93,7 +160,7 @@ public partial class MovieCardItem : ViewModelBase
 
     [ObservableProperty] private string? _image;
 
-    [ObservableProperty] private double _score;
+    [ObservableProperty] private string? _score;
 
 
     [RelayCommand]
