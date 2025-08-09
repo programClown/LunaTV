@@ -1,50 +1,61 @@
 ﻿<UserControl
-    x:Class="LunaTV.Views.TVShowPages.TVShowSearchView"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
-    xmlns:u="https://irihi.tech/ursa"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowPages.TVShowSearchView"
     x:DataType="tvvm:TVShowSearchViewModel"
-    mc:Ignorable="d">
-
-    <StackPanel Spacing="10">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:converters="clr-namespace:LunaTV.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <converters:ShareWidthConverter x:Key="ShareWidthConverter" />
+        <sys:Double x:Key="SearchInputHeight">60</sys:Double>
+    </UserControl.Resources>
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
         <TextBox
-            Width="400"
-            Margin="0,30,0,0"
             Classes="clearButton Large"
+            Margin="0,30,0,0"
             Text="{Binding InputMovieTvName}"
-            Watermark="爸爸快来">
+            Watermark="爸爸快来"
+            Width="400">
             <TextBox.InnerRightContent>
                 <Button
-                    Margin="0,0,-10,0"
                     Classes="Large"
                     Command="{Binding Search}"
                     CommandParameter="{Binding InputMovieTvName}"
-                    Content="搜索" />
+                    Content="搜索"
+                    Margin="0,0,-10,0" />
             </TextBox.InnerRightContent>
         </TextBox>
 
-        <DockPanel Width="400" HorizontalAlignment="Center">
+        <DockPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            Width="400">
             <TextBlock
-                VerticalAlignment="Center"
                 Classes="Tertiary Small"
                 DockPanel.Dock="Left"
                 FontSize="12"
-                Text="最近搜索：" />
+                Text="最近搜索："
+                VerticalAlignment="Center" />
             <Button
-                HorizontalAlignment="Right"
                 Classes="Tertiary Small"
                 Command="{Binding ClearAllHistoriesCommand}"
                 Content="清除搜索历史"
                 FontSize="12"
+                HorizontalAlignment="Right"
                 Theme="{DynamicResource BorderlessButton}" />
         </DockPanel>
 
-        <ItemsControl Width="600" ItemsSource="{Binding HistoryMovies}">
+        <ItemsControl
+            Grid.Row="2"
+            ItemsSource="{Binding HistoryMovies}"
+            Width="600">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
@@ -76,46 +87,50 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <ScrollViewer Margin="20">
+        <ScrollViewer Grid.Row="3" Margin="20">
             <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding SearchResults}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="tvvm:SearchResult">
 
                         <Button
-                            Margin="8,8"
-                            Padding="0"
                             Classes="MovieCard"
                             Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).PlayCommand}"
                             CommandParameter="{Binding Name}"
-                            Foreground="{DynamicResource SemiBlue9Color}"
+                            Margin="0,4"
+                            Padding="0"
                             Theme="{DynamicResource OutlineButton}">
                             <Button.Styles>
                                 <Style Selector="Button.MovieCard:pointerover">
-                                    <!-- <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter"> -->
-                                    <!--     <Setter Property="Background" Value="Transparent" /> -->
-                                    <!-- </Style> -->
-                                    <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                    <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
                                 </Style>
-                                <!-- <Style Selector="Button.MovieCard:pressed"> -->
-                                <!--     <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter"> -->
-                                <!--         <Setter Property="Background" Value="Transparent" /> -->
-                                <!--     </Style> -->
-                                <!-- </Style> -->
+                                <Style Selector="Button.MovieCard:pressed">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                </Style>
                             </Button.Styles>
                             <StackPanel
+                                Height="160"
                                 HorizontalAlignment="Left"
                                 Orientation="Horizontal"
-                                Spacing="8">
-                                <Image
-                                    Width="100"
-                                    Height="150"
-                                    Source="avares://LunaTV/Assets/nomedia.png"
-                                    Stretch="Fill" />
-                                <DockPanel Width="120" VerticalSpacing="8">
+                                Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=240}">
+                                <Border ClipToBounds="True" CornerRadius="5,0,0,5">
+                                    <Image
+                                        Source="avares://LunaTV/Assets/nomedia.png"
+                                        Stretch="Fill"
+                                        Width="100" />
+                                </Border>
+
+                                <DockPanel Margin="8,8,0,8" VerticalSpacing="8">
                                     <TextBlock
                                         DockPanel.Dock="Top"
                                         FontSize="16"
-                                        Text="{Binding Name}" />
+                                        Foreground="{DynamicResource SemiColorText0}"
+                                        Text="{Binding Name}"
+                                        TextWrapping="Wrap" />
                                     <StackPanel
                                         DockPanel.Dock="Top"
                                         Orientation="Horizontal"
@@ -126,12 +141,25 @@
                                     <TextBlock
                                         DockPanel.Dock="Top"
                                         FontSize="12"
-                                        Text="{Binding Descriptor}" />
+                                        Foreground="{DynamicResource SemiColorText2}"
+                                        Text="{Binding Descriptor}"
+                                        TextWrapping="Wrap" />
+
                                     <TextBlock
-                                        VerticalAlignment="Bottom"
+                                        Background="{DynamicResource SemiColorBackground0}"
                                         DockPanel.Dock="Bottom"
                                         FontSize="12"
-                                        Text="{Binding MovieSource}" />
+                                        Foreground="{DynamicResource SemiColorText0}"
+                                        HorizontalAlignment="Left"
+                                        Padding="3"
+                                        Text="{Binding MovieSource}"
+                                        VerticalAlignment="Bottom" />
+                                    <Border
+                                        Background="{DynamicResource SemiColorFill2}"
+                                        DockPanel.Dock="Bottom"
+                                        Height="1"
+                                        Opacity="0.3"
+                                        VerticalAlignment="Bottom" />
                                 </DockPanel>
                             </StackPanel>
                         </Button>
@@ -139,12 +167,12 @@
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Margin="16,0" />
+                        <WrapPanel ItemSpacing="8" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </ScrollViewer>
 
-    </StackPanel>
+    </Grid>
 
 </UserControl>

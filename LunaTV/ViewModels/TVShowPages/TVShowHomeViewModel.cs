@@ -82,9 +82,9 @@ public partial class TVShowHomeViewModel : ViewModelBase
                 PropertyNameCaseInsensitive = true, // 处理大小写不敏感
             });
         // Console.WriteLine(json);
+        MovieCardItems.Clear();
         if (json is not null)
         {
-            MovieCardItems.Clear();
             foreach (var item in json.Subjects)
             {
                 var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
@@ -94,6 +94,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
                     Name = item.Title,
                     Image = stdCover,
                     Score = string.IsNullOrEmpty(item.Rate) ? "暂无" : item.Rate,
+                    DoubanUrl = item.Url,
                 });
             }
         }
@@ -128,19 +129,30 @@ public partial class TVShowHomeViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void NaviSearch(string text)
+    private async Task NaviSearch(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
-        var mvm = App.Services.GetRequiredService<MainViewModel>();
-        if (mvm.Pages[0] is TVShowViewModel tvvm)
-        {
-            tvvm.SelectedItem = tvvm.Items[1];
-            var sview = tvvm.GetControl(tvvm.SelectedItem.Name) as TVShowSearchView;
-            // var svm = sview?.DataContext as TVShowSearchViewModel;
-            if (sview?.DataContext is TVShowSearchViewModel svm)
+        var sts = await App.Services.GetRequiredService<IWebApi>()
+            .GetchDoubanSearchSuggestions(text);
+        var json = JsonSerializer.Deserialize<List<DoubanSuggestionSubject>>(sts,
+            new JsonSerializerOptions
             {
-                svm.InputMovieTvName = text;
-                svm.Search(text);
+                PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+            });
+        MovieCardItems.Clear();
+        if (json is not null)
+        {
+            foreach (var item in json)
+            {
+                var stdCover = item.Img.Replace("\\/", "/").Replace("img2", "img3");
+                // Console.WriteLine(stdCover);
+                MovieCardItems.Add(new MovieCardItem
+                {
+                    Name = item.Title,
+                    Image = stdCover,
+                    Score = "暂无",
+                    DoubanUrl = item.Url,
+                });
             }
         }
     }
@@ -161,11 +173,25 @@ public partial class MovieCardItem : ViewModelBase
     [ObservableProperty] private string? _image;
 
     [ObservableProperty] private string? _score;
+    
+    [ObservableProperty] private string? _doubanUrl;
 
 
     [RelayCommand]
     private void Search(string name)
     {
-        Debug.Write(name);
+        if (string.IsNullOrWhiteSpace(name)) return;
+        var mvm = App.Services.GetRequiredService<MainViewModel>();
+        if (mvm.Pages[0] is TVShowViewModel tvvm)
+        {
+            tvvm.SelectedItem = tvvm.Items[1];
+            var sview = tvvm.GetControl(tvvm.SelectedItem.Name) as TVShowSearchView;
+            // var svm = sview?.DataContext as TVShowSearchViewModel;
+            if (sview?.DataContext is TVShowSearchViewModel svm)
+            {
+                svm.InputMovieTvName = name;
+                svm.Search(name);
+            }
+        }
     }
 }
