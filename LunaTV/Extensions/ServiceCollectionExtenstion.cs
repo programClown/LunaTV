@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Avalonia.Controls.Notifications;
 using CommunityToolkit.Mvvm.Messaging;
 using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
@@ -12,6 +13,7 @@ using LunaTV.ViewModels;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
+using Notification = Ursa.Controls.Notification;
 
 namespace LunaTV.Extensions;
 
@@ -57,6 +59,19 @@ public static class ServiceCollectionExtenstion
         var apiFactoryRefitSettings = new RefitSettings
         {
             ContentSerializer = new SystemTextJsonContentSerializer(defaultSystemTextJsonSettings),
+            ExceptionFactory = async (response) =>
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("API 错误: {StatusCode}, {Error}",
+                        response.StatusCode, error);
+                    App.Notification?.Show(new Notification("请求失败", error, NotificationType.Error),
+                        NotificationType.Error);
+                }
+
+                return null;
+            }
         };
 
         // Add Refit client factory

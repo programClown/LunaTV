@@ -25,7 +25,7 @@ public partial class TestWindow : UrsaWindow
         InitializeComponent();
     }
 
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    private async void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         // NotificationManager.Position = NotificationPosition.TopCenter;
         //
@@ -46,8 +46,13 @@ public partial class TestWindow : UrsaWindow
         // var sts = App.Services.GetRequiredService<IWebApi>().FetchDoubanTags("movie").GetAwaiter().GetResult();
         // var sts = App.Services.GetRequiredService<IWebApi>().FetchDoubanSubjectsByTag("movie", "战争", "recommend")
         //     .GetAwaiter().GetResult();
-        var sts = App.Services.GetRequiredService<IWebApi>().GetchDoubanSearchSuggestions("红楼梦")
-            .GetAwaiter().GetResult();
+        // var sts = App.Services.GetRequiredService<IWebApi>().GetchDoubanSearchSuggestions("红楼梦")
+        //     .GetAwaiter().GetResult();
+        // Console.WriteLine(sts);
+
+        var api = App.Services.GetRequiredService<IApiFactory>();
+        var client = api.CreateRefitClient<IMovieTvApi>(new Uri(ApiSourceInfo.ApiSitesConfig["ruyi"].ApiBaseUrl));
+        var sts = await client.SearchVideos("唐伯虎");
         Console.WriteLine(sts);
     }
 }
