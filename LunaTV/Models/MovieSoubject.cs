@@ -15,7 +15,11 @@ public class MovieSoubject
     public int Limit { get; set; }
 
     [JsonPropertyName("total")] public int Total { get; set; }
-    [JsonPropertyName("page")] public int Page { get; set; }
+
+    [JsonConverter(typeof(FlexibleIntConverter))]
+    [JsonPropertyName("page")]
+    public int Page { get; set; }
+
     [JsonPropertyName("list")] public List<MovieSubSoubject>? List { get; set; }
 }
 
@@ -104,5 +108,5 @@ public class MovieSubSoubject
     // [JsonPropertyName("vod_plot")] public int VodPlot { set; get; }
     // [JsonPropertyName("vod_plot_name")] public string? VodPlotName { set; get; }
     // [JsonPropertyName("vod_plot_detail")] public string? VodPlotDetail { set; get; }
-    [JsonPropertyName("vod_type_name")] public string? TypeName { set; get; }
+    [JsonPropertyName("type_name")] public string? TypeName { set; get; }
 }

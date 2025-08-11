@@ -43,13 +43,14 @@ public static class SqlSugarServiceExtensions
     public static void AddSugarRepository(this IServiceCollection services)
     {
         services.AddScoped<SugarRepository<SearchHistory>>();
+        services.AddScoped<SugarRepository<CustomApi>>();
     }
 
     public static Type[] GetDbTypes()
     {
         return
         [
-            typeof(SearchHistory),
+            typeof(SearchHistory), typeof(CustomApi)
         ];
     }
 }
