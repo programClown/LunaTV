@@ -75,12 +75,21 @@ public static class ServiceCollectionExtenstion
         };
 
         // Add Refit client factory
-        serviceCollection.AddSingleton<IApiFactory, ApiFactory>(provider => new ApiFactory(
-            provider.GetRequiredService<IHttpClientFactory>()
-        )
-        {
-            RefitSettings = apiFactoryRefitSettings,
-        });
+        serviceCollection
+            .AddSingleton<IApiFactory, ApiFactory>(provider =>
+                new ApiFactory(
+                    provider.GetRequiredService<IHttpClientFactory>()
+                )
+                {
+                    RefitSettings = apiFactoryRefitSettings,
+                })
+            .ConfigureHttpClientDefaults(config => config.ConfigurePrimaryHttpMessageHandler(() =>
+                new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (m, c, ch, e) => true,
+                    AllowAutoRedirect = true
+                })
+            );
 
         serviceCollection
             .AddRefitClient<IWebApi>(defaultRefitSettings)

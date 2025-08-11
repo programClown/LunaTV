@@ -16,7 +16,7 @@ public class ApiFactory : IApiFactory
     public T CreateRefitClient<T>(Uri baseAddress)
     {
         var httpClient = _httpClientFactory.CreateClient(nameof(T));
-        httpClient.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
+
         httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent.GetRandomUserAgent());
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 

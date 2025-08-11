@@ -261,10 +261,3 @@ public record UserAgent(string Value)
         return userAgents[new Random().Next(userAgents.Count)].Value;
     }
 }
-
-public record struct ApiPathConfig(string Search)
-{
-    public static ApiPathConfig Default = new ApiPathConfig("/api.php/provide/vod/?ac=videolist&wd=");
-}
-
-public record struct SearchResponse(UInt16 Code, string? Msg, JsonArray? List);

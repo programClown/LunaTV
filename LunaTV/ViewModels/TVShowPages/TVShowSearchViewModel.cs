@@ -19,7 +19,7 @@ namespace LunaTV.ViewModels.TVShowPages;
 public partial class TVShowSearchViewModel : ViewModelBase
 {
     public ObservableCollection<string> HistoryMovies { get; set; }
-    public List<string> SelectApis { get; set; } = ["tyyszy", "dyttzy", "bfzy", "ruyi"];
+    public List<string> SelectApis { get; set; } = ["dyttzy"];
     public ObservableCollection<SearchResult> SearchResults { get; set; }
 
     [ObservableProperty] private string? _inputMovieTvName;
@@ -109,7 +109,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
 
 public class SearchResult
 {
-    public int Id { get; set; } //vod_id
+    public string Id { get; set; } //vod_id
     public string Source { get; set; } = string.Empty; //网站源
     public string SourceName { get; set; } = string.Empty; //网站源名称
     public string Name { get; set; } = string.Empty; //电影名称

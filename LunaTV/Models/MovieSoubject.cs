@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using LunaTV.Converters;
 
 namespace LunaTV.Models;
 
@@ -8,7 +9,11 @@ public class MovieSoubject
     [JsonPropertyName("code")] public int Code { get; set; }
     [JsonPropertyName("msg")] public string? Msg { get; set; }
     [JsonPropertyName("pagecount")] public int PageCount { get; set; }
-    [JsonPropertyName("limit")] public string? Limit { get; set; }
+
+    [JsonConverter(typeof(FlexibleIntConverter))]
+    [JsonPropertyName("limit")]
+    public int Limit { get; set; }
+
     [JsonPropertyName("total")] public int Total { get; set; }
     [JsonPropertyName("page")] public int Page { get; set; }
     [JsonPropertyName("list")] public List<MovieSubSoubject>? List { get; set; }
@@ -16,17 +21,21 @@ public class MovieSoubject
 
 public class MovieSubSoubject
 {
-    [JsonPropertyName("vod_id")] public int VodId { set; get; }
+    [JsonConverter(typeof(FlexibleStringConverter))]
+    [JsonPropertyName("vod_id")]
+    public string VodId { set; get; }
+
     [JsonPropertyName("type_id")] public int TypeId { set; get; }
     [JsonPropertyName("type_id_1")] public int TypeId1 { set; get; }
     [JsonPropertyName("group_id")] public int GroupId { set; get; }
-
     [JsonPropertyName("vod_name")] public string? VodName { set; get; }
+    [JsonPropertyName("vod_sub")] public string? VodSub { set; get; }
 
-    // [JsonPropertyName("vod_sub")] public string? VodSub { set; get; }
     // [JsonPropertyName("vod_en")] public string? VodEn { set; get; }
-    // [JsonPropertyName("vod_status")] public int VodStatus { set; get; }
-    // [JsonPropertyName("vod_letter")] public string? VodLetter { set; get; }
+    [JsonPropertyName("vod_status")] public int VodStatus { set; get; }
+
+    [JsonPropertyName("vod_letter")] public string? VodLetter { set; get; }
+
     // [JsonPropertyName("vod_color")] public string? VodColor { set; get; }
     // [JsonPropertyName("vod_tag")] public string? VodTag { set; get; }
     [JsonPropertyName("vod_class")] public string? VodClass { set; get; }
@@ -39,20 +48,25 @@ public class MovieSubSoubject
     // [JsonPropertyName("vod_pic_screenshot")]
     // public string? VodPicScreenshot { set; get; }
 
-    // [JsonPropertyName("vod_actor")] public string? VodActor { set; get; }
-    // [JsonPropertyName("vod_director")] public string? VodDirector { set; get; }
-    // [JsonPropertyName("vod_writer")] public string? VodWriter { set; get; }
+    [JsonPropertyName("vod_actor")] public string? VodActor { set; get; }
+
+    [JsonPropertyName("vod_director")] public string? VodDirector { set; get; }
+
+    [JsonPropertyName("vod_writer")] public string? VodWriter { set; get; }
+
     // [JsonPropertyName("vod_behind")] public string? VodBehind { set; get; }
-    // [JsonPropertyName("vod_blurb")] public string? VodBlurb { set; get; }
+    [JsonPropertyName("vod_blurb")] public string? VodBlurb { set; get; }
     [JsonPropertyName("vod_remarks")] public string? VodRemarks { set; get; }
 
-    // [JsonPropertyName("vod_pubdate")] public string? VodPubdate { set; get; }
-    // [JsonPropertyName("vod_total")] public int VodTotal { set; get; }
+    [JsonPropertyName("vod_pubdate")] public string? VodPubdate { set; get; }
+
+    [JsonPropertyName("vod_total")] public int VodTotal { set; get; }
+
     // [JsonPropertyName("vod_serial")] public string? VodSerial { set; get; }
     // [JsonPropertyName("vod_tv")] public string? VodTv { set; get; }
     // [JsonPropertyName("vod_weekday")] public string? VodWeekday { set; get; }
-    // [JsonPropertyName("vod_area")] public string? VodArea { set; get; }
-    // [JsonPropertyName("vod_lang")] public string? VodLang { set; get; }
+    [JsonPropertyName("vod_area")] public string? VodArea { set; get; }
+    [JsonPropertyName("vod_lang")] public string? VodLang { set; get; }
     [JsonPropertyName("vod_year")] public string? VodYear { set; get; }
 
     // [JsonPropertyName("vod_version")] public string? VodVersion { set; get; }
@@ -78,12 +92,17 @@ public class MovieSubSoubject
     // [JsonPropertyName("vod_pwd_down")] public string? VodPwdDown { set; get; }
     // [JsonPropertyName("vod_pwd_down_url")] public string? VodPwdDownUrl { set; get; }
     [JsonPropertyName("vod_content")] public string? VodContent { set; get; }
-    // [JsonPropertyName("vod_play_from")] public string? VodPlayFrom { set; get; }
-    // [JsonPropertyName("vod_play_server")] public string? VodPlayServer { set; get; }
-    // [JsonPropertyName("vod_play_note")] public string? VodPlayNote { set; get; }
-    // [JsonPropertyName("vod_play_url")] public string? VodPlayUrl { set; get; }
+
+    [JsonPropertyName("vod_play_from")] public string? VodPlayFrom { set; get; }
+
+    [JsonPropertyName("vod_play_server")] public string? VodPlayServer { set; get; }
+
+    [JsonPropertyName("vod_play_note")] public string? VodPlayNote { set; get; }
+
+    [JsonPropertyName("vod_play_url")] public string? VodPlayUrl { set; get; }
+
     // [JsonPropertyName("vod_plot")] public int VodPlot { set; get; }
     // [JsonPropertyName("vod_plot_name")] public string? VodPlotName { set; get; }
     // [JsonPropertyName("vod_plot_detail")] public string? VodPlotDetail { set; get; }
-    // [JsonPropertyName("vod_type_name")] public string? TypeName { set; get; }
+    [JsonPropertyName("vod_type_name")] public string? TypeName { set; get; }
 }
