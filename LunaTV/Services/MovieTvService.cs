@@ -106,7 +106,7 @@ public class MovieTvService
         var site = ApiSourceInfo.ApiSitesConfig[source];
         try
         {
-            if (string.IsNullOrEmpty(site.DetailBaseUrl))
+            if (AppConifg.ForceApiNeedSpecialSource || string.IsNullOrEmpty(site.DetailBaseUrl))
             {
                 var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.ApiBaseUrl));
                 var results = await apiService.GetVideoDetail(vodId);
@@ -178,10 +178,33 @@ public class MovieTvService
                 var results = await apiService.GetSpecialSourceVideoDetail(vodId);
 
                 // 使用通用模式提取m3u8链接
-                const string generalPattern = @"\$(https?://[^""'\s]+?\.m3u8)";
-                var urls = Regex.Matches(results, generalPattern)
+                List<string> matches = new List<string>();
+                string generalPattern;
+                if (source.Equals("ffzy"))
+                {
+                    generalPattern = @"\$(https?:\/\/[^""'\s]+?\/\d{8}\/\d+_[a-f0-9]+\/index\.m3u8)";
+                    matches = Regex.Matches(results, generalPattern)
+                        .Select(m => m.Groups[1].Value)
+                        .ToList();
+                }
+
+                if (matches.Count == 0)
+                {
+                    generalPattern = @"\$(https?:\/\/[^""'\s]+?\.m3u8)";
+                    matches = Regex.Matches(results, generalPattern)
+                        .Select(m => m.Groups[1].Value) // 提取捕获组
+                        .ToList();
+                }
+
+                var urls = new HashSet<string>(matches);
+                var titleMatch = Regex.Matches(results, @"<h1[^>]*>(.*?)<\/h1>")
                     .Select(m => m.Groups[1].Value) // 提取捕获组
                     .ToList();
+                var titleText = titleMatch.Count < 2 ? "" : titleMatch[1].Trim();
+                var descMatch = Regex.Matches(results, @"<div[^>]*class=[""']sketch[""'][^>]*>([\s\S]*?)<\/div>")
+                    .Select(m => m.Groups[1].Value) // 提取捕获组
+                    .ToList();
+                var descText = descMatch.Count < 2 ? "" : Regex.Replace(descMatch[1], @"<[^>]+>", " ");
                 Console.WriteLine(urls);
             }
         }
