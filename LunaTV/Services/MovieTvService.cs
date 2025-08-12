@@ -8,6 +8,7 @@ using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
 using LunaTV.Constants;
 using LunaTV.Models;
+using Nodify.Avalonia.Shared;
 
 namespace LunaTV.Services;
 
@@ -197,15 +198,28 @@ public class MovieTvService
                 }
 
                 var urls = new HashSet<string>(matches);
-                var titleMatch = Regex.Matches(results, @"<h1[^>]*>(.*?)<\/h1>")
-                    .Select(m => m.Groups[1].Value) // 提取捕获组
-                    .ToList();
-                var titleText = titleMatch.Count < 2 ? "" : titleMatch[1].Trim();
-                var descMatch = Regex.Matches(results, @"<div[^>]*class=[""']sketch[""'][^>]*>([\s\S]*?)<\/div>")
-                    .Select(m => m.Groups[1].Value) // 提取捕获组
-                    .ToList();
-                var descText = descMatch.Count < 2 ? "" : Regex.Replace(descMatch[1], @"<[^>]+>", " ");
-                Console.WriteLine(urls);
+                //下边这个查找非常不准
+                // var titleMatch = Regex.Matches(results, @"<h1[^>]*>(.*?)<\/h1>")
+                //     .Select(m => m.Groups[1].Value) // 提取捕获组
+                //     .ToList();
+                // var titleText = titleMatch.Count < 2 ? "" : titleMatch[1].Trim();
+                // var descMatch = Regex.Matches(results, @"<div[^>]*class=[""']sketch[""'][^>]*>([\s\S]*?)<\/div>")
+                //     .Select(m => m.Groups[1].Value) // 提取捕获组
+                //     .ToList();
+                // var descText = descMatch.Count < 2 ? "" : Regex.Replace(descMatch[1], @"<[^>]+>", " ");
+                var episodes = urls.Select((url, i) => new EpisodeSubject
+                {
+                    Name = $"第{i + 1}集",
+                    Url = url,
+                }).ToList();
+
+                return new DetailResult()
+                {
+                    Episodes = episodes,
+                    DetailUrl = site.DetailBaseUrl,
+                    Source = source,
+                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                };
             }
         }
         catch (Exception e)

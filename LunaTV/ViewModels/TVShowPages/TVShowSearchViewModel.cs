@@ -56,30 +56,26 @@ public partial class TVShowSearchViewModel : ViewModelBase
         SearchCountText = $"{SearchResults.Count}个结果";
     }
 
-    /// <summary>
-    /// 显示详情
-    /// </summary>
-    /// <param name="vodId">视频id</param>
-    /// <param name="vodName">视频名称</param>
-    /// <param name="apiKey" ><see cref="ApiSourceInfo.ApiSitesConfig"/>的key</param>
-    /// <param name="apiUrlAttr"><see cref="ApiSourceInfo.ApiSitesConfig"/>的ApiBaseUrl</param>
-    private async void ShowDetail(string vodId, string vodName, string apiKey, string apiUrlAttr)
+    public async Task ShowDetail(object? item)
     {
-        // var site = ApiSourceInfo.ApiSitesConfig[apiKey];
-        // if (!string.IsNullOrEmpty(site.DetailPath)) //有detial
-        // {
-        //     var detail = _apiFactory
-        //         .CreateRefitClient<IMovieTvApi>(new Uri(site.DetailBaseUrl));
-        //     try
-        //     {
-        //         var html = await detail.GetSpecialSourceVideoDetail(vodId);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //         throw;
-        //     }
-        // }
+        if (item is not SearchResult searchResult)
+        {
+            return;
+        }
+
+        App.Notification?.Show(
+            new Notification("找剧中", searchResult.Name, NotificationType.Success),
+            NotificationType.Success,
+            showClose: true);
+
+        var videos = await _apiService.SearchDetail(searchResult.Source, searchResult.Id);
+        if (videos is not null)
+        {
+            if (videos.Episodes is { Count: > 0 })
+            {
+                // 显示播放列表
+            }
+        }
     }
 
     [RelayCommand]
@@ -97,9 +93,5 @@ public partial class TVShowSearchViewModel : ViewModelBase
     [RelayCommand]
     private void Play(string name)
     {
-        App.Notification.Show(
-            new Notification("播放", name, NotificationType.Success),
-            NotificationType.Success,
-            showClose: true);
     }
 }
