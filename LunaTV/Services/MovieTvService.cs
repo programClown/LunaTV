@@ -127,9 +127,17 @@ public class MovieTvService
                             .Where(parts => parts.Length > 1 &&
                                             (parts[1].StartsWith("http://") ||
                                              parts[1].StartsWith("https://"))) // 检查合法 URL
-                            .Select(parts => parts[1]) // 提取 URL
+                            .Select(parts =>
+                            {
+                                return new
+                                {
+                                    Name = parts[0],
+                                    Url = parts[1],
+                                };
+                            }) // 提取 URL
                     )
                     .ToList();
+                Console.WriteLine(episodes);
             }
         }
         else
