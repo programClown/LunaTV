@@ -6,6 +6,7 @@
     xmlns:converters="clr-namespace:LunaTV.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LunaTV.Models"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
@@ -95,7 +96,7 @@
         <ScrollViewer Grid.Row="4">
             <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding SearchResults}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="tvvm:SearchResult">
+                    <DataTemplate DataType="models:SearchResult">
 
                         <Button
                             Margin="0,4"

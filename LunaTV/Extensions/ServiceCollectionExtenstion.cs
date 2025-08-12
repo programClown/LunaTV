@@ -9,6 +9,7 @@ using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
 using LunaTV.Base.DB;
 using LunaTV.Constants;
+using LunaTV.Services;
 using LunaTV.ViewModels;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,9 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddSingleton<Lazy<MainView>>(provider =>
             new Lazy<MainView>(provider.GetRequiredService<MainView>));
         serviceCollection.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+
+        // 影视资源查找
+        serviceCollection.AddScoped<MovieTvService>();
 
         //影视资源
         // Configure Refit and Resilience

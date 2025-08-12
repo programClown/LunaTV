@@ -10,6 +10,7 @@ using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
+using LunaTV.Services;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 using Ursa.Controls;
@@ -50,9 +51,12 @@ public partial class TestWindow : UrsaWindow
         //     .GetAwaiter().GetResult();
         // Console.WriteLine(sts);
 
-        var api = App.Services.GetRequiredService<IApiFactory>();
-        var client = api.CreateRefitClient<IMovieTvApi>(new Uri(ApiSourceInfo.ApiSitesConfig["ruyi"].ApiBaseUrl));
-        var sts = await client.SearchVideos("唐伯虎");
-        Console.WriteLine(sts);
+        // var api = App.Services.GetRequiredService<IApiFactory>();
+        // var client = api.CreateRefitClient<IMovieTvApi>(new Uri(ApiSourceInfo.ApiSitesConfig["jisu"].ApiBaseUrl));
+        // var sts = await client.SearchVideos("唐伯虎");
+
+        var service = App.Services.GetRequiredService<MovieTvService>();
+        var details = await service.SearchDetail("ffzy", "85399");
+        Console.WriteLine(details);
     }
 }

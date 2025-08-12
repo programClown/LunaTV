@@ -26,6 +26,7 @@ public interface IMovieTvApi
     /// id = /^[\w-]+$/ 
     /// 匹配字母、数字、下划线和短横线
     /// 对应vod_id
-    [Get("/index.php/vo/detail/id/{id}")]
+    /// _t = 时间戳，清理缓存
+    [Get("/index.php/vod/detail/id/{id}.html")]
     Task<string> GetSpecialSourceVideoDetail(string id, CancellationToken cancellationToken = default);
 }

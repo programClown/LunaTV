@@ -2,19 +2,12 @@
 
 namespace LunaTV.Base.Constants;
 
-public enum ApiType
-{
-    Json,
-    Html, // For sources where details are scraped from HTML
-}
-
 public record ApiSourceInfo(
     string ApiBaseUrl,
     string Name,
-    string? DetailBaseUrl, // For HTML detail pages or different detail API base
-    ApiType ApiType, // To distinguish between JSON API and HTML scraping for details
-    string? SearchPath, // Specific search path if different from default
-    string? DetailPath // Specific detail path if different from default (for JSON APIs)
+    string? DetailBaseUrl,
+    bool IsCustomApi = false,
+    bool IsAdult = false
     // Example: some sources might use /vodsearch instead of /api.php/provide/vod/...
 )
 {
@@ -27,19 +20,13 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "http://caiji.dyttzyapi.com",
                 "电影天堂资源",
-                "http://caiji.dyttzyapi.com",
-                ApiType.Json,
-                null,
-                null)
+                "http://caiji.dyttzyapi.com")
         },
         {
             "ruyi",
             new ApiSourceInfo(
                 "https://cj.rycjapi.com",
                 "如意资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -47,9 +34,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://bfzyapi.com",
                 "暴风资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -57,9 +41,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://tyyszy.com",
                 "天涯资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -67,9 +48,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://zy.xiaomaomi.cc",
                 "小猫咪资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -77,29 +55,20 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "http://ffzy5.tv",
                 "非凡影视",
-                "http://ffzy5.tv",
-                ApiType.Html,
-                null,
-                "/index.php/vod/detail/id/{id}.html")
+                "http://ffzy5.tv")
         },
         {
             "heimuer",
             new ApiSourceInfo(
                 "https://json.heimuer.xyz",
                 "黑木耳",
-                "https://heimuer.tv",
-                ApiType.Html,
-                null,
-                "/index.php/vod/detail/id/{id}.html")
+                "https://heimuer.tv")
         },
         {
             "zy360",
             new ApiSourceInfo(
                 "https://360zy.com",
                 "360资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -107,9 +76,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://www.iqiyizyapi.com",
                 "爱奇艺",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -117,9 +83,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://wolongzyw.com",
                 "卧龙资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -127,9 +90,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://cjhwba.com",
                 "华为吧资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -137,19 +97,13 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://jszyapi.com",
                 "极速资源",
-                "https://jszyapi.com",
-                ApiType.Json,
-                null,
-                null)
+                "https://jszyapi.com")
         },
         {
             "dbzy",
             new ApiSourceInfo(
                 "https://dbzy.com",
                 "豆瓣资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -157,9 +111,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://mozhuazy.com",
                 "魔爪资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -167,9 +118,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://www.mdzyapi.com",
                 "魔都资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -177,9 +125,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://api.zuidapi.com",
                 "最大资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -187,9 +132,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://m3u8.apiyhzy.com",
                 "樱花资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -197,9 +139,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://api.apibdzy.com",
                 "百度云资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -207,9 +146,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://api.wujinapi.me",
                 "无尽资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -217,9 +153,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://wwzy.tv",
                 "旺旺短剧",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -227,9 +160,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://ikunzyapi.com",
                 "iKun资源",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
         {
@@ -237,9 +167,6 @@ public record ApiSourceInfo(
             new ApiSourceInfo(
                 "https://cj.lziapi.com",
                 "量子资源站",
-                null,
-                ApiType.Json,
-                null,
                 null)
         },
     };
