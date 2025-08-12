@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
@@ -100,51 +101,95 @@ public class MovieTvService
         return searchResults;
     }
 
-    public async Task<DetailResult> SearchDetail(string source, string vodId)
+    public async Task<DetailResult?> SearchDetail(string source, string vodId)
     {
         var site = ApiSourceInfo.ApiSitesConfig[source];
-        string results;
-        if (string.IsNullOrEmpty(site.DetailBaseUrl))
+        try
         {
-            var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.ApiBaseUrl));
-            results = await apiService.GetVideoDetail(vodId);
-
-            var json = JsonSerializer.Deserialize<MovieSoubject>(results,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
-                });
-            if (json is { List.Count: > 0 })
+            if (string.IsNullOrEmpty(site.DetailBaseUrl))
             {
-                var videoDetail = json.List[0];
-                var detailResult = new DetailResult();
-                var episodes = videoDetail.VodPlayUrl?
-                    .Split("$$$", StringSplitOptions.RemoveEmptyEntries) // 分割播放源
-                    .Take(1) // 只取第一个播放源
-                    .SelectMany(mainSource => mainSource
-                            .Split("#", StringSplitOptions.RemoveEmptyEntries) // 分割剧集
-                            .Select(episodeItem => episodeItem.Split('$')) // 分割剧集信息
-                            .Where(parts => parts.Length > 1 &&
-                                            (parts[1].StartsWith("http://") ||
-                                             parts[1].StartsWith("https://"))) // 检查合法 URL
-                            .Select(parts =>
-                            {
-                                return new
+                var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.ApiBaseUrl));
+                var results = await apiService.GetVideoDetail(vodId);
+
+                var json = JsonSerializer.Deserialize<MovieSoubject>(results,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                    });
+                if (json is { List.Count: > 0 })
+                {
+                    var videoDetail = json.List[0];
+                    var detailResult = new DetailResult();
+                    var episodes = videoDetail.VodPlayUrl?
+                        .Split("$$$", StringSplitOptions.RemoveEmptyEntries) // 分割播放源
+                        .Take(1) // 只取第一个播放源
+                        .SelectMany(mainSource => mainSource
+                                .Split("#", StringSplitOptions.RemoveEmptyEntries) // 分割剧集
+                                .Select(episodeItem => episodeItem.Split('$')) // 分割剧集信息
+                                .Where(parts => parts.Length > 1 &&
+                                                (parts[1].StartsWith("http://") ||
+                                                 parts[1].StartsWith("https://"))) // 检查合法 URL
+                                .Select(parts =>
                                 {
-                                    Name = parts[0],
-                                    Url = parts[1],
-                                };
-                            }) // 提取 URL
-                    )
+                                    return new EpisodeSubject
+                                    {
+                                        Name = parts[0],
+                                        Url = parts[1],
+                                    };
+                                }) // 提取 URL
+                        )
+                        .ToList();
+                    if (episodes.Count == 0 && !string.IsNullOrEmpty(videoDetail.VodContent))
+                    {
+                        var urls = Regex.Matches(videoDetail.VodContent, AppConifg.M3U8_PATTERN)
+                            .Select(m => m.Value)
+                            .ToList();
+                        episodes.AddRange(urls.Select(x => new EpisodeSubject { Name = "", Url = x }));
+                    }
+
+                    return new DetailResult()
+                    {
+                        Episodes = episodes,
+                        DetailUrl = site.ApiBaseUrl,
+                        Title = json.List[0].VodName,
+                        Cover = json.List[0].VodPic,
+                        Desc = json.List[0].VodContent,
+                        Type = json.List[0].TypeName,
+                        Year = json.List[0].VodYear,
+                        Area = json.List[0].VodArea,
+                        Director = json.List[0].VodDirector,
+                        Actor = json.List[0].VodActor,
+                        Remark = json.List[0].VodRemarks,
+                        Source = source,
+                        SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                    };
+                }
+
+                return new DetailResult()
+                {
+                    DetailUrl = site.ApiBaseUrl,
+                    Source = source,
+                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                };
+            }
+            else
+            {
+                var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.DetailBaseUrl));
+                var results = await apiService.GetSpecialSourceVideoDetail(vodId);
+
+                // 使用通用模式提取m3u8链接
+                const string generalPattern = @"\$(https?://[^""'\s]+?\.m3u8)";
+                var urls = Regex.Matches(results, generalPattern)
+                    .Select(m => m.Groups[1].Value) // 提取捕获组
                     .ToList();
-                Console.WriteLine(episodes);
+                Console.WriteLine(urls);
             }
         }
-        else
+        catch (Exception e)
         {
-            var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.DetailBaseUrl));
-            results = await apiService.GetSpecialSourceVideoDetail(vodId);
+            Console.WriteLine(e);
         }
+
 
         return null;
     }

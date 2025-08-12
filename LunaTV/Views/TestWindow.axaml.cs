@@ -56,7 +56,7 @@ public partial class TestWindow : UrsaWindow
         // var sts = await client.SearchVideos("唐伯虎");
 
         var service = App.Services.GetRequiredService<MovieTvService>();
-        var details = await service.SearchDetail("ruyi", "55998");
+        var details = await service.SearchDetail("jisu", "74900");
         Console.WriteLine(details);
     }
 }

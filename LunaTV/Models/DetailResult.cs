@@ -1,17 +1,35 @@
-﻿namespace LunaTV.Models;
+﻿using System.Collections.Generic;
+using LunaTV.Base.Constants;
+
+namespace LunaTV.Models;
+
+public class EpisodeSubject
+{
+    public string? Name { get; set; }
+    public string? Url { get; set; }
+}
 
 public class DetailResult
 {
-    public string? Title { get; set; }
-    public string? Cover { get; set; }
-    public string? Summary { get; set; }
-    public string? Director { get; set; }
-    public string? Actor { get; set; }
-    public string? Type { get; set; }
-    public string? Year { get; set; }
-    public string? Season { get; set; }
-    public string? Episode { get; set; }
-    public string? Duration { get; set; }
+    public List<EpisodeSubject>? Episodes { get; set; } = new();
+    public string? DetailUrl { get; set; }
+
+    // video info
+    public string? Title { get; set; } //vod_name
+    public string? Cover { get; set; } //vod pic
+    public string? Desc { get; set; } //vod_content
+    public string? Type { get; set; } //type_name
+    public string? Year { get; set; } //vod_year
+    public string? Area { get; set; } //vod_area
+    public string? Director { get; set; } //vod_director
+    public string? Actor { get; set; } //vod_actor
+    public string? Remark { get; set; } //vod_remark
+
+
+    //添加信息
+    /// 对应<see cref="ApiSourceInfo.ApiSitesConfig"/>的key
     public string? Source { get; set; }
-    public string? Url { get; set; }
+
+    /// Source是自定义的复制“自定义源”，对应<see cref="ApiSourceInfo.ApiSitesConfig"/>的value.Name
+    public string? SourceName { get; set; }
 }
