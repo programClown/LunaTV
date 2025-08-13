@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,9 +14,11 @@ using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.Api;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
+using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
 using Nodify.Avalonia.Shared;
+using Ursa.Controls;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
@@ -33,16 +36,20 @@ public partial class TVShowHomeViewModel : ViewModelBase
     private string _switchMovieOrTv = "movie";
     private int _pageStart = 0;
     private const int PageSize = 16;
-    private bool _isTagChanged2Refresh = false; //标签改变的时候要不要更新
+    private bool _isTagChanged2Refresh; //标签改变的时候要不要更新
+    private bool _initialized;
 
     [ObservableProperty] private ObservableCollection<MovieCardItem> _movieCardItems;
     [ObservableProperty] private string? _searchInputText;
+
+    private readonly LoadingWaitViewModel _loadingWaitViewModel = new();
 
     public TVShowHomeViewModel()
     {
         DoubanTags = new ObservableCollection<string>();
         MovieCardItems = new ObservableCollection<MovieCardItem>();
         _ = SwitchMovieOrTv("电影");
+        _initialized = true;
     }
 
     [RelayCommand]
@@ -73,6 +80,11 @@ public partial class TVShowHomeViewModel : ViewModelBase
             return;
         }
 
+        if (_initialized)
+        {
+            _ = Loading();
+        }
+
         var sts = await App.Services.GetRequiredService<IWebApi>()
             .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", page_limit: PageSize,
                 page_start: _pageStart);
@@ -99,13 +111,17 @@ public partial class TVShowHomeViewModel : ViewModelBase
             }
         }
 
+        if (_initialized)
+            _loadingWaitViewModel.Close();
         _isTagChanged2Refresh = true;
     }
 
     partial void OnSelectedTagItemChanged(string? value)
     {
         if (_isTagChanged2Refresh)
+        {
             RefreshMovieCardsAsync().GetAwaiter();
+        }
     }
 
     [RelayCommand]
@@ -132,6 +148,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
     private async Task NaviSearch(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
+        _ = Loading();
         var sts = await App.Services.GetRequiredService<IWebApi>()
             .GetchDoubanSearchSuggestions(text);
         var json = JsonSerializer.Deserialize<List<DoubanSuggestionSubject>>(sts,
@@ -155,6 +172,8 @@ public partial class TVShowHomeViewModel : ViewModelBase
                 });
             }
         }
+
+        _loadingWaitViewModel.Close();
     }
 
     [RelayCommand]
@@ -163,6 +182,26 @@ public partial class TVShowHomeViewModel : ViewModelBase
         var mvm = App.Services.GetRequiredService<MainViewModel>();
         if (mvm.Pages[0] is TVShowViewModel tvvm)
             tvvm.SelectedItem = tvvm.Items[2];
+    }
+
+    public async Task Loading()
+    {
+        var options = new DialogOptions
+        {
+            Title = "",
+            Mode = DialogMode.None,
+            Button = DialogButton.None,
+            ShowInTaskBar = false,
+            IsCloseButtonVisible = true,
+            StartupLocation = WindowStartupLocation.CenterScreen,
+            CanDragMove = true,
+            CanResize = false,
+            StyleClass = "",
+        };
+
+        _loadingWaitViewModel.TimerStart();
+
+        await Dialog.ShowModal<LoadingWaitView, LoadingWaitViewModel>(_loadingWaitViewModel, options: options);
     }
 }
 
@@ -173,7 +212,7 @@ public partial class MovieCardItem : ViewModelBase
     [ObservableProperty] private string? _image;
 
     [ObservableProperty] private string? _score;
-    
+
     [ObservableProperty] private string? _doubanUrl;
 
 

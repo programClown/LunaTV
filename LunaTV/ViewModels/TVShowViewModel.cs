@@ -5,13 +5,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using LunaTV.Base.Api;
+using LunaTV.Models;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.TVShowPages;
+using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
+using Ursa.Controls;
 
 namespace LunaTV.ViewModels;
 
@@ -19,6 +23,8 @@ public partial class TVShowViewModel : PageViewModelBase
 {
     private readonly IWebApi _webApi;
     public override string Title => "无限影视";
+
+    [ObservableProperty] private bool _blockedLoading;
 
     public override IconSource IconSource { set; get; } =
         App.TopLevel.TryFindResource("VideoIcon", out var value) ? (IconSource)value : null;
