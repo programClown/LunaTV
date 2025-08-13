@@ -1,65 +1,232 @@
 ﻿<UserControl
-    x:Class="LunaTV.Views.TVShowPages.TVShowSettingView"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    mc:Ignorable="d">
-    <Grid RowDefinitions="Auto,*,Auto">
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowPages.TVShowSettingView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="40,20,0,0" RowDefinitions="Auto,Auto">
         <TextBlock
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
             FontSize="32"
             FontWeight="ExtraBold"
+            HorizontalAlignment="Left"
             IsHitTestVisible="False"
-            Text="设置">
+            Text="设置"
+            VerticalAlignment="Center">
             <TextBlock.Foreground>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Offset="0" Color="#FF6094EA" />
-                    <GradientStop Offset="1" Color="#FFF02FC2" />
+                <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                    <GradientStop Color="#FF6094EA" Offset="0" />
+                    <GradientStop Color="#FFF02FC2" Offset="1" />
                 </LinearGradientBrush>
             </TextBlock.Foreground>
             <TextBlock.Effect>
-                <DropShadowEffect Opacity="0.1" Color="Black" />
+                <DropShadowEffect Color="Black" Opacity="0.1" />
             </TextBlock.Effect>
         </TextBlock>
 
-        <Border
-            Grid.Row="1"
-            Classes="Hover"
-            Theme="{StaticResource CardBorder}">
-
-            <HeaderedContentControl
-                MaxWidth="360"
-                HorizontalAlignment="Left"
-                Theme="{DynamicResource GroupBox}">
-                <HeaderedContentControl.Header>
-                    <SelectableTextBlock Text="数据源设置" />
-                </HeaderedContentControl.Header>
-                <HeaderedContentControl.Content>
-                    <StackPanel Spacing="8">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Button Classes="Tertiary" Content="全选" />
-                            <Button Classes="Tertiary" Content="全不选" />
-                            <Button Classes="Tertiary" Content="全选普通资源" />
+        <Grid ColumnDefinitions="*,*" Grid.Row="1">
+            <Border Classes="Hover" Theme="{StaticResource CardBorder}">
+                <HeaderedContentControl HorizontalAlignment="Stretch" Theme="{DynamicResource GroupBox}">
+                    <HeaderedContentControl.Header>
+                        <SelectableTextBlock Text="数据源设置" />
+                    </HeaderedContentControl.Header>
+                    <HeaderedContentControl.Content>
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Classes="Tertiary" Content="全选" />
+                                <Button Classes="Tertiary" Content="全不选" />
+                                <Button Classes="Tertiary" Content="全选普通资源" />
+                            </StackPanel>
+                            <ScrollViewer Margin="0,10,0,0" VerticalScrollBarVisibility="Auto">
+                                <Border
+                                    Classes="Shadow"
+                                    Margin="0"
+                                    Theme="{StaticResource CardBorder}">
+                                    <StackPanel Spacing="8">
+                                        <Border
+                                            Background="{DynamicResource SemiColorFill2}"
+                                            Height="1"
+                                            Opacity="0.3" />
+                                        <TextBlock
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            Text="普通资源" />
+                                        <ListBox>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel ItemSpacing="4" />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </ScrollViewer>
+                            <ScrollViewer Margin="0,10,0,0" VerticalScrollBarVisibility="Auto">
+                                <Border
+                                    Classes="Shadow"
+                                    Margin="0"
+                                    Theme="{StaticResource CardBorder}">
+                                    <StackPanel Spacing="8">
+                                        <Border
+                                            Background="{DynamicResource SemiColorFill2}"
+                                            Height="1"
+                                            Opacity="0.3" />
+                                        <TextBlock
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            Text="成人电影" />
+                                        <ListBox>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <CheckBox Content="bzy" />
+                                            </ListBoxItem>
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel ItemSpacing="4" />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Border>
+                            </ScrollViewer>
+                            <TextBlock Text="已选API数量: 0" />
                         </StackPanel>
-                        <ScrollViewer>
-                            <Border Height="1" Background="AliceBlue" />
-                        </ScrollViewer>
-                    </StackPanel>
-                </HeaderedContentControl.Content>
-            </HeaderedContentControl>
+                    </HeaderedContentControl.Content>
+                </HeaderedContentControl>
 
-        </Border>
+            </Border>
 
-        <Button
-            Grid.Row="2"
-            Margin="0,10,0,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Classes="Primary"
-            Content="清空历史" />
+            <StackPanel Grid.Column="1">
+                <Border Classes="Hover" Theme="{StaticResource CardBorder}">
+                    <HeaderedContentControl HorizontalAlignment="Stretch" Theme="{DynamicResource GroupBox}">
+                        <HeaderedContentControl.Header>
+                            <Panel>
+                                <SelectableTextBlock
+                                    HorizontalAlignment="Left"
+                                    Text="自定义API"
+                                    VerticalAlignment="Center" />
+                                <Button
+                                    Content="+"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" />
+                            </Panel>
+                        </HeaderedContentControl.Header>
+                        <HeaderedContentControl.Content>
+                            <TextBlock Classes="Quaternary" Text="未添加自定义API" />
+                        </HeaderedContentControl.Content>
+                    </HeaderedContentControl>
+                </Border>
+
+                <Border Classes="Hover" Theme="{StaticResource CardBorder}">
+                    <HeaderedContentControl HorizontalAlignment="Stretch" Theme="{DynamicResource GroupBox}">
+                        <HeaderedContentControl.Header>
+                            <SelectableTextBlock Text="功能开关" />
+                        </HeaderedContentControl.Header>
+                        <HeaderedContentControl.Content>
+                            <StackPanel Spacing="8">
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Left">
+                                        <TextBlock Classes="Tertiary" Text="黄色内容过滤" />
+                                        <TextBlock
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            Text="过滤&quot;伦理片&quot;等黄色内容" />
+                                    </StackPanel>
+
+                                    <ToggleSwitch
+                                        Classes="Large"
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        OffContent="关"
+                                        OnContent="开"
+                                        Theme="{StaticResource SimpleToggleSwitch}" />
+                                </DockPanel>
+                                <Border
+                                    Background="{DynamicResource SemiColorFill2}"
+                                    Height="1"
+                                    Opacity="0.3" />
+
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Left">
+                                        <TextBlock Classes="Tertiary" Text="分片广告过滤" />
+                                        <TextBlock
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            Text="关闭可减少卡顿" />
+                                    </StackPanel>
+
+                                    <ToggleSwitch
+                                        Classes="Large"
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        OffContent="关"
+                                        OnContent="开"
+                                        Theme="{StaticResource SimpleToggleSwitch}" />
+                                </DockPanel>
+                                <Border
+                                    Background="{DynamicResource SemiColorFill2}"
+                                    Height="1"
+                                    Opacity="0.3" />
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Left">
+                                        <TextBlock Classes="Tertiary" Text="豆瓣热门推荐" />
+                                        <TextBlock
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            Text="首页显示豆瓣热门影视内容" />
+                                    </StackPanel>
+
+                                    <ToggleSwitch
+                                        Classes="Large"
+                                        DockPanel.Dock="Right"
+                                        HorizontalAlignment="Right"
+                                        OffContent="关"
+                                        OnContent="开"
+                                        Theme="{StaticResource SimpleToggleSwitch}" />
+                                </DockPanel>
+
+                            </StackPanel>
+                        </HeaderedContentControl.Content>
+                    </HeaderedContentControl>
+                </Border>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
