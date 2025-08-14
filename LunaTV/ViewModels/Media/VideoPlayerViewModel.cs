@@ -57,8 +57,11 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         {
             if (!MediaPlayer.IsSeekable)
             {
+                // using var media = new LibVLCSharp.Shared.Media(_libVlc,
+                //     VideoPath);
+
                 using var media = new LibVLCSharp.Shared.Media(_libVlc,
-                    VideoPath);
+                    @"https://vip.dytt-kan.com/20250814/3508_7d2be41b/index.m3u8", FromType.FromLocation);
 
                 await media.Parse();
 
