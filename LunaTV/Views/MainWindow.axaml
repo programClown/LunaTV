@@ -1,0 +1,54 @@
+<u:UrsaWindow
+    Icon="/Assets/logo-tv.png"
+    Title="LunaTV"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iri="https://irihi.tech/shared"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:views="using:LunaTV.Views"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <u:UrsaWindow.RightContent>
+        <views:TitleBarRightContent />
+    </u:UrsaWindow.RightContent>
+    <u:UrsaWindow.LeftContent>
+        <StackPanel Orientation="Horizontal">
+            <u:Avatar
+                Classes="ExtraSmall"
+                Margin="4,0"
+                Source="/Assets/logo.png" />
+            <TextBlock
+                FontWeight="ExtraBold"
+                HorizontalAlignment="Left"
+                IsHitTestVisible="False"
+                Text="LunaTV"
+                VerticalAlignment="Center">
+                <TextBlock.Foreground>
+                    <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                        <GradientStop Color="#F0002FC2" Offset="0" />
+                        <GradientStop Color="#FF6094EA" Offset="1" />
+                    </LinearGradientBrush>
+                </TextBlock.Foreground>
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.1" />
+                </TextBlock.Effect>
+            </TextBlock>
+        </StackPanel>
+    </u:UrsaWindow.LeftContent>
+    <u:UrsaWindow.Styles>
+        <!--  This style is created to demonstrate Dialog StyleClass feature. This style is applied to dialogs in MainWindow OverlayDialogHost  -->
+        <Style Selector="u|DefaultDialogControl.Custom">
+            <Style Selector="^ /template/ Button#PART_OKButton">
+                <Setter Property="Content" Value="CUSTOM" />
+                <Setter Property="iri:ClassHelper.Classes" Value="Warning" />
+            </Style>
+        </Style>
+    </u:UrsaWindow.Styles>
+    <views:MainView Margin="0,30,0,0" />
+</u:UrsaWindow>

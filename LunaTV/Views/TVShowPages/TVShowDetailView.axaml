@@ -1,0 +1,136 @@
+﻿<UserControl
+    x:Class="LunaTV.Views.TVShowPages.TVShowDetailView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:LunaTV.Models"
+    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:u="https://irihi.tech/ursa"
+    MaxWidth="800"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="tvvm:TVShowDetailViewModel"
+    mc:Ignorable="d">
+    <Grid
+        MinWidth="480"
+        MinHeight="480"
+        RowDefinitions="Auto,Auto,Auto,*">
+        <StackPanel
+            Margin="8"
+            Orientation="Horizontal"
+            Spacing="8">
+            <TextBlock
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontSize="32"
+                FontWeight="ExtraBold"
+                IsHitTestVisible="False"
+                Text="{Binding VideoName}">
+                <TextBlock.Foreground>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#FF6094EA" />
+                        <GradientStop Offset="1" Color="#FFF02FC2" />
+                    </LinearGradientBrush>
+                </TextBlock.Foreground>
+                <TextBlock.Effect>
+                    <DropShadowEffect Opacity="0.1" Color="Black" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock
+                VerticalAlignment="Bottom"
+                FontSize="20"
+                Foreground="#FFF02FC2"
+                IsHitTestVisible="False"
+                Opacity="0.8"
+                Text="{Binding SourceNameText}" />
+        </StackPanel>
+        <Border
+            Grid.Row="1"
+            Classes="Hover"
+            IsVisible="{Binding IsVideoBorderVisible}"
+            Theme="{StaticResource CardBorder}">
+            <StackPanel Spacing="4">
+                <Grid ColumnDefinitions="*,*">
+                    <u:Form LabelPosition="Left" LabelWidth="*">
+                        <TextBlock u:FormItem.Label="类型：" Text="{Binding VideoDetail.Type}" />
+                        <TextBlock u:FormItem.Label="地区：" Text="{Binding VideoDetail.Area}" />
+                        <TextBlock
+                            u:FormItem.Label="主演："
+                            Text="{Binding VideoDetail.Actor}"
+                            TextWrapping="Wrap" />
+                    </u:Form>
+                    <u:Form
+                        Grid.Column="1"
+                        LabelPosition="Left"
+                        LabelWidth="*">
+                        <TextBlock u:FormItem.Label="年份：" Text="{Binding VideoDetail.Year}" />
+                        <TextBlock u:FormItem.Label="导演：" Text="{Binding VideoDetail.Director}" />
+                        <TextBlock
+                            u:FormItem.Label="备注："
+                            Text="{Binding VideoDetail.Remark}"
+                            TextWrapping="Wrap" />
+                    </u:Form>
+                </Grid>
+                <Border
+                    Height="1"
+                    VerticalAlignment="Bottom"
+                    Background="{DynamicResource SemiColorFill2}"
+                    Opacity="0.3" />
+                <u:Form>
+                    <TextBlock
+                        u:FormItem.Label="简介："
+                        Text="{Binding VideoDetail.Desc}"
+                        TextWrapping="Wrap" />
+                </u:Form>
+            </StackPanel>
+        </Border>
+        <DockPanel
+            Grid.Row="2"
+            Margin="4"
+            HorizontalSpacing="8">
+            <u:IconButton
+                HorizontalAlignment="Left"
+                Command="{Binding ReverseVideosCommand}"
+                Content="倒序排列"
+                DockPanel.Dock="Left"
+                Icon="{StaticResource SemiIconArrowDown}" />
+            <TextBlock VerticalAlignment="Center" Text="{Binding EpisodesCountText}" />
+            <u:IconButton
+                HorizontalAlignment="Right"
+                Command="{Binding CopyLinksCommand}"
+                Content="复制链接"
+                DockPanel.Dock="Right"
+                Icon="{StaticResource SemiIconCopy}" />
+        </DockPanel>
+
+        <ScrollViewer Grid.Row="3" Margin="4">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding VideoDetail.Episodes}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:EpisodeSubject">
+
+                        <Button
+                            Width="120"
+                            Margin="0,4"
+                            Padding="0"
+                            Classes="EpisodeCard"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowDetailViewModel)DataContext).PlayCommand}"
+                            CommandParameter="{Binding}">
+                            <Button.Styles>
+                                <Style Selector="Button.EpisodeCard:pointerover">
+                                    <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                </Style>
+                            </Button.Styles>
+                            <TextBlock Text="{Binding Name}" />
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel ItemSpacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

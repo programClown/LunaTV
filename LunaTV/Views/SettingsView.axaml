@@ -1,0 +1,209 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.SettingsView"
+    x:DataType="vm:SettingsViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:LunaTV.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer Padding="20">
+        <StackPanel Spacing="8">
+            <Grid
+                ColumnDefinitions="*,Auto"
+                Margin="0,0,0,10"
+                RowDefinitions="*,Auto">
+
+                <DockPanel>
+                    <Image
+                        DockPanel.Dock="Left"
+                        Height="64"
+                        RenderOptions.BitmapInterpolationMode="HighQuality"
+                        Source="/Assets/images/tv-navi.png" />
+
+                    <StackPanel Margin="12,0" Spacing="0">
+                        <TextBlock
+                            Classes="H1"
+                            Text="LunaTV"
+                            Theme="{StaticResource TitleTextBlock}" />
+                        <TextBlock Text="{Binding CurrentVersion}" />
+
+                        <TextBlock Classes="Tertiary" Text="MIT License" />
+
+                        <HyperlinkButton
+                            Classes="WithIcon Underline"
+                            Content="https://github.com/programClown/LunaTV"
+                            Height="20"
+                            NavigateUri="https://github.com/programClown/LunaTV" />
+                    </StackPanel>
+                </DockPanel>
+
+
+                <DockPanel
+                    Grid.Column="1"
+                    Name="HeaderRightContent"
+                    Opacity="1">
+                    <DockPanel.RenderTransform>
+                        <TranslateTransform X="0" Y="0" />
+                    </DockPanel.RenderTransform>
+                    <Image
+                        DockPanel.Dock="Left"
+                        Height="48"
+                        RenderOptions.BitmapInterpolationMode="HighQuality"
+                        Source="/Assets/avalonia-logo.ico" />
+
+                    <StackPanel Margin="12,0" VerticalAlignment="Center">
+                        <TextBlock
+                            Classes="H2"
+                            Text="Avalonia"
+                            Theme="{StaticResource TitleTextBlock}" />
+
+                        <TextBlock Classes="Tertiary" Text="{Binding CurrentAvaloniaVersion}" />
+
+                        <HyperlinkButton
+                            Classes="WithIcon Underline"
+                            Content="https://github.com/AvaloniaUI/Avalonia"
+                            Height="20"
+                            NavigateUri="https://github.com/AvaloniaUI/Avalonia" />
+                    </StackPanel>
+                </DockPanel>
+            </Grid>
+
+            <fa:SettingsExpander
+                Description="改变主题"
+                Header="主题"
+                IconSource="DarkTheme">
+
+                <fa:SettingsExpander.Footer>
+                    <ComboBox
+                        ItemsSource="{Binding AppThemes}"
+                        MinWidth="150"
+                        SelectedItem="{Binding CurrentAppTheme}" />
+                </fa:SettingsExpander.Footer>
+
+            </fa:SettingsExpander>
+
+            <fa:SettingsExpander
+                Description="改变导航布局"
+                Header="布局"
+                IconSource="AlignRight">
+
+                <fa:SettingsExpander.Footer>
+                    <ComboBox
+                        ItemsSource="{Binding AppFlowDirections}"
+                        MinWidth="150"
+                        SelectedItem="{Binding CurrentFlowDirection}" />
+                </fa:SettingsExpander.Footer>
+
+            </fa:SettingsExpander>
+
+            <fa:SettingsExpander
+                Description="系统配色"
+                Header="主题色"
+                IconSource="ColorLine"
+                IsExpanded="False">
+
+                <fa:SettingsExpanderItem Content="Preview">
+                    <fa:SettingsExpanderItem.Footer>
+                        <Grid
+                            ColumnDefinitions="*,*"
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            RowDefinitions="*,*,*,*">
+                            <Border
+                                Background="{DynamicResource SystemAccentColor}"
+                                Grid.ColumnSpan="2"
+                                Height="40">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="SystemAccentColor"
+                                    VerticalAlignment="Center" />
+                            </Border>
+
+                            <Border
+                                Background="{DynamicResource SystemAccentColorLight1}"
+                                Grid.Column="0"
+                                Grid.Row="1"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Light1"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <Border
+                                Background="{DynamicResource SystemAccentColorLight2}"
+                                Grid.Column="0"
+                                Grid.Row="2"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Light2"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <Border
+                                Background="{DynamicResource SystemAccentColorLight3}"
+                                Grid.Column="0"
+                                Grid.Row="3"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Light3"
+                                    VerticalAlignment="Center" />
+                            </Border>
+
+                            <Border
+                                Background="{DynamicResource SystemAccentColorDark1}"
+                                Grid.Column="1"
+                                Grid.Row="1"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Dark1"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <Border
+                                Background="{DynamicResource SystemAccentColorDark2}"
+                                Grid.Column="1"
+                                Grid.Row="2"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Dark2"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                            <Border
+                                Background="{DynamicResource SystemAccentColorDark3}"
+                                Grid.Column="1"
+                                Grid.Row="3"
+                                Height="40"
+                                Width="90">
+                                <TextBlock
+                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    Text="Dark3"
+                                    VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </fa:SettingsExpanderItem.Footer>
+                </fa:SettingsExpanderItem>
+
+            </fa:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

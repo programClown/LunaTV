@@ -1,0 +1,106 @@
+﻿<UserControl
+    x:Class="LunaTV.Views.TVShowPages.TVShowHistoryView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:vm="using:LunaTV.ViewModels.TVShowPages"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:TVShowHistoryViewModel"
+    mc:Ignorable="d">
+    <Grid Margin="40,20,0,0" RowDefinitions="Auto,*,Auto">
+        <TextBlock
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            FontSize="32"
+            FontWeight="ExtraBold"
+            IsHitTestVisible="False"
+            Text="观看历史">
+            <TextBlock.Foreground>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#FF6094EA" />
+                    <GradientStop Offset="1" Color="#FFF02FC2" />
+                </LinearGradientBrush>
+            </TextBlock.Foreground>
+            <TextBlock.Effect>
+                <DropShadowEffect Opacity="0.1" Color="Black" />
+            </TextBlock.Effect>
+        </TextBlock>
+        <ListBox
+            Grid.Row="1"
+            HorizontalAlignment="Left"
+            ItemsSource="{Binding AllHistoryItems}"
+            SelectedItem="{Binding SelectedHistoryItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="Hover" Theme="{StaticResource CardBorder}">
+                        <Panel>
+                            <Button
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Classes="Success"
+                                Command="{Binding $parent[UserControl].((vm:TVShowHistoryViewModel)DataContext).DeleteHistoryItemCommand}"
+                                CommandParameter="{Binding Id}"
+                                Content="x">
+                                <Button.Styles>
+                                    <Style
+                                        Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Opacity" Value="1" />
+                                    </Style>
+                                    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Opacity" Value="0" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                            <StackPanel Margin="10,40,0,0" Spacing="8">
+                                <TextBlock
+                                    TextTrimming="CharacterEllipsis"
+                                    MaxWidth="200"
+                                    Classes="H3"
+                                    Text="{Binding Title}"
+                                    ToolTip.Tip="{Binding Title}"
+                                    Theme="{StaticResource TitleTextBlock}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="{DynamicResource SemiBlue6Color}" Text="{Binding Episode}" />
+                                    <TextBlock Classes="Quaternary" Text="." />
+                                    <TextBlock Foreground="{DynamicResource SemiTeal6Color}" Text="{Binding Source}" />
+                                    <TextBlock Classes="Quaternary" Text="." />
+                                    <TextBlock Classes="Secondary" Text="{Binding TotalEpisodes}" />
+                                </StackPanel>
+                                <ProgressBar
+                                    Maximum="{Binding Duration}"
+                                    Minimum="0"
+                                    ShowProgressText="False"
+                                    Value="{Binding PlaybackPosition}" />
+                                <TextBlock HorizontalAlignment="Right" Text="{Binding TimeText}" />
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Classes="Secondary"
+                                    Text="{Binding LastPlayTimeText}" />
+                            </StackPanel>
+                        </Panel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="8" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+        <u:IconButton
+            Grid.Row="2"
+            Margin="20,10,0,0"
+            HorizontalAlignment="Left"
+            Background="{DynamicResource SemiPink3}"
+            Command="{Binding ClearHistoryCommand}"
+            Content="清空历史"
+            CornerRadius="10"
+            DockPanel.Dock="Right"
+            Foreground="{DynamicResource SemiColorText1}"
+            Icon="{StaticResource SemiIconDelete}"
+            IconPlacement="Left" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,45 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.MainView"
+    x:DataType="vm:MainViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:base="using:LunaTV.ViewModels.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
+    xmlns:vm="using:LunaTV.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="ui|NavigationViewItem uip|NavigationViewItemPresenter:selected /template/ ContentPresenter#Icon">
+            <Setter Property="Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,*">
+        <ui:NavigationView
+            AlwaysShowHeader="True"
+            FooterMenuItemsSource="{Binding FooterPages, Mode=OneWay}"
+            Grid.RowSpan="2"
+            IsPaneOpen="False"
+            IsSettingsVisible="False"
+            MenuItemsSource="{Binding Pages, Mode=OneWay}"
+            OpenPaneLength="{Binding PaneWidth}"
+            PaneDisplayMode="Left"
+            SelectedItem="{Binding SelectedCategory}"
+            x:Name="NaviView">
+            <ui:NavigationView.MenuItemTemplate>
+                <DataTemplate DataType="{x:Type base:PageViewModelBase}">
+                    <ui:NavigationViewItem
+                        Content="{Binding Title}"
+                        IconSource="{Binding IconSource}"
+                        Margin="0,0,0,0"
+                        Tag="{Binding}" />
+                </DataTemplate>
+            </ui:NavigationView.MenuItemTemplate>
+            <ui:Frame DataContext="{x:Null}" x:Name="FrameView" />
+        </ui:NavigationView>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,30 @@
+﻿<UserControl
+    x:Class="LunaTV.Views.PlaygroundView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:labs="clr-namespace:Avalonia.Labs.Gif;assembly=Avalonia.Labs.Gif"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid>
+        <Carousel
+            Name="Carousel"
+            Classes="Dot Center"
+            Theme="{DynamicResource FullCarousel}">
+            <labs:GifImage
+                HorizontalAlignment="Center"
+                Source="avares://LunaTV/Assets/images/fbi-warning-1.gif"
+                Stretch="None" />
+            <labs:GifImage
+                HorizontalAlignment="Center"
+                Source="avares://LunaTV/Assets/images/red-fbi-warning-vhs-tape-cassette.gif"
+                Stretch="None" />
+            <labs:GifImage
+                HorizontalAlignment="Center"
+                Source="avares://LunaTV/Assets/images/sarcasm-your-not-very-nice.gif"
+                Stretch="None" />
+        </Carousel>
+    </Grid>
+</UserControl>

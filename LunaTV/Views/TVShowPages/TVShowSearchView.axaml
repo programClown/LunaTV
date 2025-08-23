@@ -1,0 +1,209 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowPages.TVShowSearchView"
+    x:DataType="tvvm:TVShowSearchViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+    xmlns:converters="clr-namespace:LunaTV.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:LunaTV.Models"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <converters:ShareWidthConverter x:Key="ShareWidthConverter" />
+        <sys:Double x:Key="SearchInputHeight">60</sys:Double>
+    </UserControl.Resources>
+    <Grid Margin="20" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+        <TextBox
+            Classes="clearButton Large"
+            Margin="0,30,0,0"
+            Text="{Binding InputMovieTvName}"
+            Watermark="爸爸快来"
+            Width="400">
+            <TextBox.KeyBindings>
+                <KeyBinding
+                    Command="{Binding Search}"
+                    CommandParameter="{Binding InputMovieTvName}"
+                    Gesture="Enter" />
+            </TextBox.KeyBindings>
+            <TextBox.InnerLeftContent>
+                <CheckBox
+                    IsChecked="{Binding IsAdultMode}"
+                    IsVisible="{Binding IsAdultVisible}"
+                    ToolTip.Tip="成人世界" />
+            </TextBox.InnerLeftContent>
+
+            <TextBox.InnerRightContent>
+                <Button
+                    Classes="Large"
+                    Command="{Binding Search}"
+                    CommandParameter="{Binding InputMovieTvName}"
+                    Content="搜索"
+                    Margin="0,0,-10,0" />
+            </TextBox.InnerRightContent>
+        </TextBox>
+
+        <DockPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            Width="400">
+            <TextBlock
+                Classes="Tertiary Small"
+                DockPanel.Dock="Left"
+                FontSize="12"
+                Text="最近搜索："
+                VerticalAlignment="Center" />
+            <Button
+                Classes="Tertiary Small"
+                Command="{Binding ClearAllHistoriesCommand}"
+                Content="清除搜索历史"
+                FontSize="12"
+                HorizontalAlignment="Right"
+                Theme="{DynamicResource BorderlessButton}" />
+        </DockPanel>
+
+        <ItemsControl
+            Grid.Row="2"
+            ItemsSource="{Binding HistoryMovies}"
+            Width="600">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Classes="Small"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).Search}"
+                            CommandParameter="{Binding}"
+                            Content="{Binding}"
+                            CornerRadius="4,0,0,4" />
+                        <Button
+                            Classes="Small"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).DeleteHistotyCommand}"
+                            CommandParameter="{Binding}"
+                            CornerRadius="0,4,4,0"
+                            DockPanel.Dock="Right">
+                            <PathIcon
+                                Classes="Small"
+                                Data="{DynamicResource SemiIconClose}"
+                                Theme="{DynamicResource InnerPathIcon}" />
+                        </Button>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock
+            Grid.Row="3"
+            HorizontalAlignment="Right"
+            Text="{Binding SearchCountText}" />
+        <ScrollViewer Grid.Row="4">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding SearchResults}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="models:SearchResult">
+
+                        <Button
+                            Classes="MovieCard"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).ShowDetail}"
+                            CommandParameter="{Binding}"
+                            Margin="0,4"
+                            Padding="0"
+                            Theme="{DynamicResource OutlineButton}">
+                            <Button.Styles>
+                                <Style Selector="Button.MovieCard:pointerover">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                    <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                </Style>
+                                <Style Selector="Button.MovieCard:pressed">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel
+                                Height="160"
+                                HorizontalAlignment="Left"
+                                Orientation="Horizontal"
+                                Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=300}">
+                                <Border ClipToBounds="True" CornerRadius="5,0,0,5">
+                                    <Image
+                                        Stretch="Fill"
+                                        Width="120"
+                                        asyncImageLoader:ImageLoader.Source="{Binding Cover}" />
+                                </Border>
+
+                                <DockPanel Margin="8,8,0,8" VerticalSpacing="8">
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        FontSize="16"
+                                        Foreground="{DynamicResource SemiColorText0}"
+                                        Text="{Binding Name}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel
+                                        DockPanel.Dock="Top"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                        <u:DualBadge Classes="Blue" Content="{Binding Tag}" />
+                                        <u:DualBadge Classes="Purple" Content="{Binding Year}" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        FontSize="12"
+                                        Foreground="{DynamicResource SemiColorText2}"
+                                        Text="{Binding ReMark}"
+                                        TextWrapping="Wrap" />
+
+                                    <TextBlock
+                                        Background="{DynamicResource SemiColorBackground0}"
+                                        DockPanel.Dock="Bottom"
+                                        FontSize="12"
+                                        Foreground="{DynamicResource SemiColorText0}"
+                                        HorizontalAlignment="Left"
+                                        Padding="3"
+                                        Text="{Binding SourceName}"
+                                        VerticalAlignment="Bottom" />
+                                    <Border
+                                        Background="{DynamicResource SemiColorFill2}"
+                                        DockPanel.Dock="Bottom"
+                                        Height="1"
+                                        Opacity="0.3"
+                                        VerticalAlignment="Bottom" />
+                                </DockPanel>
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel ItemSpacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <u:Pagination
+            Command="{Binding LoadPageCommand}"
+            CommandParameter="{Binding $self.CurrentPage}"
+            CurrentPage="{Binding CurrentPage}"
+            Grid.Row="5"
+            HorizontalAlignment="Center"
+            Name="page"
+            PageSize="{Binding PageSize, Mode=OneWay}"
+            PageSizeOptions="10, 20, 50, 100"
+            ShowPageSizeSelector="False"
+            ShowQuickJump="True"
+            TotalCount="{Binding TotalVideos, Mode=OneWay}" />
+    </Grid>
+
+</UserControl>

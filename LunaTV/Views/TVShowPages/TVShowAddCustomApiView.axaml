@@ -1,0 +1,51 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             MinWidth="700"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             x:DataType="tvvm:TVShowAddCustomApiViewModel"
+             x:Class="LunaTV.Views.TVShowPages.TVShowAddCustomApiView">
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Spacing="8">
+            <TextBlock
+                Classes="H3"
+                Text="自定义API"
+                HorizontalAlignment="Center"
+                Theme="{StaticResource TitleTextBlock}" />
+            <Expander>
+                <Expander.Header>
+                    <TextBlock HorizontalAlignment="Center" Text="自定义API格式" />
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="Small Teriary"
+                                   Text="LunaTV 支持标准的苹果 CMS V10 API 格式。添加自定义API时需遵循以下格式：" />
+                        <TextBlock Classes="Small Teriary"
+                                   Text="1，API 必须是标准的苹果 CMS V10 API 格式；" />
+                        <TextBlock Classes="Small Teriary"
+                                   Text="2，搜索接口: https://example.com/api.php/provide/vod/?ac=videolist&amp;wd=关键词；" />
+                        <TextBlock Classes="Small Teriary"
+                                   Text="3，搜索接口: 详情接口: `https://example.com/api.php/provide/vod/?ac=detail&amp;ids=视频ID。" />
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
+
+        </StackPanel>
+
+        <u:Form Width="400" HorizontalAlignment="Center" Grid.Row="1" LabelPosition="Left" LabelWidth="*">
+            <TextBox u:FormItem.Label="API源名称：" Text="{Binding ApiSource}" Watermark="网页域名，如：douban" />
+            <TextBox u:FormItem.Label="API名称：" Text="{Binding ApiName}" Watermark="网站名，如：豆瓣" />
+            <TextBox u:FormItem.Label="网址：" InnerLeftContent="https://" InnerRightContent=".com"
+                     Text="{Binding ApiBaseUrl}" Watermark="douban" />
+            <TextBox u:FormItem.Label="详情页网址：" InnerLeftContent="https://" InnerRightContent=".com"
+                     Text="{Binding DetailBaseUrl}" Watermark="douban" />
+            <CheckBox u:FormItem.Label="黄色资源站：" IsChecked="{Binding IsAdult}">
+                <TextBlock Text="18禁" Foreground="Yellow"></TextBlock>
+            </CheckBox>
+        </u:Form>
+    </Grid>
+</UserControl>

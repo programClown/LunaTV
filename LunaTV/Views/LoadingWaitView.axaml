@@ -1,0 +1,36 @@
+﻿<UserControl
+    x:Class="LunaTV.Views.LoadingWaitView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:labs="clr-namespace:Avalonia.Labs.Gif;assembly=Avalonia.Labs.Gif"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:LunaTV.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:LoadingWaitViewModel"
+    mc:Ignorable="d">
+    <Grid
+        MinWidth="300"
+        MinHeight="300"
+        VerticalAlignment="Center"
+        RowDefinitions="Auto,Auto,Auto">
+        <TextBlock
+            Margin="10"
+            HorizontalAlignment="Center"
+            Text="{Binding LoadingTime}" />
+        <labs:GifImage
+            Grid.Row="1"
+            Width="160"
+            Height="160"
+            HorizontalAlignment="Center"
+            Source="avares://LunaTV/Assets/images/shalou.gif"
+            Stretch="None" />
+
+        <TextBlock
+            Grid.Row="2"
+            Margin="10"
+            HorizontalAlignment="Center"
+            Text="加载中. . ." />
+    </Grid>
+</UserControl>

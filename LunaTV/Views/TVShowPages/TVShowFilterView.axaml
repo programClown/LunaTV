@@ -1,0 +1,174 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowPages.TVShowFilterView"
+    x:DataType="tvvm:TVShowFilterViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <u:IconButton
+            HorizontalAlignment="Center"
+            IconPlacement="Left"
+            Theme="{DynamicResource BorderlessIconButton}">
+            <u:IconButton.Styles>
+                <Style Selector="u|IconButton:pointerover">
+                    <Style Selector="^ /template/ Border#PART_Background">
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    <Setter Property="FontWeight" Value="ExtraBold" />
+                    <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                </Style>
+            </u:IconButton.Styles>
+            <u:IconButton.Content>
+                <TextBlock
+                    FontSize="32"
+                    FontWeight="ExtraBold"
+                    HorizontalAlignment="Left"
+                    IsHitTestVisible="False"
+                    Text="LunaTV"
+                    VerticalAlignment="Center">
+                    <TextBlock.Foreground>
+                        <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                            <GradientStop Color="#FF6094EA" Offset="0" />
+                            <GradientStop Color="#FFF02FC2" Offset="1" />
+                        </LinearGradientBrush>
+                    </TextBlock.Foreground>
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" />
+                    </TextBlock.Effect>
+                </TextBlock>
+            </u:IconButton.Content>
+            <u:IconButton.Icon>
+                <fa:SymbolIcon FontSize="32" Symbol="Video" />
+            </u:IconButton.Icon>
+        </u:IconButton>
+
+        <u:SelectionList
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            ItemsSource="{Binding TagItems}"
+            SelectedItem="{Binding SelectedTagItem}">
+            <u:SelectionList.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </u:SelectionList.ItemsPanel>
+            <u:SelectionList.ItemTemplate>
+                <DataTemplate>
+                    <Panel Height="30">
+                        <TextBlock
+                            Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
+                            Margin="8,0"
+                            Text="{Binding}"
+                            VerticalAlignment="Center">
+                            <TextBlock.Styles>
+                                <Style Selector="TextBlock.Active">
+                                    <Setter Property="Foreground" Value="{DynamicResource SemiOrange6}" />
+                                </Style>
+                            </TextBlock.Styles>
+                        </TextBlock>
+                    </Panel>
+                </DataTemplate>
+            </u:SelectionList.ItemTemplate>
+        </u:SelectionList>
+
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Center"
+            Margin="0,8"
+            Orientation="Horizontal"
+            Spacing="10"
+            VerticalAlignment="Center">
+            <TextBlock Text="筛选主题：" VerticalAlignment="Center" />
+            <ComboBox
+                ItemsSource="{Binding GenresItems}"
+                SelectedItem="{Binding SelectedGenresItem}"
+                Width="100" />
+
+            <TextBlock
+                Margin="8,0"
+                Text="地区："
+                VerticalAlignment="Center" />
+            <ComboBox
+                ItemsSource="{Binding CountryItems}"
+                SelectedItem="{Binding SelectedCountryItem}"
+                Width="100" />
+
+            <TextBlock
+                Margin="8,0"
+                Text="排序方式"
+                VerticalAlignment="Center" />
+            <ComboBox
+                ItemsSource="{Binding SortItems}"
+                SelectedItem="{Binding SelectedSortItem}"
+                Width="120" />
+
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="3">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding MovieCardItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="tvvm:MovieCardItem">
+
+                        <Button
+                            Classes="MovieCard"
+                            Command="{Binding SearchCommand}"
+                            CommandParameter="{Binding Name}"
+                            Margin="0,8"
+                            Theme="{DynamicResource BorderlessButton}">
+                            <Button.Styles>
+                                <Style Selector="Button.MovieCard:pointerover">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                    <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                                </Style>
+                                <Style Selector="Button.MovieCard:pressed">
+                                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Style>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel HorizontalAlignment="Left">
+                                <Panel>
+                                    <Image
+                                        Height="200"
+                                        Source="avares://LunaTV/Assets/nomedia.png"
+                                        Stretch="Fill"
+                                        Width="150" />
+                                    <StackPanel
+                                        HorizontalAlignment="Left"
+                                        Orientation="Horizontal"
+                                        Spacing="4"
+                                        VerticalAlignment="Bottom">
+                                        <fa:SymbolIcon
+                                            FontSize="18"
+                                            Foreground="Yellow"
+                                            Symbol="StarFilled" />
+                                        <TextBlock Text="{Binding Score}" />
+                                    </StackPanel>
+                                </Panel>
+                                <Button
+                                    Content="{Binding Name}"
+                                    Foreground="{DynamicResource SemiBlue9}"
+                                    HorizontalAlignment="Stretch" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Margin="16,0" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,298 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowPages.TVShowHomeView"
+    x:DataType="vm:TVShowHomeViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+    xmlns:converters="clr-namespace:LunaTV.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:vm="using:LunaTV.ViewModels.TVShowPages"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <converters:ShareWidthConverter x:Key="ShareWidthConverter" />
+        <sys:Double x:Key="SearchInputHeight">60</sys:Double>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Button.SearchInputButton">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="{DynamicResource SemiBlue6}" />
+            <Setter Property="Height" Value="{StaticResource SearchInputHeight}" />
+            <Setter Property="Width" Value="80" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <u:IconButton
+            Command="{Binding BackHomeCommand}"
+            HorizontalAlignment="Center"
+            IconPlacement="Left"
+            Margin="0,10"
+            Theme="{DynamicResource BorderlessIconButton}">
+            <u:IconButton.Styles>
+                <Style Selector="u|IconButton:pointerover">
+                    <Style Selector="^ /template/ Border#PART_Background">
+                        <Setter Property="Background" Value="Transparent" />
+                    </Style>
+                    <Setter Property="FontWeight" Value="ExtraBold" />
+                    <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                </Style>
+            </u:IconButton.Styles>
+            <u:IconButton.Content>
+                <TextBlock
+                    FontSize="32"
+                    FontWeight="ExtraBold"
+                    HorizontalAlignment="Left"
+                    IsHitTestVisible="False"
+                    Text="LunaTV"
+                    VerticalAlignment="Center">
+                    <TextBlock.Foreground>
+                        <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
+                            <GradientStop Color="#FF6094EA" Offset="0" />
+                            <GradientStop Color="#FFF02FC2" Offset="1" />
+                        </LinearGradientBrush>
+                    </TextBlock.Foreground>
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" />
+                    </TextBlock.Effect>
+                </TextBlock>
+            </u:IconButton.Content>
+            <u:IconButton.Icon>
+                <fa:SymbolIcon FontSize="32" Symbol="Video" />
+            </u:IconButton.Icon>
+        </u:IconButton>
+
+        <Grid
+            ColumnDefinitions="160,Auto,160"
+            Grid.Row="1"
+            HorizontalAlignment="Center">
+            <Button
+                Classes="SearchInputButton"
+                Command="{Binding BackHomeCommand}"
+                Content="首页"
+                CornerRadius="5,0,0,0"
+                HorizontalAlignment="Right" />
+            <TextBox
+                Background="Transparent"
+                BorderBrush="{DynamicResource SemiColorBorder}"
+                BorderThickness="0.5"
+                Classes="clearButton"
+                CornerRadius="0"
+                FontSize="20"
+                Grid.Column="1"
+                Height="{StaticResource SearchInputHeight}"
+                Name="SearchTextBox"
+                Text="{Binding SearchInputText}"
+                Watermark="搜索你喜欢的视频..."
+                Width="400" />
+            <StackPanel
+                Grid.Column="2"
+                Orientation="Horizontal"
+                Spacing="4">
+                <Button
+                    Classes="SearchInputButton"
+                    Command="{Binding NaviSearchCommand}"
+                    CommandParameter="{Binding #SearchTextBox.Text}"
+                    Content="搜索"
+                    CornerRadius="0,5,5,0">
+                    <Button.KeyBindings>
+                        <KeyBinding
+                            Command="{Binding NaviSearchCommand}"
+                            CommandParameter="{Binding #SearchTextBox.Text}"
+                            Gesture="Enter" />
+                    </Button.KeyBindings>
+                </Button>
+
+                <u:IconButton
+                    Command="{Binding NaviHistoryCommand}"
+                    Content="历史记录"
+                    Foreground="{DynamicResource SemiCyan6}"
+                    Icon="{StaticResource SemiIconHistory}"
+                    IconPlacement="Left"
+                    Theme="{DynamicResource BorderlessIconButton}"
+                    VerticalAlignment="Bottom" />
+            </StackPanel>
+
+        </Grid>
+
+        <Grid
+            Margin="80,10,80,0"
+            Row="2"
+            RowDefinitions="Auto,Auto,*">
+            <DockPanel HorizontalSpacing="10">
+                <TextBlock
+                    Classes="H3"
+                    DockPanel.Dock="Left"
+                    Text="豆瓣热门"
+                    Theme="{DynamicResource TitleTextBlock}"
+                    VerticalAlignment="Center" />
+                <Border Background="{DynamicResource SemiColorNavBackground}" CornerRadius="20">
+                    <Border.Styles>
+                        <Style Selector="RadioButton">
+                            <Setter Property="Theme" Value="{DynamicResource PureCardRadioButton}" />
+                            <Setter Property="Command" Value="{Binding SwitchMovieOrTvCommand}" />
+                            <Setter Property="CommandParameter" Value="{Binding $self.Content}" />
+                            <Setter Property="CornerRadius">20</Setter>
+                        </Style>
+                        <Style Selector="RadioButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="{DynamicResource SemiPink3}" />
+                        </Style>
+                    </Border.Styles>
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton
+                            Content="电影"
+                            CornerRadius="20"
+                            IsChecked="{Binding MovieChecked}" />
+                        <RadioButton Content="电视" CornerRadius="20" />
+                        <!-- <RadioButton Content="成人故事" CornerRadius="20" /> -->
+                    </StackPanel>
+                </Border>
+                <u:IconButton
+                    Background="{DynamicResource SemiPink3}"
+                    Command="{Binding MoreMovieOrTvCommand}"
+                    Content="换一批"
+                    CornerRadius="10"
+                    DockPanel.Dock="Right"
+                    Foreground="{DynamicResource SemiColorText1}"
+                    HorizontalAlignment="Right"
+                    Icon="{StaticResource SemiIconRefresh}"
+                    IconPlacement="Right" />
+            </DockPanel>
+
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                <StackPanel
+                    Margin="0,10"
+                    Orientation="Horizontal"
+                    Spacing="10">
+                    <u:IconButton
+                        Content="管理标签"
+                        Foreground="{DynamicResource SemiCyan6}"
+                        Icon="+"
+                        IconPlacement="Left"
+                        Theme="{DynamicResource ThicknessIconButton}"
+                        VerticalAlignment="Center" />
+                    <u:SelectionList
+                        HorizontalAlignment="Center"
+                        ItemsSource="{Binding DoubanTags}"
+                        SelectedItem="{Binding SelectedTagItem}">
+                        <u:SelectionList.Resources>
+                            <ResourceDictionary>
+                                <SolidColorBrush Color="{DynamicResource SemiPink3Color}" x:Key="SelectionListIndicatorBackground" />
+                            </ResourceDictionary>
+                        </u:SelectionList.Resources>
+                        <u:SelectionList.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </u:SelectionList.ItemsPanel>
+                        <u:SelectionList.ItemTemplate>
+                            <DataTemplate>
+                                <Panel Height="32">
+                                    <TextBlock
+                                        Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
+                                        Text="{Binding}"
+                                        VerticalAlignment="Center">
+                                        <TextBlock.Styles>
+                                            <Style Selector="TextBlock.Active">
+                                                <!-- <Setter Property="Foreground" Value="{DynamicResource SemiOrange6}" /> -->
+                                                <Setter Property="RenderTransform" Value="scale(1.1,1.1)" />
+                                            </Style>
+                                        </TextBlock.Styles>
+                                    </TextBlock>
+                                </Panel>
+                            </DataTemplate>
+                        </u:SelectionList.ItemTemplate>
+                    </u:SelectionList>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding MovieCardItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:MovieCardItem">
+
+                                <Button
+                                    Classes="MovieCard"
+                                    Command="{Binding SearchCommand}"
+                                    CommandParameter="{Binding Name}"
+                                    Margin="0,4"
+                                    Padding="-1,0"
+                                    Theme="{DynamicResource BorderlessButton}">
+                                    <Button.Styles>
+                                        <Style Selector="Button.MovieCard:pointerover">
+                                            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                                <Setter Property="Background" Value="Transparent" />
+                                            </Style>
+                                            <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                        </Style>
+                                        <Style Selector="Button.MovieCard:pressed">
+                                            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                                                <Setter Property="Background" Value="Transparent" />
+                                            </Style>
+                                        </Style>
+                                    </Button.Styles>
+                                    <StackPanel HorizontalAlignment="Left" Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=150}">
+                                        <Panel>
+                                            <Border ClipToBounds="True" CornerRadius="5,5,0,0">
+                                                <Image
+                                                    Height="240"
+                                                    Name="MovieImage"
+                                                    Stretch="Fill"
+                                                    asyncImageLoader:ImageLoader.Source="{Binding Image}" />
+                                            </Border>
+                                            <StackPanel
+                                                Background="{DynamicResource SemiGrey1}"
+                                                HorizontalAlignment="Left"
+                                                Margin="4"
+                                                Orientation="Horizontal"
+                                                Spacing="4"
+                                                VerticalAlignment="Bottom">
+                                                <fa:SymbolIcon
+                                                    FontSize="18"
+                                                    Foreground="Yellow"
+                                                    Symbol="StarFilled" />
+                                                <TextBlock Text="{Binding Score}" />
+                                            </StackPanel>
+                                            <HyperlinkButton
+                                                Classes="WithIcon"
+                                                Content="豆瓣"
+                                                HorizontalAlignment="Right"
+                                                Margin="4"
+                                                NavigateUri="{Binding DoubanUrl}"
+                                                VerticalAlignment="Bottom">
+                                                <HyperlinkButton.Styles>
+                                                    <Style Selector="HyperlinkButton /template/ DockPanel">
+                                                        <Setter Property="Background" Value="{DynamicResource SemiGrey1}" />
+                                                    </Style>
+                                                </HyperlinkButton.Styles>
+                                            </HyperlinkButton>
+                                        </Panel>
+                                        <Button
+                                            Background="{DynamicResource SemiGrey1}"
+                                            Command="{Binding SearchCommand}"
+                                            CommandParameter="{Binding Name}"
+                                            Content="{Binding Name}"
+                                            Foreground="{DynamicResource SemiBlue9}"
+                                            HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel ItemSpacing="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+    </Grid>
+</UserControl>

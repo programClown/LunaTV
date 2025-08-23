@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>LunaTV.Base</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
+        <PackageReference Include="SqlSugarCore" Version="5.1.4.198"/>
+    </ItemGroup>
+
+</Project>

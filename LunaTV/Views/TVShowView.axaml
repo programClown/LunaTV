@@ -1,0 +1,79 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="LunaTV.Views.TVShowView"
+    x:DataType="vm:TVShowViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:vm="using:LunaTV.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid RowDefinitions="*,Auto">
+        <TransitioningContentControl Content="{Binding PageContent}">
+            <TransitioningContentControl.PageTransition>
+                <CompositePageTransition>
+                    <CrossFade Duration="0:0:0.5" />
+                    <PageSlide
+                        Duration="0:0:0.3"
+                        Orientation="Vertical"
+                        SlideInEasing="QuadraticEaseIn"
+                        SlideOutEasing="QuadraticEaseOut" />
+                </CompositePageTransition>
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
+        <u:SelectionList
+            Grid.Row="1"
+            ItemsSource="{Binding Items}"
+            SelectedItem="{Binding SelectedItem}">
+            <u:SelectionList.Indicator>
+                <Border Background="Transparent" CornerRadius="4">
+                    <Border
+                        Background="{DynamicResource SemiBlue6}"
+                        CornerRadius="2"
+                        Height="2"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,2"
+                        VerticalAlignment="Bottom" />
+                </Border>
+            </u:SelectionList.Indicator>
+            <u:SelectionList.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="40" />
+                </ItemsPanelTemplate>
+            </u:SelectionList.ItemsPanel>
+            <u:SelectionList.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:TVMenuItem}">
+                    <StackPanel
+                        Height="20"
+                        Margin="0,10"
+                        Orientation="Vertical">
+
+                        <PathIcon
+                            BorderBrush="{DynamicResource SemiBlue6}"
+                            Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
+                            Data="{Binding Data}"
+                            FontSize="10" />
+                        <TextBlock
+                            Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
+                            FontSize="10"
+                            HorizontalAlignment="Center"
+                            Margin="0,0"
+                            Text="{Binding Name}"
+                            VerticalAlignment="Center">
+                            <TextBlock.Styles>
+                                <Style Selector="TextBlock.Active">
+                                    <Setter Property="Foreground" Value="{DynamicResource SemiBlue6}" />
+                                </Style>
+                            </TextBlock.Styles>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </u:SelectionList.ItemTemplate>
+        </u:SelectionList>
+    </Grid>
+</UserControl>
