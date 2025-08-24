@@ -67,11 +67,8 @@ public static class ServiceCollectionExtenstion
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("API 错误: {StatusCode}, {Error}",
-                        response.StatusCode, error);
-                    App.Notification?.Show(new Notification("请求失败", error, NotificationType.Error),
-                        NotificationType.Error);
+                    // var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API 错误: {response.StatusCode}");
                 }
 
                 return null;
