@@ -5,4 +5,10 @@
 - [LibreTV](https://github.com/LibreSpark/LibreTV)
 - [LibreTV-App](https://github.com/KeyRotate/LibreTV-App)
 
-![tvshow.png](screenshots/tvshow.jpg)
+## 首页
+
+![screenshot-1.png](screenshots/screenshot-1.png)
+
+## 搜索界面
+
+![screenshot-2.png](screenshots/screenshot-2.png)

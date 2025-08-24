@@ -76,7 +76,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         MaximumSeekValue = MediaPlayer.Length / 1000.0;
         if (MediaPlayer.Length > 0)
         {
-            SeekPosition = ViewHistory.PlaybackPosition;
+            SeekPosition = ViewHistory?.PlaybackPosition ?? 0;
         }
     }
 
@@ -122,7 +122,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     public void Stop()
     {
-        if (MaximumSeekValue > 0)
+        if (MaximumSeekValue > 0 && ViewHistory is not null)
         {
             ViewHistory.PlaybackPosition = (int)SeekPosition;
             ViewHistory.Duration = (int)MaximumSeekValue;

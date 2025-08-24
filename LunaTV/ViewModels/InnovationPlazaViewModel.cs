@@ -45,13 +45,12 @@ public partial class InnovationPlazaViewModel : PageViewModelBase
         {
             var win = new PlayerWindow();
             (App.VisualRoot as MainWindow)?.Hide();
+            win.Show();
             if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
             {
                 videoModel.VideoPath = file[0].Path.LocalPath;
                 videoModel.VideoName = file[0].Path.LocalPath.Substring(file[0].Path.LocalPath.LastIndexOf('\\') + 1);
             }
-
-            win.Show();
         }
     }
 }

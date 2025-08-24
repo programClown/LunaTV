@@ -42,6 +42,7 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
 
         var win = new PlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();
+        win.Show();
         if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
         {
             videoModel.VideoPath = episodeSubject.Url;
@@ -60,7 +61,6 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
             };
         }
 
-        win.Show();
         Close();
     }
 
