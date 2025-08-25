@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Controls.Notifications;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Irihi.Avalonia.Shared.Contracts;
 using LunaTV.Base.Constants;
@@ -12,6 +15,7 @@ using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
+using SqlSugar;
 using Notification = Ursa.Controls.Notification;
 
 namespace LunaTV.ViewModels.TVShowPages;
@@ -22,7 +26,7 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
     public string? SourceName { set; get; }
     public string SourceNameText => $"({AppConifg.ApiSitesConfig[SourceName].Name})";
     public DetailResult VideoDetail { set; get; }
-
+    public List<EpisodeSubjectItem> Episodes { set; get; } = new();
     public bool IsVideoBorderVisible { set; get; }
     public string EpisodesCountText { set; get; }
     private readonly SugarRepository<ViewHistory> _viewHistoryTable;
@@ -30,6 +34,23 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
     public TVShowDetailViewModel()
     {
         _viewHistoryTable = App.Services.GetRequiredService<SugarRepository<ViewHistory>>();
+    }
+
+    public void RefreshUi()
+    {
+        Episodes = VideoDetail.Episodes.Select(ep => new EpisodeSubjectItem
+        {
+            Watched = false,
+            Name = ep.Name,
+            Url = ep.Url,
+        }).ToList();
+        EpisodesCountText = $"共{Episodes.Count}集";
+        var viewHistory = _viewHistoryTable.GetSingle(his =>
+            his.VodId == VideoDetail.VodId && his.Source == SourceName && his.Name == VideoName);
+        if (viewHistory is not null)
+        {
+            Episodes[Episodes.IndexOf(Episodes.FirstOrDefault(ep => ep.Name == viewHistory.Episode))].Watched = true;
+        }
     }
 
     public void Close()
@@ -42,10 +63,12 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
     [RelayCommand]
     private void Play(object? episode)
     {
-        if (episode is not EpisodeSubject episodeSubject)
+        if (episode is not EpisodeSubjectItem episodeSubject)
         {
             return;
         }
+
+        Episodes.ForEach(episode => episode.Watched = episode.Name == episodeSubject.Name);
 
         var win = new PlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();
@@ -54,6 +77,7 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
         {
             videoModel.VideoPath = episodeSubject.Url;
             videoModel.VideoName = $"{VideoName} {episodeSubject.Name}";
+            videoModel.Episodes = new ObservableCollection<EpisodeSubjectItem>(Episodes);
 
             var viewHistory = _viewHistoryTable.GetSingle(his =>
                 his.VodId == VideoDetail.VodId && his.Source == VideoDetail.Source && his.Name == VideoName);
@@ -67,7 +91,7 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
                     Episode = episodeSubject.Name,
                     Url = episodeSubject.Url,
                     Source = VideoDetail.Source,
-                    PlaybackPosition = 0,
+                    PlaybackPosition = viewHistory.PlaybackPosition,
                     Duration = 0,
                     TotalEpisodeCount = VideoDetail.Episodes.Count,
                     IsLocal = false,
@@ -104,4 +128,11 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
     {
         App.Notification?.Show(new Notification("倒序排列", "未实现呢！", NotificationType.Warning), NotificationType.Warning);
     }
+}
+
+public partial class EpisodeSubjectItem : ObservableObject
+{
+    [ObservableProperty] private bool _watched; //是否观看
+    [ObservableProperty] private string? _name;
+    [ObservableProperty] private string? _url;
 }

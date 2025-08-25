@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:LunaTV.Models"
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
     MaxWidth="800"
@@ -105,9 +104,9 @@
         </DockPanel>
 
         <ScrollViewer Grid.Row="3" Margin="4">
-            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding VideoDetail.Episodes}">
+            <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding Episodes}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="models:EpisodeSubject">
+                    <DataTemplate DataType="tvvm:EpisodeSubjectItem">
 
                         <Button
                             Width="120"
@@ -121,7 +120,13 @@
                                     <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
                                 </Style>
                             </Button.Styles>
-                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Classes.Warning="{Binding Watched}" Text="{Binding Name}">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock.Warning">
+                                        <Setter Property="ToolTip.Tip" Value="已经看过" />
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

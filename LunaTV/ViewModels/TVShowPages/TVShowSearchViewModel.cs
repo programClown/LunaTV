@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
@@ -83,6 +84,8 @@ public partial class TVShowSearchViewModel : ViewModelBase
             {
                 var ones = await _apiService.Search(api, name, true);
                 _allSearchResults.AddRange(ones);
+                SearchResults.AddRange(ones.Take(PageSize - SearchResults.Count));
+
                 if (_allSearchResults.Count >= AppConifg.SearchMaxVideos)
                 {
                     break;
@@ -95,6 +98,8 @@ public partial class TVShowSearchViewModel : ViewModelBase
             {
                 var ones = await _apiService.Search(api, name);
                 _allSearchResults.AddRange(ones);
+                SearchResults.AddRange(ones.Take(PageSize - SearchResults.Count));
+
                 if (_allSearchResults.Count >= AppConifg.SearchMaxVideos)
                 {
                     break;
@@ -104,7 +109,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
 
         SearchCountText = $"{_allSearchResults.Count}个结果";
         TotalVideos = _allSearchResults.Count;
-        SearchResults.AddRange(_allSearchResults.GetRange(0, int.Min(TotalVideos, PageSize)));
+        // SearchResults.AddRange(_allSearchResults.GetRange(0, int.Min(TotalVideos, PageSize)));
         _loadingWaitViewModel.Close();
     }
 
@@ -144,6 +149,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
             IsVideoBorderVisible = videos?.Type is not null,
             EpisodesCountText = $"共{videos?.Episodes?.Count ?? 0}集",
         };
+        vm.RefreshUi();
 
         await Dialog.ShowModal<TVShowDetailView, TVShowDetailViewModel>(vm, options: options);
     }

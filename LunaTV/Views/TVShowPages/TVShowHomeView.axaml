@@ -89,7 +89,14 @@
                 Name="SearchTextBox"
                 Text="{Binding SearchInputText}"
                 Watermark="搜索你喜欢的视频..."
-                Width="400" />
+                Width="400">
+                <TextBox.KeyBindings>
+                    <KeyBinding
+                        Command="{Binding NaviSearchCommand}"
+                        CommandParameter="{Binding #SearchTextBox.Text}"
+                        Gesture="Enter" />
+                </TextBox.KeyBindings>
+            </TextBox>
             <StackPanel
                 Grid.Column="2"
                 Orientation="Horizontal"
@@ -100,12 +107,6 @@
                     CommandParameter="{Binding #SearchTextBox.Text}"
                     Content="搜索"
                     CornerRadius="0,5,5,0">
-                    <Button.KeyBindings>
-                        <KeyBinding
-                            Command="{Binding NaviSearchCommand}"
-                            CommandParameter="{Binding #SearchTextBox.Text}"
-                            Gesture="Enter" />
-                    </Button.KeyBindings>
                 </Button>
 
                 <u:IconButton
@@ -182,7 +183,8 @@
                         SelectedItem="{Binding SelectedTagItem}">
                         <u:SelectionList.Resources>
                             <ResourceDictionary>
-                                <SolidColorBrush Color="{DynamicResource SemiPink3Color}" x:Key="SelectionListIndicatorBackground" />
+                                <SolidColorBrush Color="{DynamicResource SemiPink3Color}"
+                                                 x:Key="SelectionListIndicatorBackground" />
                             </ResourceDictionary>
                         </u:SelectionList.Resources>
                         <u:SelectionList.ItemsPanel>
@@ -237,7 +239,8 @@
                                             </Style>
                                         </Style>
                                     </Button.Styles>
-                                    <StackPanel HorizontalAlignment="Left" Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=150}">
+                                    <StackPanel HorizontalAlignment="Left"
+                                                Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=150}">
                                         <Panel>
                                             <Border ClipToBounds="True" CornerRadius="5,5,0,0">
                                                 <Image
@@ -268,7 +271,8 @@
                                                 VerticalAlignment="Bottom">
                                                 <HyperlinkButton.Styles>
                                                     <Style Selector="HyperlinkButton /template/ DockPanel">
-                                                        <Setter Property="Background" Value="{DynamicResource SemiGrey1}" />
+                                                        <Setter Property="Background"
+                                                                Value="{DynamicResource SemiGrey1}" />
                                                     </Style>
                                                 </HyperlinkButton.Styles>
                                             </HyperlinkButton>

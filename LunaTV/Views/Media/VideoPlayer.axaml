@@ -11,7 +11,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
     xmlns:vmm="using:LunaTV.ViewModels.Media"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tvShowPages="clr-namespace:LunaTV.ViewModels.TVShowPages"
+    xmlns:tvMedia="clr-namespace:LunaTV.ViewModels.Media">
 
     <UserControl.Resources>
         <converters:TimeSpanToMinutesSecondsConverter x:Key="TimeSpanToMinutesSecondsConverter" />
@@ -132,6 +134,60 @@
 
             <Border Grid.Column="1"
                     Width="{Binding KanBanWidth}">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        FontWeight="ExtraBold"
+                        IsHitTestVisible="False"
+                        Text="{Binding VideoName}">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#FF6094EA" />
+                                <GradientStop Offset="1" Color="#FFF02FC2" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Effect>
+                            <DropShadowEffect Opacity="0.1" Color="Black" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <ScrollViewer Grid.Row="1" Margin="4">
+                        <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding Episodes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="tvShowPages:EpisodeSubjectItem">
+
+                                    <Button
+                                        Width="100"
+                                        Margin="0,4"
+                                        Padding="0"
+                                        Classes="EpisodeCard"
+                                        Command="{Binding $parent[UserControl].((tvMedia:VideoPlayerViewModel)DataContext).KanbanSelectCommand}"
+                                        CommandParameter="{Binding}">
+                                        <Button.Styles>
+                                            <Style Selector="Button.EpisodeCard:pointerover">
+                                                <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <TextBlock Classes.Warning="{Binding Watched}" Text="{Binding Name}">
+                                            <TextBlock.Styles>
+                                                <Style Selector="TextBlock.Warning">
+                                                    <Setter Property="ToolTip.Tip" Value="已经看过" />
+                                                </Style>
+                                            </TextBlock.Styles>
+                                        </TextBlock>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ItemSpacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </Border>
 
         </Grid>

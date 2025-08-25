@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
+using LunaTV.Constants;
 using LunaTV.Extensions;
+using LunaTV.Services;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Nodify.Avalonia.Shared;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
@@ -103,14 +107,15 @@ public partial class TVShowHistoryViewModel : ViewModelBase
 
         var win = new PlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();
+
+        win.Show();
         if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
         {
             videoModel.VideoPath = historyItem.Url;
             videoModel.VideoName = $"{historyItem.Name} {historyItem.Episode}";
             videoModel.ViewHistory = historyItem;
+            videoModel.UpdateFromHistory(historyItem.Source, historyItem.VodId, historyItem.Episode);
         }
-
-        win.Show();
     }
 }
 

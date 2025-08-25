@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,9 +13,13 @@ using FluentAvalonia.UI.Controls;
 using LibVLCSharp.Shared;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
+using LunaTV.Constants;
+using LunaTV.Services;
 using LunaTV.ViewModels.Base;
+using LunaTV.ViewModels.TVShowPages;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Nodify.Avalonia.Shared;
 using SqlSugar;
 using Ursa.Controls;
 using Dialog = LibVLCSharp.Shared.Dialog;
@@ -31,6 +36,8 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     public bool IsPlay { get; set; }
     public bool IsMuted { get; set; }
     public ViewHistory? ViewHistory { get; set; }
+
+    [ObservableProperty] private ObservableCollection<EpisodeSubjectItem> _episodes;
 
     [ObservableProperty] private string _videoName = "xxxxxx";
     [ObservableProperty] private Symbol _playIcon = Symbol.PlayFilled;
@@ -54,12 +61,52 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         MediaPlayer = new MediaPlayer(_libVlc);
         MediaPlayer.PositionChanged += MediaPlayerOnPositionChanged;
         MediaPlayer.LengthChanged += MediaPlayerOnLengthChanged;
+        // MediaPlayer.EndReached += MediaPlayerOnEndReached;
+
         _debounceTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromMilliseconds(500)
         };
         _debounceTimer.Tick += DebounceTimerOnTick;
         _viewHistoryTable = App.Services.GetRequiredService<SugarRepository<ViewHistory>>();
+    }
+
+    public void UpdateFromHistory(string source, string vodId, string name)
+    {
+        Task.Run(async () =>
+        {
+            var videos = await App.Services.GetRequiredService<MovieTvService>()
+                .SearchDetail(source, vodId, AppConifg.AdultApiSitesConfig.ContainsKey(source));
+            Episodes = new ObservableCollection<EpisodeSubjectItem>(videos.Episodes.Select(ep =>
+                new EpisodeSubjectItem
+                {
+                    Watched = ep.Name == name,
+                    Name = ep.Name,
+                    Url = ep.Url,
+                }).ToList());
+        });
+    }
+
+    private void MediaPlayerOnEndReached(object? sender, EventArgs e)
+    {
+        Stop();
+        foreach (var episode in Episodes)
+        {
+            if (episode.Url == VideoPath)
+            {
+                if (Episodes.Count > Episodes.IndexOf(episode) + 1)
+                {
+                    ViewHistory.PlaybackPosition = 0;
+                    ViewHistory.Episode = Episodes[Episodes.IndexOf(episode) + 1].Name;
+                    ViewHistory.Url = Episodes[Episodes.IndexOf(episode) + 1].Url;
+
+                    VideoPath = Episodes[Episodes.IndexOf(episode) + 1].Url;
+                    VideoName = $"{ViewHistory?.Name} {Episodes[Episodes.IndexOf(episode) + 1].Name}";
+                    Episodes.ForEach(episode =>
+                        episode.Watched = episode.Name == Episodes[Episodes.IndexOf(episode) + 1].Name);
+                }
+            }
+        }
     }
 
     private void DebounceTimerOnTick(object? sender, EventArgs e)
@@ -120,6 +167,20 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         }
 
         IsPlay = !IsPlay;
+    }
+
+    [RelayCommand]
+    private void KanbanSelect(EpisodeSubjectItem item)
+    {
+        Stop();
+        IsVideosKanbanChecked = false;
+        KanBanWidth = 0;
+        ViewHistory.PlaybackPosition = 0;
+        ViewHistory.Episode = item.Name;
+        ViewHistory.Url = item.Url;
+        VideoPath = item.Url;
+        VideoName = $"{ViewHistory?.Name} {item.Name}";
+        Episodes.ForEach(episode => episode.Watched = episode.Name == item.Name);
     }
 
     public void Stop()
@@ -232,6 +293,6 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     partial void OnIsVideosKanbanCheckedChanged(bool value)
     {
-        KanBanWidth = value ? 200 : 0;
+        KanBanWidth = value ? 300 : 0;
     }
 }
