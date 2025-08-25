@@ -233,8 +233,46 @@
                             </Panel>
                         </HeaderedContentControl.Header>
                         <HeaderedContentControl.Content>
-                            <ListBox>
-                                <ListBoxItem>源1</ListBoxItem>
+                            <ListBox AutoScrollToSelectedItem="True" ItemsSource="{Binding ApiCustoms}">
+                                <ListBox.Styles>
+                                    <Style Selector="ListBoxItem">
+                                        <Setter Property="Height" Value="32" />
+                                    </Style>
+                                </ListBox.Styles>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel HorizontalSpacing="4">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                FontSize="12"
+                                                Text="{Binding Name}" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Foreground="{DynamicResource SemiLime6Color}"
+                                                FontSize="10"
+                                                Text="{Binding Source}" />
+                                            <PathIcon
+                                                FontSize="10"
+                                                Data="{DynamicResource SemiIconBell}"
+                                                Foreground="#F0B114" />
+
+                                            <Button
+                                                Command="{Binding $parent[UserControl].((tvvm:TVShowSettingViewModel)DataContext).DeleteCustomApiCommand}"
+                                                CommandParameter="{Binding}"
+                                                DockPanel.Dock="Right"
+                                                Height="28"
+                                                Theme="{DynamicResource BorderlessButton}"
+                                                HorizontalAlignment="Right">
+                                                <PathIcon
+                                                    FontSize="10"
+                                                    Data="{DynamicResource SemiIconDelete}" />
+                                            </Button>
+                                        </DockPanel>
+
+
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
                             </ListBox>
                         </HeaderedContentControl.Content>
                     </HeaderedContentControl>
@@ -329,7 +367,8 @@
                                 VerticalAlignment="Center"
                                 Text="网络测试" />
                             <Button HorizontalAlignment="Right" VerticalAlignment="Center">
-                                <PathIcon Data="{DynamicResource SemiIconGlobeStroke}" Theme="{DynamicResource InnerPathIcon}" />
+                                <PathIcon Data="{DynamicResource SemiIconGlobeStroke}"
+                                          Theme="{DynamicResource InnerPathIcon}" />
                             </Button>
                         </Panel>
                     </HeaderedContentControl.Header>
@@ -341,7 +380,7 @@
                                         <TextBlock
                                             MinWidth="30"
                                             VerticalAlignment="Center"
-                                            Text="{Binding Id}" />
+                                            Text="{Binding IndexId}" />
                                         <HyperlinkButton Content="{Binding Name}" NavigateUri="{Binding Url}" />
                                         <PathIcon
                                             Data="{DynamicResource SemiIconLink}"

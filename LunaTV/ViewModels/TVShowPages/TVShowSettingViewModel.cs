@@ -30,6 +30,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<ApiSourceItem> _commonApis;
     [ObservableProperty] private ObservableCollection<ApiSourceItem> _adultApis;
     [ObservableProperty] private ObservableCollection<ApiNetItem> _apiNets;
+    [ObservableProperty] private ObservableCollection<ApiCustomItem> _apiCustoms;
     [ObservableProperty] private int _selectedApiCount;
     private readonly SugarRepository<ApiSource> _apiSourceTable;
 
@@ -37,11 +38,24 @@ public partial class TVShowSettingViewModel : ViewModelBase
     public TVShowSettingViewModel()
     {
         _apiSourceTable = App.Services.GetRequiredService<SugarRepository<ApiSource>>();
-        var apiSources = _apiSourceTable.GetList();
+
         CommonApis = new ObservableCollection<ApiSourceItem>();
         AdultApis = new ObservableCollection<ApiSourceItem>();
         ApiNets = new ObservableCollection<ApiNetItem>();
+        ApiCustoms = new ObservableCollection<ApiCustomItem>();
+
+        RefreshSource();
+    }
+
+    private void RefreshSource()
+    {
+        var apiSources = _apiSourceTable.GetList();
         int index = 0;
+        int netIndex = 0;
+        CommonApis.Clear();
+        AdultApis.Clear();
+        ApiNets.Clear();
+        ApiCustoms.Clear();
         foreach (var api in apiSources)
         {
             index += api.IsEnable ? 1 : 0;
@@ -71,10 +85,22 @@ public partial class TVShowSettingViewModel : ViewModelBase
             ApiNets.Add(new ApiNetItem
             {
                 Id = api.Id,
+                IndexId = ++netIndex,
                 Name = api.Name,
                 Url = api.ApiBaseUrl,
                 IsAdult = api.IsAdult,
             });
+
+            if (api.IsCustomApi)
+            {
+                ApiCustoms.Add(new ApiCustomItem()
+                {
+                    Id = api.Id,
+                    Source = api.Source,
+                    Name = api.Name,
+                    IsAdult = api.IsAdult
+                });
+            }
         }
 
         SelectedApiCount = index;
@@ -318,26 +344,47 @@ public partial class TVShowSettingViewModel : ViewModelBase
                 options: options);
         if (result == DialogResult.OK)
         {
-            if (string.IsNullOrWhiteSpace(addCustomApiViewModel.ApiSource) ||
-                string.IsNullOrWhiteSpace(addCustomApiViewModel.ApiBaseUrl) ||
-                string.IsNullOrWhiteSpace(addCustomApiViewModel.ApiName))
+            if (addCustomApiViewModel.ApiSourceErrorVisible ||
+                addCustomApiViewModel.ApiBaseUrlErrorVisible ||
+                addCustomApiViewModel.ApiNameErrorVisible)
             {
                 App.Notification.Show(new Notification("错误", "请把信息填完", NotificationType.Error), NotificationType.Error);
                 return;
             }
 
-            var apiSource = new ApiSource()
+
+            var check = await _apiSourceTable.GetSingleAsync(s => s.Source == addCustomApiViewModel.ApiSource
+                                                                  && s.Name == addCustomApiViewModel.ApiName &&
+                                                                  s.ApiBaseUrl == addCustomApiViewModel.ApiBaseUrl);
+            if (check is not null)
             {
-                Source = addCustomApiViewModel.ApiSource,
-                ApiBaseUrl = addCustomApiViewModel.ApiBaseUrl,
-                DetailBaseUrl = addCustomApiViewModel.DetailBaseUrl,
-                Name = addCustomApiViewModel.ApiName,
-                IsAdult = addCustomApiViewModel.IsAdult,
-                IsCustomApi = true,
-                IsEnable = false,
-            };
-            // await _apiSourceTable.InsertAsync(apiSource);
+                App.Notification.Show(new Notification("错误", "重复添加", NotificationType.Error), NotificationType.Error);
+                return;
+            }
+
+            if (await _apiSourceTable.InsertAsync(new ApiSource()
+                {
+                    Source = addCustomApiViewModel.ApiSource,
+                    ApiBaseUrl = addCustomApiViewModel.ApiBaseUrl,
+                    DetailBaseUrl = addCustomApiViewModel.DetailBaseUrl,
+                    Name = addCustomApiViewModel.ApiName,
+                    IsAdult = addCustomApiViewModel.IsAdult,
+                    IsCustomApi = true,
+                    IsEnable = false,
+                }))
+            {
+                App.Notification.Show(new Notification("成功", "添加新的自定义源成功", NotificationType.Success),
+                    NotificationType.Success);
+                RefreshSource();
+            }
         }
+    }
+
+    [RelayCommand]
+    private async Task DeleteCustomApi(ApiCustomItem api)
+    {
+        await _apiSourceTable.DeleteAsync(s => s.Id == api.Id);
+        RefreshSource();
     }
 }
 
@@ -352,8 +399,17 @@ public partial class ApiSourceItem : ObservableObject
 
 public class ApiNetItem
 {
+    public int IndexId { get; set; }
     public int Id { get; set; }
     public string? Name { get; set; }
     public string? Url { get; set; }
+    public bool IsAdult { get; set; }
+}
+
+public class ApiCustomItem
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? Source { get; set; }
     public bool IsAdult { get; set; }
 }

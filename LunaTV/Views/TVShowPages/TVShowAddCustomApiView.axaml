@@ -37,10 +37,14 @@
         </StackPanel>
 
         <u:Form Width="400" HorizontalAlignment="Center" Grid.Row="1" LabelPosition="Left" LabelWidth="*">
-            <TextBox u:FormItem.Label="API源名称：" Text="{Binding ApiSource}" Watermark="网页域名，如：douban" />
-            <TextBox u:FormItem.Label="API名称：" Text="{Binding ApiName}" Watermark="网站名，如：豆瓣" />
-            <TextBox u:FormItem.Label="网址：" InnerLeftContent="https://" InnerRightContent=".com"
+            <TextBox u:FormItem.Label="API源名称（必填）：" Text="{Binding ApiSource}" Watermark="网页域名，如：douban" />
+            <TextBlock FontSize="10" Foreground="Red" Text="API源名称不能为空"
+                       IsVisible="{Binding ApiSourceErrorVisible}" />
+            <TextBox u:FormItem.Label="API名称（必填）：" Text="{Binding ApiName}" Watermark="网站名，如：豆瓣" />
+            <TextBlock FontSize="10" Foreground="Red" Text="API名称不能为空" IsVisible="{Binding ApiNameErrorVisible}" />
+            <TextBox u:FormItem.Label="网址（必填）：" InnerLeftContent="https://" InnerRightContent=".com"
                      Text="{Binding ApiBaseUrl}" Watermark="douban" />
+            <TextBlock FontSize="10" Foreground="Red" Text="网址不能为空或非法格式" IsVisible="{Binding ApiBaseUrlErrorVisible}" />
             <TextBox u:FormItem.Label="详情页网址：" InnerLeftContent="https://" InnerRightContent=".com"
                      Text="{Binding DetailBaseUrl}" Watermark="douban" />
             <CheckBox u:FormItem.Label="黄色资源站：" IsChecked="{Binding IsAdult}">

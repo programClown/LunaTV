@@ -4,12 +4,14 @@ using Avalonia.Controls.Notifications;
 using CommunityToolkit.Mvvm.Input;
 using Irihi.Avalonia.Shared.Contracts;
 using LunaTV.Base.Constants;
+using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using LunaTV.Constants;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.Media;
 using LunaTV.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Notification = Ursa.Controls.Notification;
 
 namespace LunaTV.ViewModels.TVShowPages;
@@ -23,7 +25,12 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
 
     public bool IsVideoBorderVisible { set; get; }
     public string EpisodesCountText { set; get; }
+    private readonly SugarRepository<ViewHistory> _viewHistoryTable;
 
+    public TVShowDetailViewModel()
+    {
+        _viewHistoryTable = App.Services.GetRequiredService<SugarRepository<ViewHistory>>();
+    }
 
     public void Close()
     {
@@ -47,18 +54,40 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
         {
             videoModel.VideoPath = episodeSubject.Url;
             videoModel.VideoName = $"{VideoName} {episodeSubject.Name}";
-            videoModel.ViewHistory = new ViewHistory
+
+            var viewHistory = _viewHistoryTable.GetSingle(his =>
+                his.VodId == VideoDetail.VodId && his.Source == VideoDetail.Source && his.Name == VideoName);
+            if (viewHistory is not null)
             {
-                VodId = VideoDetail.VodId,
-                Name = VideoName,
-                Episode = episodeSubject.Name,
-                Url = episodeSubject.Url,
-                Source = VideoDetail.Source,
-                PlaybackPosition = 0,
-                Duration = 0,
-                TotalEpisodeCount = VideoDetail.Episodes.Count,
-                IsLocal = false,
-            };
+                videoModel.ViewHistory = new ViewHistory
+                {
+                    Id = viewHistory.Id,
+                    VodId = VideoDetail.VodId,
+                    Name = VideoName,
+                    Episode = episodeSubject.Name,
+                    Url = episodeSubject.Url,
+                    Source = VideoDetail.Source,
+                    PlaybackPosition = 0,
+                    Duration = 0,
+                    TotalEpisodeCount = VideoDetail.Episodes.Count,
+                    IsLocal = false,
+                };
+            }
+            else
+            {
+                videoModel.ViewHistory = new ViewHistory
+                {
+                    VodId = VideoDetail.VodId,
+                    Name = VideoName,
+                    Episode = episodeSubject.Name,
+                    Url = episodeSubject.Url,
+                    Source = VideoDetail.Source,
+                    PlaybackPosition = 0,
+                    Duration = 0,
+                    TotalEpisodeCount = VideoDetail.Episodes.Count,
+                    IsLocal = false,
+                };
+            }
         }
 
         Close();
