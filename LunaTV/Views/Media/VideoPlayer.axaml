@@ -26,98 +26,115 @@
             Text="{Binding VideoName}"
             VerticalAlignment="Top" />
 
-        <vlc:VideoView
-            Grid.Row="1"
-            HorizontalAlignment="Stretch"
-            MediaPlayer="{Binding MediaPlayer}"
-            PointerEntered="VideoViewOnPointerEntered"
-            VerticalAlignment="Stretch">
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <vlc:VideoView
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                MediaPlayer="{Binding MediaPlayer}"
+                PointerEntered="VideoViewOnPointerEntered"
+                VerticalAlignment="Stretch">
 
-            <Border
-                IsVisible="False"
-                Margin="20"
-                Name="ControlsPanel">
-                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <Border
+                    IsVisible="False"
+                    Margin="20"
+                    Name="ControlsPanel">
+                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
 
-                        <Button
-                            Command="{Binding PreviousCommand}"
-                            IsVisible="{Binding IsMultiVideos}"
-                            Theme="{DynamicResource BorderlessButton}">
-                            <fa:SymbolIcon FontSize="18" Symbol="PreviousFilled" />
-                        </Button>
-                        <Button Command="{Binding PlayCommand}" Theme="{DynamicResource BorderlessButton}">
-                            <fa:SymbolIcon FontSize="32" Symbol="{Binding PlayIcon}" />
-                        </Button>
-                        <Button
-                            Command="{Binding NextCommand}"
-                            IsVisible="{Binding IsMultiVideos}"
-                            Theme="{DynamicResource BorderlessButton}">
-                            <fa:SymbolIcon FontSize="18" Symbol="NextFilled" />
-                        </Button>
-                        <Button Command="{Binding Stop}" Theme="{DynamicResource BorderlessButton}">
-                            <fa:SymbolIcon FontSize="18" Symbol="StopFilled" />
-                        </Button>
+                            <Button
+                                Command="{Binding PreviousCommand}"
+                                IsVisible="{Binding IsMultiVideos}"
+                                Theme="{DynamicResource BorderlessButton}">
+                                <fa:SymbolIcon FontSize="18" Symbol="PreviousFilled" />
+                            </Button>
+                            <Button Command="{Binding PlayCommand}" Theme="{DynamicResource BorderlessButton}">
+                                <fa:SymbolIcon FontSize="32" Symbol="{Binding PlayIcon}" />
+                            </Button>
+                            <Button
+                                Command="{Binding NextCommand}"
+                                IsVisible="{Binding IsMultiVideos}"
+                                Theme="{DynamicResource BorderlessButton}">
+                                <fa:SymbolIcon FontSize="18" Symbol="NextFilled" />
+                            </Button>
+                            <Button Command="{Binding Stop}" Theme="{DynamicResource BorderlessButton}">
+                                <fa:SymbolIcon FontSize="18" Symbol="StopFilled" />
+                            </Button>
 
-                    </StackPanel>
-
-                    <Grid
-                        ColumnDefinitions="60,*,60"
-                        Grid.Column="1"
-                        Margin="40,0">
-                        <!--  Current Position Display  -->
-                        <TextBlock
-                            Grid.Column="0"
-                            HorizontalAlignment="Left"
-                            Text="{Binding SeekPosition, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
-                            VerticalAlignment="Center" />
-
-                        <!--  Seek Slider  -->
-                        <Slider
-                            Grid.Column="1"
-                            IsHitTestVisible="{Binding CanInteractSeekSlider}"
-                            Margin="10,0"
-                            Maximum="{Binding MaximumSeekValue}"
-                            Minimum="0"
-                            Value="{Binding SeekPosition, Mode=TwoWay}"
-                            VerticalAlignment="Center" />
-
-                        <!--  Maximum Duration Display  -->
-                        <TextBlock
-                            Grid.Column="2"
-                            HorizontalAlignment="Right"
-                            Text="{Binding MaximumSeekValue, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
-                            VerticalAlignment="Center" />
-                    </Grid>
-
-                    <StackPanel Grid.Column="2" Orientation="Horizontal">
-
-                        <StackPanel Orientation="Horizontal" Spacing="5">
-                            <TextBlock Text="倍速" VerticalAlignment="Center" />
-                            <ComboBox ItemsSource="{Binding RateLists}" SelectedItem="{Binding SelectRate}" />
                         </StackPanel>
 
-                        <Button
-                            Background="Transparent"
-                            Command="{Binding MuteCommand}"
-                            Margin="10,0">
-                            <fa:SymbolIcon FontSize="18" Symbol="{Binding MuteIcon}" />
-                        </Button>
+                        <Grid
+                            ColumnDefinitions="60,*,60"
+                            Grid.Column="1"
+                            Margin="40,0">
+                            <!--  Current Position Display  -->
+                            <TextBlock
+                                Grid.Column="0"
+                                HorizontalAlignment="Left"
+                                Text="{Binding SeekPosition, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
+                                VerticalAlignment="Center" />
 
-                        <Slider
-                            IsEnabled="{Binding !IsMuted}"
-                            Margin="0,0,20,0"
-                            Maximum="1"
-                            Minimum="0"
-                            Value="{Binding Volume, Mode=TwoWay}"
-                            VerticalAlignment="Center"
-                            Width="150" />
+                            <!--  Seek Slider  -->
+                            <Slider
+                                Grid.Column="1"
+                                IsHitTestVisible="{Binding CanInteractSeekSlider}"
+                                Margin="10,0"
+                                Maximum="{Binding MaximumSeekValue}"
+                                Minimum="0"
+                                Value="{Binding SeekPosition, Mode=TwoWay}"
+                                VerticalAlignment="Center" />
 
-                    </StackPanel>
-                </Grid>
+                            <!--  Maximum Duration Display  -->
+                            <TextBlock
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                Text="{Binding MaximumSeekValue, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}"
+                                VerticalAlignment="Center" />
+                        </Grid>
 
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="倍速" VerticalAlignment="Center" />
+                                <ComboBox ItemsSource="{Binding RateLists}" SelectedItem="{Binding SelectRate}" />
+                            </StackPanel>
+
+                            <Button
+                                Background="Transparent"
+                                Command="{Binding MuteCommand}"
+                                Margin="10,0">
+                                <fa:SymbolIcon FontSize="18" Symbol="{Binding MuteIcon}" />
+                            </Button>
+
+                            <Slider
+                                IsEnabled="{Binding !IsMuted}"
+                                Margin="0,0,20,0"
+                                Maximum="1"
+                                Minimum="0"
+                                Value="{Binding Volume, Mode=TwoWay}"
+                                VerticalAlignment="Center"
+                                Width="150" />
+
+                            <ToggleButton
+                                Background="Transparent"
+                                Classes="Tertiary"
+                                IsChecked="{Binding IsVideosKanbanChecked}"
+                                Margin="10,0">
+                                <PathIcon
+                                    FontSize="10"
+                                    Data="{DynamicResource SemiIconKanban}" />
+                            </ToggleButton>
+
+                        </StackPanel>
+                    </Grid>
+
+                </Border>
+            </vlc:VideoView>
+
+            <Border Grid.Column="1"
+                    Width="{Binding KanBanWidth}">
             </Border>
-        </vlc:VideoView>
+
+        </Grid>
 
 
     </Grid>

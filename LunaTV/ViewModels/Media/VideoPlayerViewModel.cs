@@ -42,6 +42,8 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     [ObservableProperty] private string _videoPath;
     [ObservableProperty] private bool _isMultiVideos;
     [ObservableProperty] private string _selectRate = "1x";
+    [ObservableProperty] private bool _isVideosKanbanChecked;
+    [ObservableProperty] private int _kanBanWidth = 0;
     private bool _isUpdatingFromMedia;
     private bool _isUserSeeking;
     private readonly DispatcherTimer _debounceTimer;
@@ -226,5 +228,10 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     partial void OnSelectRateChanged(string value)
     {
         MediaPlayer.SetRate(float.Parse(value.Substring(0, value.Length - 1)));
+    }
+
+    partial void OnIsVideosKanbanCheckedChanged(bool value)
+    {
+        KanBanWidth = value ? 200 : 0;
     }
 }
