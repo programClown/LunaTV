@@ -1,42 +1,42 @@
 <u:UrsaWindow
-    Icon="/Assets/logo-tv.png"
-    Title="LunaTV"
-    WindowStartupLocation="CenterScreen"
-    WindowState="Maximized"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    mc:Ignorable="d"
     x:Class="LunaTV.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:iri="https://irihi.tech/shared"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:u="https://irihi.tech/ursa"
     xmlns:views="using:LunaTV.Views"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    Title="LunaTV"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Icon="/Assets/logo-tv.png"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
+    mc:Ignorable="d">
     <u:UrsaWindow.RightContent>
         <views:TitleBarRightContent />
     </u:UrsaWindow.RightContent>
     <u:UrsaWindow.LeftContent>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Name="LeftTitlebar" Orientation="Horizontal">
             <u:Avatar
-                Classes="ExtraSmall"
                 Margin="4,0"
+                Classes="ExtraSmall"
                 Source="/Assets/logo.png" />
             <TextBlock
-                FontWeight="ExtraBold"
                 HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontWeight="ExtraBold"
                 IsHitTestVisible="False"
-                Text="LunaTV"
-                VerticalAlignment="Center">
+                Text="LunaTV">
                 <TextBlock.Foreground>
-                    <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
-                        <GradientStop Color="#F0002FC2" Offset="0" />
-                        <GradientStop Color="#FF6094EA" Offset="1" />
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#F0002FC2" />
+                        <GradientStop Offset="1" Color="#FF6094EA" />
                     </LinearGradientBrush>
                 </TextBlock.Foreground>
                 <TextBlock.Effect>
-                    <DropShadowEffect Color="Black" Opacity="0.1" />
+                    <DropShadowEffect Opacity="0.1" Color="Black" />
                 </TextBlock.Effect>
             </TextBlock>
         </StackPanel>
