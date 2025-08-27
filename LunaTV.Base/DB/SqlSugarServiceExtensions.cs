@@ -36,6 +36,34 @@ public static class SqlSugarServiceExtensions
             }
         }
 
+        if (!db.DbMaintenance.IsAnyColumn("player_config", "DoubanApiEnabled"))
+        {
+            db.DbMaintenance.AddColumn("player_config", new DbColumnInfo()
+            {
+                DbColumnName = "DoubanApiEnabled",
+                TableName = "player_config",
+                DataType = "bit",
+                IsNullable = false,
+                DefaultValue = "0"
+            });
+            db.DbMaintenance.AddColumn("player_config", new DbColumnInfo()
+            {
+                DbColumnName = "HomeAutoLoadDoubanEnabled",
+                TableName = "player_config",
+                DataType = "bit",
+                IsNullable = false,
+                DefaultValue = "0"
+            });
+            db.DbMaintenance.AddColumn("player_config", new DbColumnInfo()
+            {
+                DbColumnName = "ForceApiNeedSpecialSource",
+                TableName = "player_config",
+                DataType = "bit",
+                IsNullable = false,
+                DefaultValue = "0"
+            });
+        }
+
         services.AddSingleton<ISqlSugarClient>(db);
         return services;
     }

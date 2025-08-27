@@ -32,12 +32,18 @@ public partial class TVShowSettingViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<ApiNetItem> _apiNets;
     [ObservableProperty] private ObservableCollection<ApiCustomItem> _apiCustoms;
     [ObservableProperty] private int _selectedApiCount;
-    private readonly SugarRepository<ApiSource> _apiSourceTable;
 
+    [ObservableProperty] private bool _doubanApiEnabled;
+    [ObservableProperty] private bool _homeAutoLoadDoubanEnabled;
+    [ObservableProperty] private bool _forceBaseApiNeedChecked;
+
+    private readonly SugarRepository<ApiSource> _apiSourceTable;
+    private readonly SugarRepository<PlayerConfig> _playConfigTable;
 
     public TVShowSettingViewModel()
     {
         _apiSourceTable = App.Services.GetRequiredService<SugarRepository<ApiSource>>();
+        _playConfigTable = App.Services.GetRequiredService<SugarRepository<PlayerConfig>>();
 
         CommonApis = new ObservableCollection<ApiSourceItem>();
         AdultApis = new ObservableCollection<ApiSourceItem>();
@@ -49,6 +55,10 @@ public partial class TVShowSettingViewModel : ViewModelBase
 
     private void RefreshSource()
     {
+        DoubanApiEnabled = AppConifg.PlayerConfig.DoubanApiEnabled;
+        HomeAutoLoadDoubanEnabled = AppConifg.PlayerConfig.HomeAutoLoadDoubanEnabled;
+        ForceBaseApiNeedChecked = AppConifg.PlayerConfig.ForceApiNeedSpecialSource;
+
         var apiSources = _apiSourceTable.GetList();
         int index = 0;
         int netIndex = 0;
@@ -385,6 +395,24 @@ public partial class TVShowSettingViewModel : ViewModelBase
     {
         await _apiSourceTable.DeleteAsync(s => s.Id == api.Id);
         RefreshSource();
+    }
+
+    partial void OnDoubanApiEnabledChanged(bool value)
+    {
+        AppConifg.PlayerConfig.DoubanApiEnabled = value;
+        _playConfigTable.Update(AppConifg.PlayerConfig);
+    }
+
+    partial void OnHomeAutoLoadDoubanEnabledChanged(bool value)
+    {
+        AppConifg.PlayerConfig.HomeAutoLoadDoubanEnabled = value;
+        _playConfigTable.Update(AppConifg.PlayerConfig);
+    }
+
+    partial void OnForceBaseApiNeedCheckedChanged(bool value)
+    {
+        AppConifg.PlayerConfig.ForceApiNeedSpecialSource = value;
+        _playConfigTable.Update(AppConifg.PlayerConfig);
     }
 }
 
