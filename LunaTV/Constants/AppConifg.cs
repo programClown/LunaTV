@@ -8,7 +8,6 @@ public static class AppConifg
 {
     public const int SearchMaxPages = 50;
     public const string M3U8_PATTERN = @"https?:\/\/[^""'\s]+?\.m3u8";
-    public const bool ForceApiNeedSpecialSource = false; //强制使用api
 
     public const int SearchMaxVideos = 1000; //最多搜索多少部资源
     public static readonly List<string> SelectApis = ["dyttzy", "tyyszy"];

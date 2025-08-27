@@ -107,7 +107,7 @@ public class MovieTvService
         try
         {
             var site = isAdult ? AppConifg.AdultApiSitesConfig[source] : AppConifg.ApiSitesConfig[source];
-            if (AppConifg.ForceApiNeedSpecialSource || string.IsNullOrEmpty(site.DetailBaseUrl))
+            if (AppConifg.PlayerConfig.ForceApiNeedSpecialSource || string.IsNullOrEmpty(site.DetailBaseUrl))
             {
                 var apiService = _apiFactory.CreateRefitClient<IMovieTvApi>(new Uri(site.ApiBaseUrl));
                 var results = await apiService.GetVideoDetail(vodId);
