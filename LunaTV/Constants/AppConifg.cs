@@ -16,6 +16,7 @@ public static class AppConifg
 
     public static Dictionary<string, ApiSourceInfo> ApiSitesConfig = new();
     public static Dictionary<string, ApiSourceInfo> AdultApiSitesConfig = new();
+    public static PlayerConfig PlayerConfig = new();
 
     public static void UpdateSites(List<ApiSource> apiSources)
     {

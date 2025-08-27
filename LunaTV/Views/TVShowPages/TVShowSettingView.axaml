@@ -289,39 +289,18 @@
                             <StackPanel Spacing="8">
                                 <DockPanel>
                                     <StackPanel DockPanel.Dock="Left">
-                                        <TextBlock Classes="Tertiary" Text="黄色内容过滤" />
+                                        <TextBlock Classes="Tertiary" Text="豆瓣API启用" />
                                         <TextBlock
                                             Classes="Quaternary"
                                             FontSize="12"
-                                            Text="过滤&quot;伦理片&quot;等黄色内容" />
+                                            Text="通过豆瓣API获取影视信息" />
                                     </StackPanel>
 
                                     <ToggleSwitch
                                         HorizontalAlignment="Right"
                                         Classes="Large"
                                         DockPanel.Dock="Right"
-                                        OffContent="关"
-                                        OnContent="开"
-                                        Theme="{StaticResource SimpleToggleSwitch}" />
-                                </DockPanel>
-                                <Border
-                                    Height="1"
-                                    Background="{DynamicResource SemiColorFill2}"
-                                    Opacity="0.3" />
-
-                                <DockPanel>
-                                    <StackPanel DockPanel.Dock="Left">
-                                        <TextBlock Classes="Tertiary" Text="分片广告过滤" />
-                                        <TextBlock
-                                            Classes="Quaternary"
-                                            FontSize="12"
-                                            Text="关闭可减少卡顿" />
-                                    </StackPanel>
-
-                                    <ToggleSwitch
-                                        HorizontalAlignment="Right"
-                                        Classes="Large"
-                                        DockPanel.Dock="Right"
+                                        IsChecked="{Binding DoubanApiEnabled}"
                                         OffContent="关"
                                         OnContent="开"
                                         Theme="{StaticResource SimpleToggleSwitch}" />
@@ -343,6 +322,32 @@
                                         HorizontalAlignment="Right"
                                         Classes="Large"
                                         DockPanel.Dock="Right"
+                                        IsChecked="{Binding HomeAutoLoadDoubanEnabled}"
+                                        OffContent="关"
+                                        OnContent="开"
+                                        Theme="{StaticResource SimpleToggleSwitch}" />
+                                </DockPanel>
+                                <Border
+                                    Height="1"
+                                    Background="{DynamicResource SemiColorFill2}"
+                                    Opacity="0.3" />
+
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Left">
+                                        <TextBlock Classes="Tertiary" Text="强制使用baseurl接口id查询" />
+                                        <TextBlock
+                                            Width="200"
+                                            Classes="Quaternary"
+                                            FontSize="12"
+                                            TextWrapping="Wrap"
+                                            Text="不在使用detail接口查询，detail会访问网页然后模式匹配" />
+                                    </StackPanel>
+
+                                    <ToggleSwitch
+                                        HorizontalAlignment="Right"
+                                        Classes="Large"
+                                        DockPanel.Dock="Right"
+                                        IsChecked="{Binding ForceBaseApiNeedChecked}"
                                         OffContent="关"
                                         OnContent="开"
                                         Theme="{StaticResource SimpleToggleSwitch}" />

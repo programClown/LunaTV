@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,6 +24,7 @@ using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
 using Nodify.Avalonia.Shared;
 using Ursa.Controls;
+using Notification = Ursa.Controls.Notification;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
@@ -51,9 +53,28 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
     public TVShowHomeViewModel()
     {
+        var pcfg = App.Services.GetRequiredService<SugarRepository<PlayerConfig>>().GetSingle(u => u.Id > 0);
+        AppConifg.PlayerConfig =
+            pcfg ??
+            new PlayerConfig()
+            {
+                AdFilteringEnabled = true,
+                DoubanApiEnabled = false,
+                HomeAutoLoadDoubanEnabled = false,
+                ForceApiNeedSpecialSource = false,
+                Timeout = 15000,
+                FilterAds = true,
+                AutoPlayNext = false,
+            };
+        if (pcfg == null)
+        {
+            App.Services.GetRequiredService<SugarRepository<PlayerConfig>>().Insert(AppConifg.PlayerConfig);
+        }
+
         DoubanTags = new ObservableCollection<string>();
         MovieCardItems = new ObservableCollection<MovieCardItem>();
         _ = SwitchMovieOrTv("电影");
+
         _initialized = true;
 
         _apiSourceTable = App.Services.GetRequiredService<SugarRepository<ApiSource>>();
@@ -79,13 +100,29 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
         SelectedTagItem = DoubanTags.FirstOrDefault();
 
-        await RefreshMovieCardsAsync();
+        if (!_initialized && AppConifg.PlayerConfig.HomeAutoLoadDoubanEnabled)
+        {
+            await RefreshMovieCardsAsync();
+        }
+        else
+        {
+            await RefreshMovieCardsAsync();
+        }
     }
 
     private async Task RefreshMovieCardsAsync()
     {
         if (SelectedTagItem is null)
         {
+            _isTagChanged2Refresh = true;
+            return;
+        }
+
+        if (AppConifg.PlayerConfig.DoubanApiEnabled is false)
+        {
+            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动", NotificationType.Information),
+                NotificationType.Information);
+            _isTagChanged2Refresh = true;
             return;
         }
 
@@ -94,31 +131,39 @@ public partial class TVShowHomeViewModel : ViewModelBase
             _ = Loading();
         }
 
-        var sts = await App.Services.GetRequiredService<IWebApi>()
-            .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", page_limit: PageSize,
-                page_start: _pageStart);
-        var json = JsonSerializer.Deserialize<DoubanSubjectsResponse>(sts,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true, // 处理大小写不敏感
-            });
-        // Console.WriteLine(json);
-        MovieCardItems.Clear();
-        if (json is not null)
+        try
         {
-            foreach (var item in json.Subjects)
-            {
-                var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
-                // Console.WriteLine(stdCover);
-                MovieCardItems.Add(new MovieCardItem
+            var sts = await App.Services.GetRequiredService<IWebApi>()
+                .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", page_limit: PageSize,
+                    page_start: _pageStart);
+            var json = JsonSerializer.Deserialize<DoubanSubjectsResponse>(sts,
+                new JsonSerializerOptions
                 {
-                    Name = item.Title,
-                    Image = stdCover,
-                    Score = string.IsNullOrEmpty(item.Rate) ? "暂无" : item.Rate,
-                    DoubanUrl = item.Url,
+                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
                 });
+            // Console.WriteLine(json);
+            MovieCardItems.Clear();
+            if (json is not null)
+            {
+                foreach (var item in json.Subjects)
+                {
+                    var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
+                    // Console.WriteLine(stdCover);
+                    MovieCardItems.Add(new MovieCardItem
+                    {
+                        Name = item.Title,
+                        Image = stdCover,
+                        Score = string.IsNullOrEmpty(item.Rate) ? "暂无" : item.Rate,
+                        DoubanUrl = item.Url,
+                    });
+                }
             }
         }
+        catch (Exception e)
+        {
+            App.Notification?.Show(new Notification("查找失败", "豆瓣检索失败", NotificationType.Error), NotificationType.Error);
+        }
+
 
         if (_initialized)
             _loadingWaitViewModel.Close();
@@ -157,30 +202,46 @@ public partial class TVShowHomeViewModel : ViewModelBase
     private async Task NaviSearch(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
-        _ = Loading();
-        var sts = await App.Services.GetRequiredService<IWebApi>()
-            .GetchDoubanSearchSuggestions(text);
-        var json = JsonSerializer.Deserialize<List<DoubanSuggestionSubject>>(sts,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true, // 处理大小写不敏感
-            });
-        MovieCardItems.Clear();
-        if (json is not null)
+        if (AppConifg.PlayerConfig.DoubanApiEnabled is false)
         {
-            foreach (var item in json)
-            {
-                var stdCover = item.Img.Replace("\\/", "/").Replace("img2", "img3");
-                // Console.WriteLine(stdCover);
-                MovieCardItems.Add(new MovieCardItem
+            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动", NotificationType.Information),
+                NotificationType.Information);
+            return;
+        }
+
+        _ = Loading();
+
+        try
+        {
+            var sts = await App.Services.GetRequiredService<IWebApi>()
+                .GetchDoubanSearchSuggestions(text);
+            var json = JsonSerializer.Deserialize<List<DoubanSuggestionSubject>>(sts,
+                new JsonSerializerOptions
                 {
-                    Name = item.Title,
-                    Image = stdCover,
-                    Score = "暂无",
-                    DoubanUrl = item.Url,
+                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
                 });
+            MovieCardItems.Clear();
+            if (json is not null)
+            {
+                foreach (var item in json)
+                {
+                    var stdCover = item.Img.Replace("\\/", "/").Replace("img2", "img3");
+                    // Console.WriteLine(stdCover);
+                    MovieCardItems.Add(new MovieCardItem
+                    {
+                        Name = item.Title,
+                        Image = stdCover,
+                        Score = "暂无",
+                        DoubanUrl = item.Url,
+                    });
+                }
             }
         }
+        catch (Exception e)
+        {
+            App.Notification?.Show(new Notification("查找失败", "豆瓣检索失败", NotificationType.Error), NotificationType.Error);
+        }
+
 
         _loadingWaitViewModel.Close();
     }
