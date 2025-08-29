@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using LunaTV.ViewModels.Media;
-using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
 
 namespace LunaTV.Views.Media;
 
 public partial class VideoPlayer : UserControl
 {
-    VideoPlayerViewModel _viewModel;
-    private DispatcherTimer _overlayTimer;
+    private readonly DispatcherTimer _overlayTimer;
+    private readonly VideoPlayerViewModel _viewModel;
 
     public VideoPlayer()
     {
@@ -23,7 +18,7 @@ public partial class VideoPlayer : UserControl
 
         _viewModel = new VideoPlayerViewModel();
         DataContext = _viewModel;
-        _overlayTimer = new DispatcherTimer()
+        _overlayTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(6)
         };
@@ -40,7 +35,7 @@ public partial class VideoPlayer : UserControl
         _viewModel.Stop();
     }
 
-    private async void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private async void VideoViewOnPointerPressedOpen(object? sender, PointerPressedEventArgs e)
     {
         var videoAll = new FilePickerFileType("All Videos")
         {
@@ -51,15 +46,15 @@ public partial class VideoPlayer : UserControl
 
 
         var file = await (Parent as Window)?.StorageProvider?.OpenFilePickerAsync(
-            new FilePickerOpenOptions()
+            new FilePickerOpenOptions
             {
                 Title = "打开文件",
                 FileTypeFilter = new[]
                 {
                     videoAll,
-                    FilePickerFileTypes.All,
+                    FilePickerFileTypes.All
                 },
-                AllowMultiple = false,
+                AllowMultiple = false
             });
 
         if (file is { Count: > 0 })
@@ -76,5 +71,34 @@ public partial class VideoPlayer : UserControl
         _overlayTimer.Stop();
         _overlayTimer.Start();
         ControlsPanel.IsVisible = true;
+    }
+
+    private void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!ControlsPanel.IsVisible)
+        {
+            _overlayTimer.Stop();
+            _overlayTimer.Start();
+            ControlsPanel.IsVisible = true;
+        }
+    }
+
+    private void VideoViewOnKeyDown(object? sender, KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case Key.Space:
+                _viewModel.PlayCommand.Execute(null);
+                e.Handled = true;
+                break;
+            case Key.Right:
+                _viewModel.FastForward();
+                e.Handled = true;
+                break;
+            case Key.Left:
+                _viewModel.Rewind();
+                e.Handled = true;
+                break;
+        }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,47 +13,40 @@ using LibVLCSharp.Shared;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using LunaTV.Constants;
+using LunaTV.Models;
 using LunaTV.Services;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.TVShowPages;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Nodify.Avalonia.Shared;
-using SqlSugar;
 using Ursa.Controls;
-using Dialog = LibVLCSharp.Shared.Dialog;
 
 namespace LunaTV.ViewModels.Media;
 
 public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 {
+    private readonly AppJsonConfig? _appJsonConfig;
+    private readonly DispatcherTimer _debounceTimer;
     private readonly LibVLC _libVlc = new();
-
-    public MediaPlayer MediaPlayer { get; }
-    public List<string> RateLists { get; } = ["0.5x", "1x", "1.5x", "2x"];
-
-    public bool IsPlay { get; set; }
-    public bool IsMuted { get; set; }
-    public ViewHistory? ViewHistory { get; set; }
+    private readonly SugarRepository<ViewHistory> _viewHistoryTable;
+    [ObservableProperty] private bool _canInteractSeekSlider = true;
 
     [ObservableProperty] private ObservableCollection<EpisodeSubjectItem> _episodes;
-
-    [ObservableProperty] private string _videoName = "xxxxxx";
-    [ObservableProperty] private Symbol _playIcon = Symbol.PlayFilled;
-    [ObservableProperty] private double _seekPosition = 0;
-    [ObservableProperty] private bool _canInteractSeekSlider = true;
-    [ObservableProperty] private double _maximumSeekValue = 0;
-    [ObservableProperty] private Symbol _muteIcon = Symbol.Speaker2Filled;
-    [ObservableProperty] private float _volume = 0.5f;
-    [ObservableProperty] private string _videoPath;
     [ObservableProperty] private bool _isMultiVideos;
-    [ObservableProperty] private string _selectRate = "1x";
-    [ObservableProperty] private bool _isVideosKanbanChecked;
-    [ObservableProperty] private int _kanBanWidth = 0;
     private bool _isUpdatingFromMedia;
     private bool _isUserSeeking;
-    private readonly DispatcherTimer _debounceTimer;
-    private readonly SugarRepository<ViewHistory> _viewHistoryTable;
+    [ObservableProperty] private bool _isVideosKanbanChecked;
+    [ObservableProperty] private int _kanBanWidth;
+    [ObservableProperty] private double _maximumSeekValue;
+    [ObservableProperty] private Symbol _muteIcon = Symbol.Speaker2Filled;
+    [ObservableProperty] private Symbol _playIcon = Symbol.PlayFilled;
+    [ObservableProperty] private double _seekPosition;
+    [ObservableProperty] private string _selectRate = "1x";
+
+    [ObservableProperty] private string _videoName = "xxxxxx";
+    [ObservableProperty] private string _videoPath;
+    [ObservableProperty] private float _volume = 0.5f;
 
     public VideoPlayerViewModel()
     {
@@ -69,6 +61,30 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         };
         _debounceTimer.Tick += DebounceTimerOnTick;
         _viewHistoryTable = App.Services.GetRequiredService<SugarRepository<ViewHistory>>();
+        _appJsonConfig = App.Services.GetRequiredService<AppJsonConfigService>().ReadJson<AppJsonConfig>();
+        if (_appJsonConfig is null)
+            _appJsonConfig = new AppJsonConfig
+            {
+                Player = new Player
+                {
+                    Vol = 0.5f,
+                    Muted = false
+                }
+            };
+    }
+
+    public MediaPlayer MediaPlayer { get; }
+    public List<string> RateLists { get; } = ["0.5x", "1x", "1.5x", "2x"];
+
+    public bool IsPlay { get; set; }
+    public bool IsMuted { get; set; }
+    public ViewHistory? ViewHistory { get; set; }
+
+    public void Dispose()
+    {
+        Stop();
+        MediaPlayer?.Dispose();
+        _libVlc?.Dispose();
     }
 
     public void UpdateFromHistory(string source, string vodId, string name)
@@ -82,7 +98,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
                 {
                     Watched = ep.Name == name,
                     Name = ep.Name,
-                    Url = ep.Url,
+                    Url = ep.Url
                 }).ToList());
         });
     }
@@ -91,9 +107,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     {
         Stop();
         foreach (var episode in Episodes)
-        {
             if (episode.Url == VideoPath)
-            {
                 if (Episodes.Count > Episodes.IndexOf(episode) + 1)
                 {
                     ViewHistory.PlaybackPosition = 0;
@@ -105,17 +119,12 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
                     Episodes.ForEach(episode =>
                         episode.Watched = episode.Name == Episodes[Episodes.IndexOf(episode) + 1].Name);
                 }
-            }
-        }
     }
 
     private void DebounceTimerOnTick(object? sender, EventArgs e)
     {
         _debounceTimer.Stop();
-        if (MediaPlayer.IsSeekable)
-        {
-            MediaPlayer.SeekTo(TimeSpan.FromSeconds(SeekPosition));
-        }
+        if (MediaPlayer.IsSeekable) MediaPlayer.SeekTo(TimeSpan.FromSeconds(SeekPosition));
 
         _isUserSeeking = false;
     }
@@ -123,24 +132,15 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     private void MediaPlayerOnLengthChanged(object? sender, MediaPlayerLengthChangedEventArgs e)
     {
         MaximumSeekValue = MediaPlayer.Length / 1000.0;
-        if (MediaPlayer.Length > 0)
-        {
-            SeekPosition = ViewHistory?.PlaybackPosition ?? 0;
-        }
+        if (MediaPlayer.Length > 0) SeekPosition = ViewHistory?.PlaybackPosition ?? 0;
     }
 
     [RelayCommand]
     private void Play()
     {
-        if (Design.IsDesignMode)
-        {
-            return;
-        }
+        if (Design.IsDesignMode) return;
 
-        if (string.IsNullOrWhiteSpace(VideoPath))
-        {
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(VideoPath)) return;
 
         if (!IsPlay)
         {
@@ -159,6 +159,9 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
             }
 
             PlayIcon = Symbol.PauseFilled;
+
+            Volume = _appJsonConfig.Player.Vol;
+            if (IsMuted != _appJsonConfig.Player.Muted) Mute();
         }
         else
         {
@@ -207,11 +210,16 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         MediaPlayer.Pause();
     }
 
-    public void Dispose()
+    public void FastForward()
     {
-        Stop();
-        MediaPlayer?.Dispose();
-        _libVlc?.Dispose();
+        if (SeekPosition < MaximumSeekValue && MaximumSeekValue > 0)
+            SeekPosition += double.Min(MaximumSeekValue - SeekPosition, 10);
+    }
+
+    public void Rewind()
+    {
+        if (SeekPosition > 0 && MaximumSeekValue > 0)
+            SeekPosition -= double.Min(SeekPosition, 10);
     }
 
     [RelayCommand]
@@ -236,24 +244,19 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
     private void Mute()
     {
         if (!IsMuted)
-        {
             MuteIcon = Symbol.SpeakerOffFilled;
-        }
         else
-        {
             MuteIcon = Symbol.Speaker2Filled;
-        }
 
         IsMuted = !IsMuted;
         MediaPlayer.Mute = IsMuted;
+        _appJsonConfig.Player.Muted = IsMuted;
+        App.Services.GetRequiredService<AppJsonConfigService>().WriteJson(_appJsonConfig);
     }
 
     partial void OnVideoPathChanged(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(value)) return;
 
         Play();
     }
@@ -280,9 +283,11 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
     partial void OnVolumeChanged(float value)
     {
-        if (MediaPlayer.IsSeekable)
+        if (MediaPlayer.IsSeekable) MediaPlayer.Volume = (int)(value * 100);
+        if (_appJsonConfig.Player.Vol != value)
         {
-            MediaPlayer.Volume = (int)(value * 100);
+            _appJsonConfig.Player.Vol = value;
+            App.Services.GetRequiredService<AppJsonConfigService>().WriteJson(_appJsonConfig);
         }
     }
 

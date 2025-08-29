@@ -34,11 +34,13 @@
                 HorizontalAlignment="Stretch"
                 MediaPlayer="{Binding MediaPlayer}"
                 PointerEntered="VideoViewOnPointerEntered"
+                PointerPressed="VideoViewOnPointerPressed"
                 VerticalAlignment="Stretch">
 
                 <Border
                     IsVisible="False"
                     Margin="20"
+                    KeyDown="VideoViewOnKeyDown"
                     Name="ControlsPanel">
                     <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
                         <StackPanel Grid.Column="0" Orientation="Horizontal">

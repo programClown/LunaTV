@@ -112,6 +112,8 @@ public static class ServiceCollectionExtenstion
                     options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30); //熔断时间
                 }
             );
+
+        serviceCollection.AddSingleton<AppJsonConfigService>();
     }
 
 

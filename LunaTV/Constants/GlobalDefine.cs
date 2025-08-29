@@ -33,4 +33,7 @@ public sealed class GlobalDefine
     /// App数据库连接字符串
     /// </summary>
     public static string DbConn => Path.Combine(DataPath, "lunatv.sqlite");
+    
+    public static string AppJsonPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LunaTV", "lunatv-app.json");
 }
