@@ -3,28 +3,273 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="clr-namespace:Avalonia.Labs.Gif;assembly=Avalonia.Labs.Gif"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:LunaTV.ViewModels"
+    x:DataType="vm:PlaygroundViewModel"
+    xmlns:nodify="https://miroiu.github.io/nodify"
+    xmlns:playground="clr-namespace:Nodify.Playground;assembly=Nodify.Playground"
+    xmlns:shared="clr-namespace:Nodify;assembly=Nodify.Shared"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <shared:ToStringConverter x:Key="ToStringConverter" />
+    </UserControl.Resources>
+
     <Grid>
-        <Carousel
-            Name="Carousel"
-            Classes="Dot Center"
-            Theme="{DynamicResource FullCarousel}">
-            <labs:GifImage
-                HorizontalAlignment="Center"
-                Source="avares://LunaTV/Assets/images/fbi-warning-1.gif"
-                Stretch="None" />
-            <labs:GifImage
-                HorizontalAlignment="Center"
-                Source="avares://LunaTV/Assets/images/red-fbi-warning-vhs-tape-cassette.gif"
-                Stretch="None" />
-            <labs:GifImage
-                HorizontalAlignment="Center"
-                Source="avares://LunaTV/Assets/images/sarcasm-your-not-very-nice.gif"
-                Stretch="None" />
-        </Carousel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <playground:NodifyEditorView
+            x:Name="EditorView"
+            Grid.RowSpan="3"
+            DataContext="{Binding GraphViewModel}" />
+
+        <!--  ACTIONS  -->
+        <Border
+            Padding="10"
+            VerticalAlignment="Top"
+            Background="{DynamicResource PanelBackgroundBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <Button
+                        Command="{Binding GenerateRandomNodesCommand}"
+                        Content="GENERATE NODES"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Generate nodes using the specified settings." />
+                    <Button
+                        Command="{Binding ToggleConnectionsCommand}"
+                        Content="{Binding ConnectNodesText}"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Will add new connections if Connect Nodes is checked, otherwise it will disconnect nodes." />
+                    <Button
+                        Command="{Binding PerformanceTestCommand}"
+                        Content="PERFORMANCE TEST"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="You will encounter rendering performance issues. Try disabling the connections to see the difference." />
+                    <Button
+                        Command="{Binding ResetCommand}"
+                        Content="RESET PLAYGROUND"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Reset the Location, Zoom, Nodes and Connections." />
+                    <Button
+                        Click="BringIntoView_Click"
+                        Content="BRING INTO VIEW"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Bring a random node into view." />
+                    <WpfBtn
+                        Command="{x:Static nodify:EditorCommands.FitToScreen}"
+                        CommandTarget="{Binding EditorInstance, ElementName=EditorView}"
+                        Content="FIT TO SCREEN"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Scales the viewport to fit all nodes if that's possible." />
+                    <Button
+                        Command="{Binding GraphViewModel.CommentSelectionCommand}"
+                        Content="COMMENT SELECTION"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Creates a comment node containing the selected nodes." />
+                    <Button
+                        Click="AnimateConnections_Click"
+                        Content="TOGGLE CONNECTIONS ANIMATION"
+                        Theme="{StaticResource HollowButton}"
+                        ToolTip.Tip="Starts or stops animating the directional arrows on all connections (see DirectionalArrowsCount)" />
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Command="{Binding Source={x:Static shared:ThemeManager.SetNextThemeCommand}}"
+                    Content="{StaticResource ThemeIcon}"
+                    Theme="{StaticResource IconButton}"
+                    ToolTip.Tip="Change theme" />
+            </Grid>
+        </Border>
+
+        <!--  SETTINGS  -->
+        <Expander
+            Grid.Row="1"
+            Padding="0,1,4,3"
+            HorizontalAlignment="Left"
+            HorizontalContentAlignment="Left"
+            VerticalContentAlignment="Center"
+            Background="{DynamicResource PanelBackgroundBrush}"
+            ExpandDirection="Left"
+            IsExpanded="True">
+            <Expander.Theme>
+                <ControlTheme BasedOn="{StaticResource {x:Type Expander}}" TargetType="{x:Type Expander}">
+                    <Setter Property="Tag" Value="{StaticResource ExpandRightIcon}" />
+                    <Setter Property="(Interaction.Behaviors)">
+                        <BehaviorCollectionTemplate>
+                            <BehaviorCollection>
+                                <DataTrigger
+                                    UseDataContext="False"
+                                    Property="IsExpanded"
+                                    Value="True">
+                                    <PropertySetter Property="Tag" Value="{StaticResource ExpandLeftIcon}" />
+                                </DataTrigger>
+                            </BehaviorCollection>
+                        </BehaviorCollectionTemplate>
+                    </Setter>
+                </ControlTheme>
+            </Expander.Theme>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Margin="0,0,5,10">
+                    <TextBlock Margin="0,0,0,3">Search:</TextBlock>
+                    <TextBox Padding="4"
+                             Text="{CompiledBinding Source={x:Static playground:PlaygroundSettings.Instance}, Path=SearchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                </StackPanel>
+                <ScrollViewer Grid.Row="1">
+                    <Grid Width="380" IsSharedSizeScope="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Expander
+                            Padding="0,5,0,0"
+                            BorderBrush="{DynamicResource BackgroundBrush}"
+                            BorderThickness="0,0,0,1"
+                            Header="Playground Settings"
+                            IsExpanded="True">
+                            <Expander.Theme>
+                                <ControlTheme BasedOn="{StaticResource {x:Type Expander}}"
+                                              TargetType="{x:Type Expander}">
+                                    <Setter Property="Tag" Value="{StaticResource ExpandRightIcon}" />
+                                    <Setter Property="(Interaction.Behaviors)">
+                                        <BehaviorCollectionTemplate>
+                                            <BehaviorCollection>
+                                                <DataTrigger
+                                                    UseDataContext="False"
+                                                    Property="IsExpanded"
+                                                    Value="True">
+                                                    <PropertySetter Property="Tag"
+                                                                    Value="{StaticResource ExpandDownIcon}" />
+                                                </DataTrigger>
+                                            </BehaviorCollection>
+                                        </BehaviorCollectionTemplate>
+                                    </Setter>
+                                </ControlTheme>
+                            </Expander.Theme>
+                            <Border
+                                Padding="10"
+                                HorizontalAlignment="Stretch"
+                                BorderThickness="1">
+                                <playground:SettingsView
+                                    Items="{Binding Source={x:Static playground:PlaygroundSettings.Instance}, Path=Settings}" />
+                            </Border>
+                        </Expander>
+
+                        <Expander
+                            Grid.Row="1"
+                            Padding="0,5,0,0"
+                            BorderBrush="{DynamicResource BackgroundBrush}"
+                            BorderThickness="0,0,0,1"
+                            Header="Editor Settings"
+                            IsExpanded="True">
+                            <Expander.Theme>
+                                <ControlTheme BasedOn="{StaticResource {x:Type Expander}}"
+                                              TargetType="{x:Type Expander}">
+                                    <Setter Property="Tag" Value="{StaticResource ExpandRightIcon}" />
+                                    <Setter Property="(Interaction.Behaviors)">
+                                        <BehaviorCollectionTemplate>
+                                            <BehaviorCollection>
+                                                <DataTrigger
+                                                    UseDataContext="False"
+                                                    Property="IsExpanded"
+                                                    Value="True">
+                                                    <PropertySetter Property="Tag"
+                                                                    Value="{StaticResource ExpandDownIcon}" />
+                                                </DataTrigger>
+                                            </BehaviorCollection>
+                                        </BehaviorCollectionTemplate>
+                                    </Setter>
+                                </ControlTheme>
+                            </Expander.Theme>
+
+                            <playground:EditorSettingsView />
+                        </Expander>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Expander>
+
+        <!--  INFORMATION  -->
+        <Border
+            Grid.Row="2"
+            Padding="10"
+            VerticalAlignment="Bottom"
+            Background="{DynamicResource PanelBackgroundBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                </Grid.Resources>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock ToolTip.Tip="The number of selected items.">
+                        <TextBlock.Inlines>
+                            <Run Text="Selected nodes: " />
+                            <Run Foreground="YellowGreen"
+                                 Text="{Binding GraphViewModel.SelectedNodes.Count, Mode=OneWay}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding GraphViewModel.Nodes.Count, Mode=OneWay}" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                    <TextBlock ToolTip.Tip="The number of selected connections.">
+                        <TextBlock.Inlines>
+                            <Run Text="Selected connections: " />
+                            <Run Foreground="YellowGreen"
+                                 Text="{Binding GraphViewModel.SelectedConnections.Count, Mode=OneWay}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding GraphViewModel.Connections.Count, Mode=OneWay}" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <TextBlock ToolTip.Tip="The viewport's location.">
+                        <TextBlock.Inlines>
+                            <Run Text="Location: " />
+                            <Run Foreground="Orange"
+                                 Text="{Binding Location.Value, Mode=OneWay, Converter={StaticResource ToStringConverter}, Source={x:Static playground:EditorSettings.Instance}}" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                    <TextBlock ToolTip.Tip="The viewport's size.">
+                        <TextBlock.Inlines>
+                            <Run Text="Size: " />
+                            <Run Foreground="YellowGreen"
+                                 Text="{Binding GraphViewModel.ViewportSize, Mode=OneWay, Converter={StaticResource ToStringConverter}}" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                    <TextBlock
+                        ToolTip.Tip="The viewport's zoom. Not accurate when trying to zoom outside the MinViewportZoom and MaxViewportZoom because of dependency property coercion not updating the binding with the final result.">
+                        <TextBlock.Inlines>
+                            <Run Text="Zoom: " />
+                            <Run Foreground="DodgerBlue"
+                                 Text="{Binding Zoom, Mode=OneWay, Converter={StaticResource ToStringConverter}, Source={x:Static playground:EditorSettings.Instance}}" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                    <TextBlock ToolTip.Tip="The estimated frame rate. (my be buggy)">
+                        <TextBlock.Inlines>
+                            <Run Text="FPS: " />
+                            <Run Name="FPSText" Foreground="LawnGreen" />
+                        </TextBlock.Inlines>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

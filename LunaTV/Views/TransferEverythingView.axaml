@@ -1,0 +1,184 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LunaTV.Views.TransferEverythingView">
+
+    <UserControl.Styles>
+        <Style Selector="PathIcon.Indicator">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <StackPanel Grid.Row="0" Spacing="8">
+            <TextBlock HorizontalAlignment="Center" FontSize="32" Theme="{DynamicResource TitleTextBlock}"
+                       Foreground="{DynamicResource SemiPurple6Color}"
+                       Text="万物快传" />
+            <TextBlock HorizontalAlignment="Center" Classes="H5" Theme="{DynamicResource TitleTextBlock}"
+                       Text="安全、快速、简单的传输服务" />
+            <TextBlock HorizontalAlignment="Center" Classes="Tertiary"
+                       Text="基于WebRTC的端到端服务 - 无需注册，即传即用" />
+
+            <Border
+                Opacity="0.3"
+                MaxWidth="600"
+                Height="2">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FFDD9BE0" Offset="0.0" />
+                        <GradientStop Color="#FF490A61" Offset="0.5" />
+                        <GradientStop Color="#FFB449C2" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </StackPanel>
+
+        <Border Grid.Row="1" Classes="Shadow"
+                HorizontalAlignment="Center"
+                Padding="0"
+                Margin="0,40,0,0"
+                Theme="{StaticResource CardBorder}">
+            <u:SelectionList>
+                <u:SelectionList.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Margin="16,4" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="16" />
+                    </ItemsPanelTemplate>
+                </u:SelectionList.ItemsPanel>
+                <u:SelectionListItem>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconUpload}" />
+                        <TextBlock Text="文件传输" />
+                    </StackPanel>
+                </u:SelectionListItem>
+                <u:SelectionListItem>
+                    <u:SelectionListItem.Styles>
+                        <Style Selector="u|SelectionListItem:selected">
+                            <Setter Property="Foreground" Value="{DynamicResource SemiGreen7Color}" />
+                        </Style>
+                    </u:SelectionListItem.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconComment}" />
+                        <TextBlock Text="文本消息" />
+                    </StackPanel>
+                </u:SelectionListItem>
+                <u:SelectionListItem>
+                    <u:SelectionListItem.Styles>
+                        <Style Selector="u|SelectionListItem:selected">
+                            <Setter Property="Foreground" Value="{DynamicResource SemiPurple7Color}" />
+                        </Style>
+                    </u:SelectionListItem.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconDesktop}" />
+                        <TextBlock Text="共享桌面" />
+                    </StackPanel>
+                </u:SelectionListItem>
+            </u:SelectionList>
+        </Border>
+
+        <Panel Grid.Row="2">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0" Classes="Shadow"
+                        HorizontalAlignment="Center"
+                        Padding="0"
+                        Margin="0,20,0,0"
+                        Theme="{StaticResource CardBorder}">
+                    <u:SelectionList>
+                        <u:SelectionList.Styles>
+                            <Style Selector="u|SelectionListItem:selected">
+                                <Setter Property="Foreground" Value="{DynamicResource SemiPurple7Color}" />
+                            </Style>
+                        </u:SelectionList.Styles>
+                        <u:SelectionList.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Margin="16,4" HorizontalAlignment="Center" Orientation="Horizontal"
+                                            Spacing="16" />
+                            </ItemsPanelTemplate>
+                        </u:SelectionList.ItemsPanel>
+                        <u:SelectionListItem>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconSend}" />
+                                <TextBlock Text="发送文字" />
+                            </StackPanel>
+                        </u:SelectionListItem>
+                        <u:SelectionListItem>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconDownloadStroked}" />
+                                <TextBlock Text="加入房间" />
+                            </StackPanel>
+                        </u:SelectionListItem>
+                    </u:SelectionList>
+                </Border>
+
+                <Border BorderThickness="2" Grid.Row="1" Classes="Shadow"
+                        HorizontalAlignment="Stretch"
+                        MaxWidth="1000"
+                        Padding="0"
+                        Margin="0,20,0,40"
+                        Theme="{StaticResource CardBorder}">
+
+
+                    <Grid Margin="40,10" RowDefinitions="Auto,*">
+                        <DockPanel Grid.Row="0">
+                            <StackPanel Spacing="8" DockPanel.Dock="Left" Orientation="Horizontal">
+                                <PathIcon Data="{DynamicResource SemiIconComment}" />
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="传送文字" Classes="H5" Theme="{DynamicResource TitleTextBlock}" />
+                                    <TextBlock Text="输入要传输的文本内容" Classes="Tertiary" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Spacing="4" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                                <TextBlock Text="未连接" Classes="Tertiary" FontWeight="Bold" FontSize="16" />
+                                <TextBlock Text="尚未创建房间" Classes="Tertiary" FontWeight="ExtraLight" FontSize="12" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="WS" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                    <Border Height="12" Width="12" CornerRadius="6" Background="DarkRed" />
+                                    <TextBlock Text="未连接" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                    <TextBlock Text="|" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                    <TextBlock Text="RTC" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                    <Border Height="12" Width="12" CornerRadius="6" Background="DarkRed" />
+                                    <TextBlock Text="未连接" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Button Name="PushButton" Margin="0,20,0,10" Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch">
+                            <Button.BorderBrush>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Grid>
+                                            <Rectangle StrokeThickness="2" Stroke="#FFC6CACD"
+                                                       StrokeDashArray="4,2"
+                                                       Width="{Binding Path=Bounds.Width,ElementName=PushButton}"
+                                                       Height="{Binding Path=Bounds.Height,ElementName=PushButton}" />
+                                        </Grid>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Button.BorderBrush>
+                            <StackPanel Spacing="16">
+                                <Border Height="128" Width="128" CornerRadius="64"
+                                        Background="{DynamicResource SemiGrey2Color}">
+                                    <PathIcon Width="96" Height="96"
+                                              Data="{DynamicResource SemiIconCloudUploadStroked}" />
+                                </Border>
+                                <TextBlock HorizontalAlignment="Center" FontSize="32" Text="拖拽文件到这里" />
+                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Classes="Tertiary" Text="或者" />
+                                    <TextBlock Classes="Underline" Text="点击选择文件" />
+                                </StackPanel>
+                                <TextBlock HorizontalAlignment="Center" Classes="Tertiary"
+                                           Text="支持多个文件同时上传，WebRTC点对点传输" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                </Border>
+            </Grid>
+        </Panel>
+    </Grid>
+</UserControl>

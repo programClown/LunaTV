@@ -1,0 +1,13 @@
+global using Avalonia.Controls;
+global using Avalonia;
+global using Avalonia.Data.Converters;
+global using Avalonia.Markup.Xaml;
+global using System.Windows.Input;
+global using Avalonia.Interactivity;
+global using Avalonia.Controls.ApplicationLifetimes;
+global using Avalonia.Media;
+global using Avalonia.Threading;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using Avalonia.Layout;
+global using ModifierKeys = Avalonia.Input.KeyModifiers;
+global using Nodify.Compatibility;

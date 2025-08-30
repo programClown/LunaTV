@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +6,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LunaTV.Base.Api;
-using LunaTV.Base.Constants;
 using LunaTV.Constants;
 using LunaTV.Models;
 using LunaTV.Services;
@@ -16,7 +13,6 @@ using LunaTV.ViewModels.Base;
 using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
-using Nodify.Avalonia.Shared;
 using Ursa.Controls;
 using Notification = Ursa.Controls.Notification;
 
@@ -25,21 +21,18 @@ namespace LunaTV.ViewModels.TVShowPages;
 public partial class TVShowSearchViewModel : ViewModelBase
 {
     public const string LocalHost = "LocalHost";
-    public ObservableCollection<string> HistoryMovies { get; set; }
-    public ObservableCollection<SearchResult> SearchResults { get; set; }
-    private List<SearchResult> _allSearchResults = new();
-
-    [ObservableProperty] private string? _inputMovieTvName;
-    [ObservableProperty] private string? _searchCountText = "0个结果";
-    [ObservableProperty] private int _totalVideos = 0;
-    [ObservableProperty] private int _currentPage = 1;
-    [ObservableProperty] private bool _isAdultMode = false;
-    [ObservableProperty] private bool _isAdultVisible = true;
+    private readonly List<SearchResult> _allSearchResults = new();
 
     private readonly MovieTvService _apiService;
-    public int PageSize { get; } = 12;
 
     private readonly LoadingWaitViewModel _loadingWaitViewModel = new();
+    [ObservableProperty] private int _currentPage = 1;
+
+    [ObservableProperty] private string? _inputMovieTvName;
+    [ObservableProperty] private bool _isAdultMode;
+    [ObservableProperty] private bool _isAdultVisible = true;
+    [ObservableProperty] private string? _searchCountText = "0个结果";
+    [ObservableProperty] private int _totalVideos;
 
     public TVShowSearchViewModel()
     {
@@ -48,25 +41,21 @@ public partial class TVShowSearchViewModel : ViewModelBase
         SearchResults = new ObservableCollection<SearchResult>();
     }
 
+    public ObservableCollection<string> HistoryMovies { get; set; }
+    public ObservableCollection<SearchResult> SearchResults { get; set; }
+    public int PageSize { get; } = 12;
+
     public async Task Search(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            return;
-        }
+        if (string.IsNullOrEmpty(name)) return;
 
-        if (IsAdultMode)
-        {
-            IsAdultMode = AppConifg.SelectAdultApis.Count > 0;
-        }
+        if (IsAdultMode) IsAdultMode = AppConifg.SelectAdultApis.Count > 0;
 
         if (!IsAdultMode && AppConifg.SelectApis.Count == 0)
-        {
             App.Notification?.Show(
                 new Notification("没有选择任何源", $"查找\"{name}\"资源失败！", NotificationType.Warning),
                 NotificationType.Warning,
                 showClose: true);
-        }
 
         App.Notification?.Show(
             new Notification("查找", name, NotificationType.Success),
@@ -79,33 +68,23 @@ public partial class TVShowSearchViewModel : ViewModelBase
         CurrentPage = 1;
 
         if (IsAdultMode)
-        {
             foreach (var api in AppConifg.SelectAdultApis)
             {
                 var ones = await _apiService.Search(api, name, true);
                 _allSearchResults.AddRange(ones);
-                SearchResults.AddRange(ones.Take(PageSize - SearchResults.Count));
+                ones.Take(PageSize - SearchResults.Count).ToList().ForEach(x => SearchResults.Add(x));
 
-                if (_allSearchResults.Count >= AppConifg.SearchMaxVideos)
-                {
-                    break;
-                }
+                if (_allSearchResults.Count >= AppConifg.SearchMaxVideos) break;
             }
-        }
         else
-        {
             foreach (var api in AppConifg.SelectApis)
             {
                 var ones = await _apiService.Search(api, name);
                 _allSearchResults.AddRange(ones);
-                SearchResults.AddRange(ones.Take(PageSize - SearchResults.Count));
+                ones.Take(PageSize - SearchResults.Count).ToList().ForEach(x => SearchResults.Add(x));
 
-                if (_allSearchResults.Count >= AppConifg.SearchMaxVideos)
-                {
-                    break;
-                }
+                if (_allSearchResults.Count >= AppConifg.SearchMaxVideos) break;
             }
-        }
 
         SearchCountText = $"{_allSearchResults.Count}个结果";
         TotalVideos = _allSearchResults.Count;
@@ -115,10 +94,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
 
     public async Task ShowDetail(object? item)
     {
-        if (item is not SearchResult searchResult)
-        {
-            return;
-        }
+        if (item is not SearchResult searchResult) return;
 
         App.Notification?.Show(
             new Notification("找剧中", searchResult.Name, NotificationType.Success),
@@ -138,7 +114,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
             StartupLocation = WindowStartupLocation.CenterScreen,
             CanDragMove = true,
             CanResize = false,
-            StyleClass = "",
+            StyleClass = ""
         };
 
         var vm = new TVShowDetailViewModel
@@ -147,7 +123,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
             SourceName = searchResult.Source,
             VideoDetail = videos ?? new DetailResult(),
             IsVideoBorderVisible = videos?.Type is not null,
-            EpisodesCountText = $"共{videos?.Episodes?.Count ?? 0}集",
+            EpisodesCountText = $"共{videos?.Episodes?.Count ?? 0}集"
         };
         vm.RefreshUi();
 
@@ -171,8 +147,8 @@ public partial class TVShowSearchViewModel : ViewModelBase
     {
         CurrentPage = page;
         SearchResults.Clear();
-        SearchResults.AddRange(_allSearchResults.GetRange((page - 1) * PageSize,
-            int.Min(PageSize, TotalVideos - (page - 1) * PageSize)));
+        _allSearchResults.GetRange((page - 1) * PageSize,
+            int.Min(PageSize, TotalVideos - (page - 1) * PageSize)).ForEach(x => SearchResults.Add(x));
     }
 
     public async Task Loading()
@@ -187,7 +163,7 @@ public partial class TVShowSearchViewModel : ViewModelBase
             StartupLocation = WindowStartupLocation.CenterScreen,
             CanDragMove = true,
             CanResize = false,
-            StyleClass = "",
+            StyleClass = ""
         };
 
         _loadingWaitViewModel.TimerStart();

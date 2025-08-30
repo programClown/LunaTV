@@ -1,27 +1,22 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
-using LunaTV.Constants;
 using LunaTV.Extensions;
-using LunaTV.Services;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
-using Nodify.Avalonia.Shared;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
 public partial class TVShowHistoryViewModel : ViewModelBase
 {
+    private readonly SugarRepository<ViewHistory> _viewHistoryTable;
     [ObservableProperty] private ObservableCollection<HistoryItems> _allHistoryItems;
     [ObservableProperty] private HistoryItems? _selectedHistoryItem;
-
-    private readonly SugarRepository<ViewHistory> _viewHistoryTable;
 
     public TVShowHistoryViewModel()
     {
@@ -29,8 +24,7 @@ public partial class TVShowHistoryViewModel : ViewModelBase
         _viewHistoryTable = App.Services.GetRequiredService<SugarRepository<ViewHistory>>();
         var historyItems = _viewHistoryTable.GetList();
         foreach (var item in historyItems)
-        {
-            AllHistoryItems.Add(new HistoryItems()
+            AllHistoryItems.Add(new HistoryItems
             {
                 Id = item.Id,
                 VodId = item.VodId,
@@ -44,10 +38,9 @@ public partial class TVShowHistoryViewModel : ViewModelBase
                 TimeText = $"{TimeSpanToFriendlyTime(item.PlaybackPosition)}/{TimeSpanToFriendlyTime(item.Duration)}",
                 LastPlayTimeText = item.UpdateTime.ToFriendlyTime()
             });
-        }
     }
 
-    private String TimeSpanToFriendlyTime(int seconds)
+    private string TimeSpanToFriendlyTime(int seconds)
     {
         var time = TimeSpan.FromSeconds(seconds);
         return time.ToString(@"hh\:mm\:ss");
@@ -58,8 +51,7 @@ public partial class TVShowHistoryViewModel : ViewModelBase
         AllHistoryItems.Clear();
         var historyItems = _viewHistoryTable.GetList();
         foreach (var item in historyItems)
-        {
-            AllHistoryItems.Add(new HistoryItems()
+            AllHistoryItems.Add(new HistoryItems
             {
                 Id = item.Id,
                 VodId = item.VodId,
@@ -73,7 +65,6 @@ public partial class TVShowHistoryViewModel : ViewModelBase
                 TimeText = $"{TimeSpanToFriendlyTime(item.PlaybackPosition)}/{TimeSpanToFriendlyTime(item.Duration)}",
                 LastPlayTimeText = item.UpdateTime.ToFriendlyTime()
             });
-        }
     }
 
     [RelayCommand]
@@ -94,16 +85,10 @@ public partial class TVShowHistoryViewModel : ViewModelBase
 
     partial void OnSelectedHistoryItemChanged(HistoryItems? value)
     {
-        if (value == null)
-        {
-            return;
-        }
+        if (value == null) return;
 
         var historyItem = _viewHistoryTable.GetById(value.Id);
-        if (historyItem == null)
-        {
-            return;
-        }
+        if (historyItem == null) return;
 
         var win = new PlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();

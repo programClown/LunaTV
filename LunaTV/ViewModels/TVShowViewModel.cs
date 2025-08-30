@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
@@ -15,27 +10,15 @@ using LunaTV.Base.Api;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using LunaTV.Constants;
-using LunaTV.Models;
 using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.TVShowPages;
-using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
-using Nodify.Avalonia.Shared;
-using Ursa.Controls;
 
 namespace LunaTV.ViewModels;
 
 public partial class TVShowViewModel : PageViewModelBase
 {
-    private readonly IWebApi _webApi;
-    public override string Title => "无限影视";
-
-    [ObservableProperty] private bool _blockedLoading;
-
-    public override IconSource IconSource { set; get; } =
-        App.TopLevel.TryFindResource("VideoIcon", out var value) ? (IconSource)value : null;
-
     private readonly Dictionary<string, UserControl> _viewDictionary = new()
     {
         ["首页"] = new TVShowHomeView
@@ -45,7 +28,7 @@ public partial class TVShowViewModel : PageViewModelBase
         ["搜索"] = new TVShowSearchView
         {
             DataContext = new TVShowSearchViewModel()
-        },
+        }
         // ["筛选"] = new TVShowFilterView
         // {
         //     DataContext = new TVShowFilterViewModel()
@@ -60,25 +43,27 @@ public partial class TVShowViewModel : PageViewModelBase
         // }
     };
 
-    public ObservableCollection<TVMenuItem> Items { get; set; }
-    [ObservableProperty] private TVMenuItem? _selectedItem;
+    private readonly IWebApi _webApi;
+
+    [ObservableProperty] private bool _blockedLoading;
     [ObservableProperty] private UserControl? _pageContent;
+    [ObservableProperty] private TVMenuItem? _selectedItem;
 
     public TVShowViewModel(IWebApi webApi)
     {
         _webApi = webApi;
 
-        Items = new ObservableCollection<TVMenuItem>()
+        Items = new ObservableCollection<TVMenuItem>
         {
             new()
             {
                 Name = "首页",
-                Data = App.TopLevel.TryFindResource("SemiIconHome", out var value1) ? (StreamGeometry)value1 : null,
+                Data = App.TopLevel.TryFindResource("SemiIconHome", out var value1) ? (StreamGeometry)value1 : null
             },
             new()
             {
                 Name = "搜索",
-                Data = App.TopLevel.TryFindResource("SemiIconSearch", out var value2) ? (StreamGeometry)value2 : null,
+                Data = App.TopLevel.TryFindResource("SemiIconSearch", out var value2) ? (StreamGeometry)value2 : null
             },
             // new()
             // {
@@ -88,13 +73,13 @@ public partial class TVShowViewModel : PageViewModelBase
             new()
             {
                 Name = "历史",
-                Data = App.TopLevel.TryFindResource("SemiIconHistory", out var value4) ? (StreamGeometry)value4 : null,
+                Data = App.TopLevel.TryFindResource("SemiIconHistory", out var value4) ? (StreamGeometry)value4 : null
             },
             new()
             {
                 Name = "配置",
-                Data = App.TopLevel.TryFindResource("SemiIconSetting", out var value5) ? (StreamGeometry)value5 : null,
-            },
+                Data = App.TopLevel.TryFindResource("SemiIconSetting", out var value5) ? (StreamGeometry)value5 : null
+            }
         };
         SelectedItem = Items[0];
 
@@ -109,6 +94,13 @@ public partial class TVShowViewModel : PageViewModelBase
             .Select(api => api.Source));
     }
 
+    public override string Title => "无限影视";
+
+    public override IconSource IconSource { set; get; } =
+        App.TopLevel.TryFindResource("VideoIcon", out var value) ? (IconSource)value : null;
+
+    public ObservableCollection<TVMenuItem> Items { get; set; }
+
     partial void OnSelectedItemChanged(TVMenuItem? value)
     {
         if (value == null) return;
@@ -120,11 +112,8 @@ public partial class TVShowViewModel : PageViewModelBase
     {
         if (string.IsNullOrEmpty(content)) return;
         if (_viewDictionary.TryGetValue(content, out var control))
-        {
             PageContent = control;
-        }
         else
-        {
             PageContent = content switch
             {
                 "历史" => new TVShowHistoryView
@@ -137,7 +126,6 @@ public partial class TVShowViewModel : PageViewModelBase
                 },
                 _ => null
             };
-        }
     }
 
     public UserControl GetControl(string name)

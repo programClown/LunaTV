@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Avalonia.Controls.Notifications;
 using CommunityToolkit.Mvvm.Messaging;
 using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
@@ -14,7 +12,6 @@ using LunaTV.ViewModels;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
-using Notification = Ursa.Controls.Notification;
 
 namespace LunaTV.Extensions;
 
@@ -46,7 +43,7 @@ public static class ServiceCollectionExtenstion
         var jsonSerializerOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
         jsonSerializerOptions.Converters.Add(new ObjectToInferredTypesConverter());
         jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
@@ -54,7 +51,7 @@ public static class ServiceCollectionExtenstion
 
         var defaultRefitSettings = new RefitSettings
         {
-            ContentSerializer = new SystemTextJsonContentSerializer(jsonSerializerOptions),
+            ContentSerializer = new SystemTextJsonContentSerializer(jsonSerializerOptions)
         };
 
         // Refit settings for IApiFactory
@@ -63,13 +60,11 @@ public static class ServiceCollectionExtenstion
         var apiFactoryRefitSettings = new RefitSettings
         {
             ContentSerializer = new SystemTextJsonContentSerializer(defaultSystemTextJsonSettings),
-            ExceptionFactory = async (response) =>
+            ExceptionFactory = async response =>
             {
                 if (!response.IsSuccessStatusCode)
-                {
                     // var error = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"API 错误: {response.StatusCode}");
-                }
 
                 return null;
             }
@@ -82,7 +77,7 @@ public static class ServiceCollectionExtenstion
                     provider.GetRequiredService<IHttpClientFactory>()
                 )
                 {
-                    RefitSettings = apiFactoryRefitSettings,
+                    RefitSettings = apiFactoryRefitSettings
                 })
             .ConfigureHttpClientDefaults(config => config.ConfigurePrimaryHttpMessageHandler(() =>
                 new HttpClientHandler
@@ -128,6 +123,7 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddTransient<InnovationPlazaViewModel>();
         serviceCollection.AddTransient<SettingsViewModel>();
         serviceCollection.AddTransient<PlaygroundViewModel>();
+        serviceCollection.AddTransient<TransferEverythingViewModel>();
         serviceCollection.AddSingleton<MainViewModel>(provider =>
             new MainViewModel
             {
@@ -135,7 +131,8 @@ public static class ServiceCollectionExtenstion
                 {
                     provider.GetRequiredService<TVShowViewModel>(),
                     provider.GetRequiredService<InnovationPlazaViewModel>(),
-                    provider.GetRequiredService<PlaygroundViewModel>()
+                    provider.GetRequiredService<PlaygroundViewModel>(),
+                    provider.GetRequiredService<TransferEverythingViewModel>()
                 },
                 FooterPages =
                 {
@@ -155,6 +152,7 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddTransient<InnovationPlazaView>();
         serviceCollection.AddSingleton<SettingsView>();
         serviceCollection.AddSingleton<PlaygroundView>();
+        serviceCollection.AddSingleton<TransferEverythingView>();
     }
 
     /// <summary>

@@ -8,7 +8,6 @@ using LunaTV.Base.Api;
 using LunaTV.Base.Constants;
 using LunaTV.Constants;
 using LunaTV.Models;
-using Nodify.Avalonia.Shared;
 
 namespace LunaTV.Services;
 
@@ -22,9 +21,9 @@ public class MovieTvService
     }
 
     /// <summary>
-    /// 搜索
+    ///     搜索
     /// </summary>
-    /// <param name="source"><see cref="ApiSourceInfo.ApiSitesConfig"/>网站源</param>
+    /// <param name="source"><see cref="ApiSourceInfo.ApiSitesConfig" />网站源</param>
     /// <returns></returns>
     public async Task<List<SearchResult>> Search(string source, string name, bool isAdult = false)
     {
@@ -38,14 +37,13 @@ public class MovieTvService
             var json = JsonSerializer.Deserialize<MovieSoubject>(results,
                 new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                    PropertyNameCaseInsensitive = true // 处理大小写不敏感
                 });
             // Console.WriteLine(json);
             if (json is { List.Count: > 0 })
-            {
                 json.List.ForEach(x =>
                 {
-                    searchResults.Add(new SearchResult()
+                    searchResults.Add(new SearchResult
                     {
                         Id = x.VodId,
                         Source = source,
@@ -56,10 +54,9 @@ public class MovieTvService
                         Cover = x.VodPic,
                         Descriptor = x.VodContent,
                         ReMark = x.VodRemarks ?? "暂无介绍",
-                        ApiUrlAttr = site.ApiBaseUrl,
+                        ApiUrlAttr = site.ApiBaseUrl
                     });
                 });
-            }
 
             var pageCount = json.PageCount;
             // 确定需要获取的额外页数 (最多获取maxPages页)
@@ -71,13 +68,12 @@ public class MovieTvService
                 var pageJson = JsonSerializer.Deserialize<MovieSoubject>(pageResults,
                     new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                        PropertyNameCaseInsensitive = true // 处理大小写不敏感
                     });
                 if (pageJson is { List.Count: > 0 })
-                {
                     pageJson.List.ForEach(x =>
                     {
-                        searchResults.Add(new SearchResult()
+                        searchResults.Add(new SearchResult
                         {
                             Id = x.VodId,
                             Source = source,
@@ -88,10 +84,9 @@ public class MovieTvService
                             Cover = x.VodPic,
                             Descriptor = x.VodContent,
                             ReMark = x.VodRemarks ?? "暂无介绍",
-                            ApiUrlAttr = site.ApiBaseUrl,
+                            ApiUrlAttr = site.ApiBaseUrl
                         });
                     });
-                }
             }
         }
         catch (Exception e)
@@ -115,7 +110,7 @@ public class MovieTvService
                 var json = JsonSerializer.Deserialize<MovieSoubject>(results,
                     new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                        PropertyNameCaseInsensitive = true // 处理大小写不敏感
                     });
                 if (json is { List.Count: > 0 })
                 {
@@ -135,7 +130,7 @@ public class MovieTvService
                                     return new EpisodeSubject
                                     {
                                         Name = parts[0],
-                                        Url = parts[1],
+                                        Url = parts[1]
                                     };
                                 }) // 提取 URL
                         )
@@ -148,7 +143,7 @@ public class MovieTvService
                         episodes.AddRange(urls.Select(x => new EpisodeSubject { Name = "", Url = x }));
                     }
 
-                    return new DetailResult()
+                    return new DetailResult
                     {
                         VodId = vodId,
                         Episodes = episodes,
@@ -163,16 +158,16 @@ public class MovieTvService
                         Actor = json.List[0].VodActor,
                         Remark = json.List[0].VodRemarks,
                         Source = source,
-                        SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                        SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name
                     };
                 }
 
-                return new DetailResult()
+                return new DetailResult
                 {
                     VodId = vodId,
                     DetailUrl = site.ApiBaseUrl,
                     Source = source,
-                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name
                 };
             }
             else
@@ -181,7 +176,7 @@ public class MovieTvService
                 var results = await apiService.GetSpecialSourceVideoDetail(vodId);
 
                 // 使用通用模式提取m3u8链接
-                List<string> matches = new List<string>();
+                var matches = new List<string>();
                 string generalPattern;
                 if (source.Equals("ffzy"))
                 {
@@ -212,16 +207,16 @@ public class MovieTvService
                 var episodes = urls.Select((url, i) => new EpisodeSubject
                 {
                     Name = $"第{i + 1}集",
-                    Url = url,
+                    Url = url
                 }).ToList();
 
-                return new DetailResult()
+                return new DetailResult
                 {
                     VodId = vodId,
                     Episodes = episodes,
                     DetailUrl = site.DetailBaseUrl,
                     Source = source,
-                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name,
+                    SourceName = site.IsCustomApi ? $"自定义源-{site.Name}" : site.Name
                 };
             }
         }

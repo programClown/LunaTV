@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.Api;
-using LunaTV.Base.Constants;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using LunaTV.Constants;
@@ -22,7 +17,6 @@ using LunaTV.ViewModels.Base;
 using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
-using Nodify.Avalonia.Shared;
 using Ursa.Controls;
 using Notification = Ursa.Controls.Notification;
 
@@ -30,33 +24,35 @@ namespace LunaTV.ViewModels.TVShowPages;
 
 public partial class TVShowHomeViewModel : ViewModelBase
 {
+    private const int PageSize = 16;
+    private readonly SugarRepository<ApiSource> _apiSourceTable;
+
     private readonly List<string> _defaultMovieTags =
         ["热门", "最新", "经典", "豆瓣高分", "冷门佳片", "华语", "欧美", "韩国", "日本", "动作", "喜剧", "日综", "爱情", "科幻", "悬疑", "恐怖", "治愈"];
 
     private readonly List<string> _defaultTvTags =
         ["热门", "美剧", "英剧", "韩剧", "日剧", "国产剧", "港剧", "日本动画", "综艺", "纪录片"];
 
-    [ObservableProperty] private ObservableCollection<string> _doubanTags;
-    [ObservableProperty] private string? _selectedTagItem;
-    [ObservableProperty] private bool _movieChecked = true;
-    private string _switchMovieOrTv = "movie";
-    private int _pageStart = 0;
-    private const int PageSize = 16;
-    private bool _isTagChanged2Refresh; //标签改变的时候要不要更新
-    private bool _initialized;
-
-    [ObservableProperty] private ObservableCollection<MovieCardItem> _movieCardItems;
-    [ObservableProperty] private string? _searchInputText;
+    private readonly bool _initialized;
 
     private readonly LoadingWaitViewModel _loadingWaitViewModel = new();
-    private readonly SugarRepository<ApiSource> _apiSourceTable;
+
+    [ObservableProperty] private ObservableCollection<string> _doubanTags;
+    private bool _isTagChanged2Refresh; //标签改变的时候要不要更新
+
+    [ObservableProperty] private ObservableCollection<MovieCardItem> _movieCardItems;
+    [ObservableProperty] private bool _movieChecked = true;
+    private int _pageStart;
+    [ObservableProperty] private string? _searchInputText;
+    [ObservableProperty] private string? _selectedTagItem;
+    private string _switchMovieOrTv = "movie";
 
     public TVShowHomeViewModel()
     {
         var pcfg = App.Services.GetRequiredService<SugarRepository<PlayerConfig>>().GetSingle(u => u.Id > 0);
         AppConifg.PlayerConfig =
             pcfg ??
-            new PlayerConfig()
+            new PlayerConfig
             {
                 AdFilteringEnabled = true,
                 DoubanApiEnabled = false,
@@ -64,12 +60,10 @@ public partial class TVShowHomeViewModel : ViewModelBase
                 ForceApiNeedSpecialSource = false,
                 Timeout = 15000,
                 FilterAds = true,
-                AutoPlayNext = false,
+                AutoPlayNext = false
             };
         if (pcfg == null)
-        {
             App.Services.GetRequiredService<SugarRepository<PlayerConfig>>().Insert(AppConifg.PlayerConfig);
-        }
 
         DoubanTags = new ObservableCollection<string>();
         MovieCardItems = new ObservableCollection<MovieCardItem>();
@@ -89,25 +83,21 @@ public partial class TVShowHomeViewModel : ViewModelBase
         DoubanTags.Clear();
         if (tag == "电影")
         {
-            DoubanTags.AddRange(_defaultMovieTags);
+            _defaultMovieTags.ForEach(x => DoubanTags.Add(x));
             _switchMovieOrTv = "movie";
         }
         else if (tag == "电视")
         {
-            DoubanTags.AddRange(_defaultTvTags);
+            _defaultTvTags.ForEach(x => DoubanTags.Add(x));
             _switchMovieOrTv = "tv";
         }
 
         SelectedTagItem = DoubanTags.FirstOrDefault();
 
         if (!_initialized && AppConifg.PlayerConfig.HomeAutoLoadDoubanEnabled)
-        {
             await RefreshMovieCardsAsync();
-        }
         else
-        {
             await RefreshMovieCardsAsync();
-        }
     }
 
     private async Task RefreshMovieCardsAsync()
@@ -120,31 +110,27 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
         if (AppConifg.PlayerConfig.DoubanApiEnabled is false)
         {
-            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动", NotificationType.Information),
+            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动"),
                 NotificationType.Information);
             _isTagChanged2Refresh = true;
             return;
         }
 
-        if (_initialized)
-        {
-            _ = Loading();
-        }
+        if (_initialized) _ = Loading();
 
         try
         {
             var sts = await App.Services.GetRequiredService<IWebApi>()
-                .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", page_limit: PageSize,
-                    page_start: _pageStart);
+                .FetchDoubanSubjectsByTag(_switchMovieOrTv, SelectedTagItem, "recommend", PageSize,
+                    _pageStart);
             var json = JsonSerializer.Deserialize<DoubanSubjectsResponse>(sts,
                 new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                    PropertyNameCaseInsensitive = true // 处理大小写不敏感
                 });
             // Console.WriteLine(json);
             MovieCardItems.Clear();
             if (json is not null)
-            {
                 foreach (var item in json.Subjects)
                 {
                     var stdCover = item.Cover.Replace("\\/", "/").Replace("img2", "img3");
@@ -154,10 +140,9 @@ public partial class TVShowHomeViewModel : ViewModelBase
                         Name = item.Title,
                         Image = stdCover,
                         Score = string.IsNullOrEmpty(item.Rate) ? "暂无" : item.Rate,
-                        DoubanUrl = item.Url,
+                        DoubanUrl = item.Url
                     });
                 }
-            }
         }
         catch (Exception e)
         {
@@ -172,10 +157,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
     partial void OnSelectedTagItemChanged(string? value)
     {
-        if (_isTagChanged2Refresh)
-        {
-            RefreshMovieCardsAsync().GetAwaiter();
-        }
+        if (_isTagChanged2Refresh) RefreshMovieCardsAsync().GetAwaiter();
     }
 
     [RelayCommand]
@@ -183,10 +165,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
     {
         _isTagChanged2Refresh = false;
         _pageStart += PageSize;
-        if (_pageStart > 9 * PageSize)
-        {
-            _pageStart = 0;
-        }
+        if (_pageStart > 9 * PageSize) _pageStart = 0;
 
         await RefreshMovieCardsAsync();
     }
@@ -204,7 +183,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(text)) return;
         if (AppConifg.PlayerConfig.DoubanApiEnabled is false)
         {
-            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动", NotificationType.Information),
+            App.Notification?.Show(new Notification("温馨提示", "豆瓣接口未启动"),
                 NotificationType.Information);
             return;
         }
@@ -218,11 +197,10 @@ public partial class TVShowHomeViewModel : ViewModelBase
             var json = JsonSerializer.Deserialize<List<DoubanSuggestionSubject>>(sts,
                 new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // 处理大小写不敏感
+                    PropertyNameCaseInsensitive = true // 处理大小写不敏感
                 });
             MovieCardItems.Clear();
             if (json is not null)
-            {
                 foreach (var item in json)
                 {
                     var stdCover = item.Img.Replace("\\/", "/").Replace("img2", "img3");
@@ -232,10 +210,9 @@ public partial class TVShowHomeViewModel : ViewModelBase
                         Name = item.Title,
                         Image = stdCover,
                         Score = "暂无",
-                        DoubanUrl = item.Url,
+                        DoubanUrl = item.Url
                     });
                 }
-            }
         }
         catch (Exception e)
         {
@@ -266,7 +243,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
             StartupLocation = WindowStartupLocation.CenterScreen,
             CanDragMove = true,
             CanResize = false,
-            StyleClass = "",
+            StyleClass = ""
         };
 
         _loadingWaitViewModel.TimerStart();
@@ -277,13 +254,12 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
 public partial class MovieCardItem : ViewModelBase
 {
-    [ObservableProperty] private string? _name;
+    [ObservableProperty] private string? _doubanUrl;
 
     [ObservableProperty] private string? _image;
+    [ObservableProperty] private string? _name;
 
     [ObservableProperty] private string? _score;
-
-    [ObservableProperty] private string? _doubanUrl;
 
 
     [RelayCommand]

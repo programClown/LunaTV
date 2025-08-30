@@ -19,7 +19,6 @@ using LunaTV.ViewModels.Base;
 using LunaTV.ViewModels.TVShowPages;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
-using Nodify.Avalonia.Shared;
 using Ursa.Controls;
 
 namespace LunaTV.ViewModels.Media;
@@ -116,7 +115,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
 
                     VideoPath = Episodes[Episodes.IndexOf(episode) + 1].Url;
                     VideoName = $"{ViewHistory?.Name} {Episodes[Episodes.IndexOf(episode) + 1].Name}";
-                    Episodes.ForEach(episode =>
+                    Episodes.ToList().ForEach(episode =>
                         episode.Watched = episode.Name == Episodes[Episodes.IndexOf(episode) + 1].Name);
                 }
     }
@@ -183,7 +182,7 @@ public partial class VideoPlayerViewModel : ViewModelBase, IDisposable
         ViewHistory.Url = item.Url;
         VideoPath = item.Url;
         VideoName = $"{ViewHistory?.Name} {item.Name}";
-        Episodes.ForEach(episode => episode.Watched = episode.Name == item.Name);
+        Episodes.ToList().ForEach(episode => episode.Watched = episode.Name == item.Name);
     }
 
     public void Stop()
