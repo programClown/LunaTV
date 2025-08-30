@@ -68,13 +68,13 @@
         </u:IconButton>
 
         <Grid
-            ColumnDefinitions="160,Auto,160"
+            ColumnDefinitions="*,Auto,160"
             Grid.Row="1"
             HorizontalAlignment="Center">
             <Button
                 Classes="SearchInputButton"
-                Command="{Binding BackHomeCommand}"
-                Content="首页"
+                Command="{Binding OpenLocalVideoCommand}"
+                Content="本地"
                 CornerRadius="5,0,0,0"
                 HorizontalAlignment="Right" />
             <TextBox
@@ -89,7 +89,7 @@
                 Name="SearchTextBox"
                 Text="{Binding SearchInputText}"
                 Watermark="搜索你喜欢的视频..."
-                Width="400">
+                Width="300">
                 <TextBox.KeyBindings>
                     <KeyBinding
                         Command="{Binding NaviSearchCommand}"

@@ -10,12 +10,6 @@
     x:DataType="vm:InnovationPlazaViewModel"
     mc:Ignorable="d">
 
-    <Grid>
-        <Button
-            Width="100"
-            Height="100"
-            Command="{Binding OpenLocalVideoCommand}"
-            Content="本地影视" />
-    </Grid>
+   
 
 </UserControl>

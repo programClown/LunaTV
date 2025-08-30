@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.Api;
@@ -14,6 +15,7 @@ using LunaTV.Base.Models;
 using LunaTV.Constants;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
+using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
@@ -175,6 +177,42 @@ public partial class TVShowHomeViewModel : ViewModelBase
     {
         MovieChecked = true;
         await SwitchMovieOrTv("电影");
+    }
+    
+    [RelayCommand]
+    private async void OpenLocalVideo()
+    {
+        var videoAll = new FilePickerFileType("All Videos")
+        {
+            Patterns = new string[6] { "*.mp4", "*.mkv", "*.avi", "*.mov", "*.wmv", "*.flv" },
+            AppleUniformTypeIdentifiers = new string[1] { "public.video" },
+            MimeTypes = new string[1] { "video/*" }
+        };
+
+
+        var file = await App.StorageProvider?.OpenFilePickerAsync(
+            new FilePickerOpenOptions()
+            {
+                Title = "打开文件",
+                FileTypeFilter = new[]
+                {
+                    videoAll,
+                    FilePickerFileTypes.All,
+                },
+                AllowMultiple = false,
+            });
+
+        if (file is { Count: > 0 })
+        {
+            var win = new PlayerWindow();
+            (App.VisualRoot as MainWindow)?.Hide();
+            win.Show();
+            if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
+            {
+                videoModel.VideoPath = file[0].Path.LocalPath;
+                videoModel.VideoName = file[0].Path.LocalPath.Substring(file[0].Path.LocalPath.LastIndexOf('\\') + 1);
+            }
+        }
     }
 
     [RelayCommand]

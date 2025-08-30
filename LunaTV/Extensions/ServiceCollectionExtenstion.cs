@@ -130,7 +130,6 @@ public static class ServiceCollectionExtenstion
                 Pages =
                 {
                     provider.GetRequiredService<TVShowViewModel>(),
-                    provider.GetRequiredService<InnovationPlazaViewModel>(),
                     provider.GetRequiredService<PlaygroundViewModel>(),
                     provider.GetRequiredService<TransferEverythingViewModel>()
                 },
@@ -151,8 +150,8 @@ public static class ServiceCollectionExtenstion
         serviceCollection.AddTransient<TVShowView>();
         serviceCollection.AddTransient<InnovationPlazaView>();
         serviceCollection.AddSingleton<SettingsView>();
-        serviceCollection.AddSingleton<PlaygroundView>();
-        serviceCollection.AddSingleton<TransferEverythingView>();
+        serviceCollection.AddTransient<PlaygroundView>();
+        serviceCollection.AddTransient<TransferEverythingView>();
     }
 
     /// <summary>
