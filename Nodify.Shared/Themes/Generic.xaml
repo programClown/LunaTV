@@ -3,14 +3,13 @@
                     xmlns:local="clr-namespace:Nodify">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://Nodify.Shared/Themes/Controls.xaml" />
         <ResourceInclude Source="avares://Nodify.Shared/Themes/Icons.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <local:ResizeDirectionToVisiblityConverter x:Key="ResizeDirectionToVisiblityConverter" />
 
     <ControlTheme x:Key="EditableTextBlockBaseStyle"
-           TargetType="{x:Type local:EditableTextBlock}">
+                  TargetType="{x:Type local:EditableTextBlock}">
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderThickness"
@@ -77,13 +76,13 @@
     </ControlTheme>
 
     <ControlTheme TargetType="{x:Type local:EditableTextBlock}" x:Key="{x:Type local:EditableTextBlock}"
-           BasedOn="{StaticResource EditableTextBlockBaseStyle}" />
+                  BasedOn="{StaticResource EditableTextBlockBaseStyle}" />
 
     <ControlTheme TargetType="{x:Type local:TabControlEx}" x:Key="{x:Type local:TabControlEx}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TabControlEx}">
-                    <Grid KeyboardNavigation.TabNavigation="Local" 
+                    <Grid KeyboardNavigation.TabNavigation="Local"
                           ClipToBounds="true">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -115,7 +114,7 @@
                                             BorderBrush="{DynamicResource HighlightedBackgroundBrush}"
                                             Grid.Column="1"
                                             ToolTip.Tip="Add new tab">
-                                        <Path Width="25" 
+                                        <Path Width="25"
                                               Height="15"
                                               Data="{StaticResource AddGeometry}"
                                               Fill="{TemplateBinding Foreground}"
@@ -158,13 +157,13 @@
         <!-- </Setter> -->
         <Setter Property="RenderTransformOrigin"
                 Value="1 1" />
-        <Setter Property="VerticalAlignment" 
+        <Setter Property="VerticalAlignment"
                 Value="Bottom" />
-        <Setter Property="VerticalContentAlignment" 
+        <Setter Property="VerticalContentAlignment"
                 Value="Stretch" />
-        <Setter Property="HorizontalContentAlignment" 
+        <Setter Property="HorizontalContentAlignment"
                 Value="Stretch" />
-        <Setter Property="Padding" 
+        <Setter Property="Padding"
                 Value="7" />
         <Setter Property="Template">
             <Setter.Value>
@@ -200,18 +199,18 @@
             </Setter.Value>
         </Setter>
         <Style Selector="^:pointerover">
-            <Setter Property="Background" 
-                    Value="{DynamicResource HighlightedBackgroundBrush}"/>
+            <Setter Property="Background"
+                    Value="{DynamicResource HighlightedBackgroundBrush}" />
         </Style>
         <Style Selector="^:pointerover /template/ Button#mCloseBtn">
             <Setter Property="Opacity" Value="1" />
         </Style>
         <Style Selector="^:selected">
-            <Setter Property="Background" 
+            <Setter Property="Background"
                     Value="{DynamicResource HighlightedBackgroundBrush}" />
             <Setter Property="Padding"
                     Value="8" />
-            <Setter Property="TextElement.FontWeight" 
+            <Setter Property="TextElement.FontWeight"
                     Value="Bold" />
         </Style>
         <Style Selector="^:selected /template/ Button#mCloseBtn">
@@ -268,7 +267,8 @@
                                                 <Setter Property="(Interaction.Behaviors)">
                                                     <BehaviorCollectionTemplate>
                                                         <BehaviorCollection>
-                                                            <DataTrigger Property="." Value="{Binding Path=SelectedColor, RelativeSource={RelativeSource AncestorType=local:Swatches}}">
+                                                            <DataTrigger Property="."
+                                                                         Value="{Binding Path=SelectedColor, RelativeSource={RelativeSource AncestorType=local:Swatches}}">
                                                                 <PropertySetter Property="Background"
                                                                     Value="White" />
                                                             </DataTrigger>
@@ -308,7 +308,8 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <ContentPresenter Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
 
                             <local:Resizer Direction="TopLeft"
                                            HorizontalAlignment="Left"

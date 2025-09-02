@@ -15,10 +15,7 @@
                 <ResourceInclude Source="/Styles/Theme.axaml" />
                 <ResourceInclude Source="avares://Nodify/Theme.axaml" />
                 <ResourceInclude Source="avares://Nodify.Shared/Themes/Generic.xaml" />
-                <ResourceInclude Source="avares://Nodify.Shared/Themes/Nodify.xaml" />
                 <ResourceInclude Source="avares://Nodify.Shared/Themes/Icons.xaml" />
-                <ResourceInclude Source="avares://Nodify.Shared/Themes/Generic.xaml" />
-                <ResourceInclude Source="avares://Nodify.Shared/Themes/Nodify.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
