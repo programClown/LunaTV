@@ -9,11 +9,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
     xmlns:vmm="using:LunaTV.ViewModels.Media"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:tvShowPages="clr-namespace:LunaTV.ViewModels.TVShowPages"
-    xmlns:tvMedia="clr-namespace:LunaTV.ViewModels.Media">
+    xmlns:tvMedia="clr-namespace:LunaTV.ViewModels.Media"
+    xmlns:media="clr-namespace:LunaTV.Views.Media">
 
     <UserControl.Resources>
         <converters:TimeSpanToMinutesSecondsConverter x:Key="TimeSpanToMinutesSecondsConverter" />
@@ -29,18 +29,18 @@
             VerticalAlignment="Top" />
 
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
-            <vlc:VideoView
+            <media:VideoView
                 Grid.Column="0"
                 HorizontalAlignment="Stretch"
                 MediaPlayer="{Binding MediaPlayer}"
                 PointerEntered="VideoViewOnPointerEntered"
                 PointerPressed="VideoViewOnPointerPressed"
+                KeyDown="VideoViewOnKeyDown"
                 VerticalAlignment="Stretch">
 
                 <Border
                     IsVisible="False"
                     Margin="20"
-                    KeyDown="VideoViewOnKeyDown"
                     Name="ControlsPanel">
                     <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Bottom">
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
@@ -132,7 +132,7 @@
                     </Grid>
 
                 </Border>
-            </vlc:VideoView>
+            </media:VideoView>
 
             <Border Grid.Column="1"
                     Width="{Binding KanBanWidth}">
