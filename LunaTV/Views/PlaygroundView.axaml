@@ -63,19 +63,11 @@
         <Border
             Margin="20,0,0,20"
             HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Theme="{StaticResource RadioButtonGroupBorder}">
-            <ListBox Theme="{StaticResource ButtonRadioGroupListBox}">
-                <Dock>Left</Dock>
-                <Dock>Bottom</Dock>
-                <Dock>Right</Dock>
-                <Dock>Top</Dock>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
+            VerticalAlignment="Center">
+            <StackPanel Spacing="8">
+                <Button HorizontalAlignment="Left">图片节点</Button>
+                <Button HorizontalAlignment="Left">算法节点</Button>
+            </StackPanel>
         </Border>
 
         <Border
