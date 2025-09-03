@@ -71,7 +71,7 @@
             x:Key="ConnectionStyle"
             BasedOn="{StaticResource {x:Type nodify:BaseConnection}}"
             TargetType="{x:Type nodify:BaseConnection}">
-            <Setter Property="(nodify:BindableStyleClasses.Classes)" Value="{Binding Input.Shape}" />
+            <!-- <Setter Property="(nodify:BindableStyleClasses.Classes)" Value="{Binding Input.Shape}" /> -->
             <Setter Property="(Interaction.Behaviors)">
                 <BehaviorCollectionTemplate>
                     <BehaviorCollection>
@@ -127,44 +127,28 @@
             <Setter Property="Target" Value="{Binding Input.Anchor}" />
             <Setter Property="SplitCommand" Value="{Binding SplitCommand}" />
             <Setter Property="DisconnectCommand" Value="{Binding DisconnectCommand}" />
-            <Setter Property="SourceOffsetMode"
-                    Value="{Binding ConnectionSourceOffsetMode, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="TargetOffsetMode"
-                    Value="{Binding ConnectionTargetOffsetMode, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="SourceOffset"
-                    Value="{Binding ConnectionSourceOffset.Size, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="TargetOffset"
-                    Value="{Binding ConnectionTargetOffset.Size, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="ArrowSize"
-                    Value="{Binding ConnectionArrowSize.Size, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="ArrowEnds"
-                    Value="{Binding ArrowHeadEnds, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="ArrowShape"
-                    Value="{Binding ArrowHeadShape, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="Spacing"
-                    Value="{Binding ConnectionSpacing, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="Direction"
-                    Value="{Binding Output.Flow, Converter={StaticResource FlowToDirectionConverter}}" />
+            <Setter Property="SourceOffsetMode" Value="{Binding ConnectionSourceOffsetMode, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="TargetOffsetMode" Value="{Binding ConnectionTargetOffsetMode, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="SourceOffset" Value="{Binding ConnectionSourceOffset.Size, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="TargetOffset" Value="{Binding ConnectionTargetOffset.Size, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="ArrowSize" Value="{Binding ConnectionArrowSize.Size, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="ArrowEnds" Value="{Binding ArrowHeadEnds, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="ArrowShape" Value="{Binding ArrowHeadShape, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="Spacing" Value="{Binding ConnectionSpacing, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="Direction" Value="{Binding Output.Flow, Converter={StaticResource FlowToDirectionConverter}}" />
             <Setter Property="SourceOrientation" Value="{Binding Output.Node.Orientation}" />
             <Setter Property="TargetOrientation" Value="{Binding Input.Node.Orientation}" />
-            <Setter Property="DirectionalArrowsCount"
-                    Value="{Binding DirectionalArrowsCount, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="DirectionalArrowsOffset"
-                    Value="{Binding DirectionalArrowsOffset, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="IsAnimatingDirectionalArrows"
-                    Value="{Binding IsAnimatingConnections, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="DirectionalArrowsAnimationDuration"
-                    Value="{Binding DirectionalArrowsAnimationDuration, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="DirectionalArrowsCount" Value="{Binding DirectionalArrowsCount, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="DirectionalArrowsOffset" Value="{Binding DirectionalArrowsOffset, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="IsAnimatingDirectionalArrows" Value="{Binding IsAnimatingConnections, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="DirectionalArrowsAnimationDuration" Value="{Binding DirectionalArrowsAnimationDuration, Source={x:Static local:EditorSettings.Instance}}" />
             <Setter Property="Text" Value="{Binding ConnectionText, Source={x:Static local:EditorSettings.Instance}}" />
-            <Setter Property="IsSelectable"
-                    Value="{Binding SelectableConnections, Source={x:Static local:EditorSettings.Instance}}" />
+            <Setter Property="IsSelectable" Value="{Binding SelectableConnections, Source={x:Static local:EditorSettings.Instance}}" />
             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
         </ControlTheme>
 
         <DataTemplate x:Key="CircuitConnectionTemplate">
-            <nodify:CircuitConnection
-                Angle="{Binding CircuitConnectionAngle, Source={x:Static local:EditorSettings.Instance}}"
-                Theme="{StaticResource ConnectionStyle}" />
+            <nodify:CircuitConnection Angle="{Binding CircuitConnectionAngle, Source={x:Static local:EditorSettings.Instance}}" Theme="{StaticResource ConnectionStyle}" />
         </DataTemplate>
 
         <DataTemplate x:Key="StepConnectionTemplate">
@@ -271,8 +255,7 @@
             ViewportSize="{Binding ViewportSize, Mode=OneWayToSource}"
             ViewportZoom="{Binding Zoom, Source={x:Static local:EditorSettings.Instance}}">
             <nodify:NodifyEditor.Theme>
-                <ControlTheme BasedOn="{StaticResource {x:Type nodify:NodifyEditor}}"
-                              TargetType="{x:Type nodify:NodifyEditor}">
+                <ControlTheme BasedOn="{StaticResource {x:Type nodify:NodifyEditor}}" TargetType="{x:Type nodify:NodifyEditor}">
                     <Setter Property="ConnectionTemplate" Value="{StaticResource ConnectionTemplate}" />
                     <Setter Property="(Interaction.Behaviors)">
                         <BehaviorCollectionTemplate>
@@ -281,29 +264,25 @@
                                     Source="{x:Static local:PlaygroundSettings.Instance}"
                                     Property="ShowGridLines"
                                     Value="True">
-                                    <PropertySetter Property="Background"
-                                                    Value="{StaticResource SmallGridLinesDrawingBrush}" />
+                                    <PropertySetter Property="Background" Value="{StaticResource SmallGridLinesDrawingBrush}" />
                                 </DataTrigger>
                                 <DataTrigger
                                     Source="{x:Static local:EditorSettings.Instance}"
                                     Property="ConnectionStyle"
                                     Value="Line">
-                                    <PropertySetter Property="ConnectionTemplate"
-                                                    Value="{StaticResource LineConnectionTemplate}" />
+                                    <PropertySetter Property="ConnectionTemplate" Value="{StaticResource LineConnectionTemplate}" />
                                 </DataTrigger>
                                 <DataTrigger
                                     Source="{x:Static local:EditorSettings.Instance}"
                                     Property="ConnectionStyle"
                                     Value="Circuit">
-                                    <PropertySetter Property="ConnectionTemplate"
-                                                    Value="{StaticResource CircuitConnectionTemplate}" />
+                                    <PropertySetter Property="ConnectionTemplate" Value="{StaticResource CircuitConnectionTemplate}" />
                                 </DataTrigger>
                                 <DataTrigger
                                     Source="{x:Static local:EditorSettings.Instance}"
                                     Property="ConnectionStyle"
                                     Value="Step">
-                                    <PropertySetter Property="ConnectionTemplate"
-                                                    Value="{StaticResource StepConnectionTemplate}" />
+                                    <PropertySetter Property="ConnectionTemplate" Value="{StaticResource StepConnectionTemplate}" />
                                 </DataTrigger>
                             </BehaviorCollection>
                         </BehaviorCollectionTemplate>
@@ -326,14 +305,10 @@
                     <Setter Property="Target" Value="{Binding PreviewTarget, Mode=OneWayToSource}" />
                     <Setter Property="PreviewTarget" Value="{Binding PreviewTarget, Mode=OneWayToSource}" />
                     <Setter Property="Content" Value="{Binding PreviewText}" />
-                    <Setter Property="EnablePreview"
-                            Value="{Binding EnablePendingConnectionPreview, Source={x:Static local:EditorSettings.Instance}}" />
-                    <Setter Property="EnableSnapping"
-                            Value="{Binding EnablePendingConnectionSnapping, Source={x:Static local:EditorSettings.Instance}}" />
-                    <Setter Property="AllowOnlyConnectors"
-                            Value="{Binding AllowConnectingToConnectorsOnly, Source={x:Static local:EditorSettings.Instance}}" />
-                    <Setter Property="Direction"
-                            Value="{Binding Source.Flow, Converter={StaticResource FlowToDirectionConverter}}" />
+                    <Setter Property="EnablePreview" Value="{Binding EnablePendingConnectionPreview, Source={x:Static local:EditorSettings.Instance}}" />
+                    <Setter Property="EnableSnapping" Value="{Binding EnablePendingConnectionSnapping, Source={x:Static local:EditorSettings.Instance}}" />
+                    <Setter Property="AllowOnlyConnectors" Value="{Binding AllowConnectingToConnectorsOnly, Source={x:Static local:EditorSettings.Instance}}" />
+                    <Setter Property="Direction" Value="{Binding Source.Flow, Converter={StaticResource FlowToDirectionConverter}}" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type nodify:PendingConnection}">
@@ -355,28 +330,19 @@
                                         TargetOffsetMode="None"
                                         TargetOrientation="{Binding TargetOrientation}">
                                         <nodify:Connection.Theme>
-                                            <ControlTheme BasedOn="{StaticResource {x:Type nodify:Connection}}"
-                                                          TargetType="nodify:Connection">
-                                                <Setter Property="Stroke"
-                                                        Value="{DynamicResource Connection.StrokeBrush}" />
-                                                <Setter Property="Fill"
-                                                        Value="{DynamicResource Connection.StrokeBrush}" />
+                                            <ControlTheme BasedOn="{StaticResource {x:Type nodify:Connection}}" TargetType="nodify:Connection">
+                                                <Setter Property="Stroke" Value="{DynamicResource Connection.StrokeBrush}" />
+                                                <Setter Property="Fill" Value="{DynamicResource Connection.StrokeBrush}" />
                                                 <Setter Property="(Interaction.Behaviors)">
                                                     <BehaviorCollectionTemplate>
                                                         <BehaviorCollection>
-                                                            <DataTrigger Property="Source.Shape"
-                                                                         Value="{x:Static local:ConnectorShape.Square}">
-                                                                <PropertySetter Property="Stroke"
-                                                                    Value="{StaticResource SquareConnectorColor}" />
-                                                                <PropertySetter Property="Fill"
-                                                                    Value="{StaticResource SquareConnectorColor}" />
+                                                            <DataTrigger Property="Source.Shape" Value="{x:Static local:ConnectorShape.Square}">
+                                                                <PropertySetter Property="Stroke" Value="{StaticResource SquareConnectorColor}" />
+                                                                <PropertySetter Property="Fill" Value="{StaticResource SquareConnectorColor}" />
                                                             </DataTrigger>
-                                                            <DataTrigger Property="Source.Shape"
-                                                                         Value="{x:Static local:ConnectorShape.Triangle}">
-                                                                <PropertySetter Property="Stroke"
-                                                                    Value="{StaticResource TriangleConnectorColor}" />
-                                                                <PropertySetter Property="Fill"
-                                                                    Value="{StaticResource TriangleConnectorColor}" />
+                                                            <DataTrigger Property="Source.Shape" Value="{x:Static local:ConnectorShape.Triangle}">
+                                                                <PropertySetter Property="Stroke" Value="{StaticResource TriangleConnectorColor}" />
+                                                                <PropertySetter Property="Fill" Value="{StaticResource TriangleConnectorColor}" />
                                                             </DataTrigger>
                                                         </BehaviorCollection>
                                                     </BehaviorCollectionTemplate>
@@ -394,8 +360,7 @@
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         CornerRadius="3"
                                         IsVisible="{Binding PreviewText, Converter={shared:StringToVisibilityConverter}}">
-                                        <ContentPresenter Content="{TemplateBinding Content}"
-                                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                        <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
                                     </Border>
                                 </Canvas>
                             </ControlTemplate>
@@ -419,10 +384,8 @@
                         <BehaviorCollectionTemplate>
                             <BehaviorCollection>
                                 <DataTrigger Property="Shape" Value="{x:Static local:ConnectorShape.Square}">
-                                    <PropertySetter Property="ConnectorTemplate"
-                                                    Value="{StaticResource SquareConnector}" />
-                                    <PropertySetter Property="BorderBrush"
-                                                    Value="{StaticResource SquareConnectorColor}" />
+                                    <PropertySetter Property="ConnectorTemplate" Value="{StaticResource SquareConnector}" />
+                                    <PropertySetter Property="BorderBrush" Value="{StaticResource SquareConnectorColor}" />
                                     <PropertySetter Property="HeaderTemplate">
                                         <PropertySetter.Value>
                                             <DataTemplate DataType="{x:Type local:ConnectorViewModel}">
@@ -435,10 +398,8 @@
                                     </PropertySetter>
                                 </DataTrigger>
                                 <DataTrigger Property="Shape" Value="{x:Static local:ConnectorShape.Triangle}">
-                                    <PropertySetter Property="ConnectorTemplate"
-                                                    Value="{StaticResource TriangleConnector}" />
-                                    <PropertySetter Property="BorderBrush"
-                                                    Value="{StaticResource TriangleConnectorColor}" />
+                                    <PropertySetter Property="ConnectorTemplate" Value="{StaticResource TriangleConnector}" />
+                                    <PropertySetter Property="BorderBrush" Value="{StaticResource TriangleConnectorColor}" />
                                     <PropertySetter Property="HeaderTemplate">
                                         <PropertySetter.Value>
                                             <DataTemplate DataType="{x:Type local:ConnectorViewModel}">
@@ -477,16 +438,12 @@
                         <BehaviorCollectionTemplate>
                             <BehaviorCollection>
                                 <DataTrigger Property="Shape" Value="{x:Static local:ConnectorShape.Square}">
-                                    <PropertySetter Property="ConnectorTemplate"
-                                                    Value="{StaticResource SquareConnector}" />
-                                    <PropertySetter Property="BorderBrush"
-                                                    Value="{StaticResource SquareConnectorColor}" />
+                                    <PropertySetter Property="ConnectorTemplate" Value="{StaticResource SquareConnector}" />
+                                    <PropertySetter Property="BorderBrush" Value="{StaticResource SquareConnectorColor}" />
                                 </DataTrigger>
                                 <DataTrigger Property="Shape" Value="{x:Static local:ConnectorShape.Triangle}">
-                                    <PropertySetter Property="ConnectorTemplate"
-                                                    Value="{StaticResource TriangleConnector}" />
-                                    <PropertySetter Property="BorderBrush"
-                                                    Value="{StaticResource TriangleConnectorColor}" />
+                                    <PropertySetter Property="ConnectorTemplate" Value="{StaticResource TriangleConnector}" />
+                                    <PropertySetter Property="BorderBrush" Value="{StaticResource TriangleConnectorColor}" />
                                 </DataTrigger>
                             </BehaviorCollection>
                         </BehaviorCollectionTemplate>
@@ -564,14 +521,11 @@
             </nodify:NodifyEditor.DataTemplates>
 
             <nodify:NodifyEditor.ItemContainerTheme>
-                <ControlTheme BasedOn="{StaticResource {x:Type nodify:ItemContainer}}"
-                              TargetType="{x:Type nodify:ItemContainer}">
+                <ControlTheme BasedOn="{StaticResource {x:Type nodify:ItemContainer}}" TargetType="{x:Type nodify:ItemContainer}">
                     <Setter Property="BorderThickness" Value="2" />
                     <Setter Property="SelectedBorderThickness" Value="4" />
-                    <Setter Property="IsSelectable"
-                            Value="{Binding SelectableNodes, Source={x:Static local:EditorSettings.Instance}}" />
-                    <Setter Property="IsDraggable"
-                            Value="{Binding DraggableNodes, Source={x:Static local:EditorSettings.Instance}}" />
+                    <Setter Property="IsSelectable" Value="{Binding SelectableNodes, Source={x:Static local:EditorSettings.Instance}}" />
+                    <Setter Property="IsDraggable" Value="{Binding DraggableNodes, Source={x:Static local:EditorSettings.Instance}}" />
                     <!-- <Setter Property="CacheMode"> -->
                     <!--     <Setter.Value> -->
                     <!--         <BitmapCache RenderAtScale="{Binding MaxZoom, Source={x:Static local:EditorSettings.Instance}}" EnableClearType="True" /> -->
@@ -616,8 +570,7 @@
                 </DataTemplate>
             </nodify:Minimap.ItemTemplate>
             <nodify:Minimap.ItemContainerTheme>
-                <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}"
-                              TargetType="{x:Type nodify:MinimapItem}">
+                <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}" TargetType="{x:Type nodify:MinimapItem}">
                     <Setter Property="Location" Value="{Binding Location}" />
                     <Setter Property="Width" Value="150" />
                     <Setter Property="Height" Value="130" />
