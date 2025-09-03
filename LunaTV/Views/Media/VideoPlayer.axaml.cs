@@ -75,12 +75,6 @@ public partial class VideoPlayer : UserControl
 
     private void VideoViewOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!ControlsPanel.IsVisible)
-        {
-            _overlayTimer.Stop();
-            _overlayTimer.Start();
-            ControlsPanel.IsVisible = true;
-        }
     }
 
     private void VideoViewOnKeyDown(object? sender, KeyEventArgs e)
@@ -99,6 +93,16 @@ public partial class VideoPlayer : UserControl
                 _viewModel.Rewind();
                 e.Handled = true;
                 break;
+        }
+    }
+
+    private void VideoViewOnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!ControlsPanel.IsVisible)
+        {
+            _overlayTimer.Stop();
+            _overlayTimer.Start();
+            ControlsPanel.IsVisible = true;
         }
     }
 }

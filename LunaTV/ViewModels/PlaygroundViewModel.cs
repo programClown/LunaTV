@@ -2,6 +2,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using LunaTV.ViewModels.Base;
 using Nodify.Playground;
@@ -27,4 +28,36 @@ public partial class PlaygroundViewModel : PageViewModelBase
 
     public override IconSource IconSource { set; get; } =
         App.TopLevel.TryFindResource("ColorFillIcon", out var value) ? (IconSource)value : null;
+
+    [RelayCommand]
+    private void ImageNode()
+    {
+        var node = new FlowNodeViewModel
+        {
+            Title = "Node 1",
+            Location = new Point(200, 300)
+        };
+        Nodes.Add(node);
+        node.Input.Add(new ConnectorViewModel
+        {
+            Title = "NEW 1",
+            Shape = ConnectorShape.Circle
+        });
+        node.Input.Add(new ConnectorViewModel
+        {
+            Title = "NEW 2",
+            Shape = ConnectorShape.Square
+        });
+    }
+
+
+    [RelayCommand]
+    private void AlgorithmNode()
+    {
+    }
+
+    [RelayCommand]
+    private void DisplayNode()
+    {
+    }
 }

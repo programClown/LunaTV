@@ -51,7 +51,8 @@
                     </DataTemplate>
                 </nodify:Minimap.ItemTemplate>
                 <nodify:Minimap.ItemContainerTheme>
-                    <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}" TargetType="{x:Type nodify:MinimapItem}">
+                    <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}"
+                                  TargetType="{x:Type nodify:MinimapItem}">
                         <Setter Property="Location" Value="{Binding Location}" />
                         <Setter Property="Width" Value="150" />
                         <Setter Property="Height" Value="130" />
@@ -65,8 +66,9 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Center">
             <StackPanel Spacing="8">
-                <Button HorizontalAlignment="Left">图片节点</Button>
-                <Button HorizontalAlignment="Left">算法节点</Button>
+                <Button HorizontalAlignment="Left" Command="{Binding ImageNodeCommand}">图片节点</Button>
+                <Button HorizontalAlignment="Left" Command="{Binding AlgorithmNodeCommand}">算法节点</Button>
+                <Button HorizontalAlignment="Left" Command="{Binding DisplayNodeCommand}">显示节点</Button>
             </StackPanel>
         </Border>
 

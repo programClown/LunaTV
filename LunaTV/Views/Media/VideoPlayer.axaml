@@ -34,7 +34,7 @@
                 HorizontalAlignment="Stretch"
                 MediaPlayer="{Binding MediaPlayer}"
                 PointerEntered="VideoViewOnPointerEntered"
-                PointerPressed="VideoViewOnPointerPressed"
+                PointerMoved="VideoViewOnPointerMoved"
                 KeyDown="VideoViewOnKeyDown"
                 VerticalAlignment="Stretch">
 
