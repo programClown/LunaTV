@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0"/>
         <PackageReference Include="SqlSugarCore" Version="5.1.4.198"/>
+        <PackageReference Include="TouchSocket.WebApi" Version="4.0.0-beta.5"/>
     </ItemGroup>
 
 </Project>

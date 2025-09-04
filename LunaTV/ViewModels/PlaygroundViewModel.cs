@@ -1,9 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
+using LunaTV.Base.Web;
+using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
 using Nodify.Playground;
 
@@ -11,6 +14,7 @@ namespace LunaTV.ViewModels;
 
 public partial class PlaygroundViewModel : PageViewModelBase
 {
+    private readonly LunaHttpStaticPageServer _htmlServerProxy;
     [ObservableProperty] private ObservableCollection<ConnectionViewModel> _connections = new();
     [ObservableProperty] private PointEditor _location;
     [ObservableProperty] private PointEditor _minimapViewportOffset;
@@ -23,6 +27,12 @@ public partial class PlaygroundViewModel : PageViewModelBase
     [ObservableProperty] private ObservableCollection<NodeViewModel> _selectedNodes = new();
     [ObservableProperty] private Size _viewportSize;
     [ObservableProperty] private double _zoom = 1.0;
+
+    public PlaygroundViewModel()
+    {
+        _htmlServerProxy = new LunaHttpStaticPageServer();
+        _htmlServerProxy?.Start(GlobalDefine.RootPath + "wwwroot/unfake", 8080);
+    }
 
     public override string Title => "创作广场";
 
@@ -52,8 +62,9 @@ public partial class PlaygroundViewModel : PageViewModelBase
 
 
     [RelayCommand]
-    private void AlgorithmNode()
+    private async void AlgorithmNode()
     {
+        await App.TopLevel.Launcher.LaunchUriAsync(new Uri("http://localhost:8080/index.html"));
     }
 
     [RelayCommand]

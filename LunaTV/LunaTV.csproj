@@ -40,18 +40,34 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Views\Media\VideoPlayer.axaml.cs">
-            <DependentUpon>VideoPlayer.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\LunaTV.Base\LunaTV.Base.csproj"/>
         <ProjectReference Include="..\Nodify.Playground\Nodify.Playground.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Exceptions\"/>
+        <None Include="wwwroot\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaXaml Remove="Assets\wwwroot\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Assets\wwwroot\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Assets\wwwroot\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Remove="Assets\wwwroot\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Assets\wwwroot\**"/>
     </ItemGroup>
 </Project>
