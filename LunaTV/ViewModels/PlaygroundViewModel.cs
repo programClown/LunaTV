@@ -27,6 +27,7 @@ public partial class PlaygroundViewModel : PageViewModelBase
     [ObservableProperty] private ObservableCollection<ConnectionViewModel> _selectedConnections = new();
     [ObservableProperty] private NodeViewModel? _selectedNode;
     [ObservableProperty] private ObservableCollection<NodeViewModel> _selectedNodes = new();
+    [ObservableProperty] private bool _showGridLines;
     [ObservableProperty] private Size _viewportSize;
     [ObservableProperty] private double _zoom = 1.0;
 
