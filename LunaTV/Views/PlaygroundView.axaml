@@ -29,7 +29,32 @@
             SelectedItems="{Binding SelectedNodes}"
             ViewportLocation="{Binding Location.Value}"
             ViewportSize="{Binding ViewportSize, Mode=OneWayToSource}"
-            ViewportZoom="{Binding Zoom}" />
+            ViewportZoom="{Binding Zoom}">
+            <nodify:NodifyEditor.Resources />
+            <nodify:NodifyEditor.DataTemplates>
+                <DataTemplate DataType="{x:Type playground:KnotNodeViewModel}">
+                    <nodify:KnotNode Content="{Binding Connector}" />
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type playground:CommentNodeViewModel}">
+                    <nodify:GroupingNode
+                        ActualSize="{Binding Size}"
+                        Header="{Binding Title}"
+                        MovementMode="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).GroupingNodeMovement}" />
+                </DataTemplate>
+
+
+                <DataTemplate DataType="{x:Type playground:FlowNodeViewModel}">
+                    <nodify:Node
+                        Header="{Binding Title}"
+                        Input="{Binding Input}"
+                        Output="{Binding Output}" />
+                </DataTemplate>
+
+            </nodify:NodifyEditor.DataTemplates>
+
+
+        </nodify:NodifyEditor>
 
         <Grid ZIndex="-2">
             <nodify:Minimap
@@ -51,8 +76,7 @@
                     </DataTemplate>
                 </nodify:Minimap.ItemTemplate>
                 <nodify:Minimap.ItemContainerTheme>
-                    <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}"
-                                  TargetType="{x:Type nodify:MinimapItem}">
+                    <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}" TargetType="{x:Type nodify:MinimapItem}">
                         <Setter Property="Location" Value="{Binding Location}" />
                         <Setter Property="Width" Value="150" />
                         <Setter Property="Height" Value="130" />

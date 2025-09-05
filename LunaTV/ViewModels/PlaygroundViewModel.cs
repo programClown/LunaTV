@@ -8,6 +8,7 @@ using FluentAvalonia.UI.Controls;
 using LunaTV.Base.Web;
 using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
+using Nodify;
 using Nodify.Playground;
 
 namespace LunaTV.ViewModels;
@@ -16,6 +17,7 @@ public partial class PlaygroundViewModel : PageViewModelBase
 {
     private readonly LunaHttpStaticPageServer _htmlServerProxy;
     [ObservableProperty] private ObservableCollection<ConnectionViewModel> _connections = new();
+    [ObservableProperty] private GroupingMovementMode _groupingNodeMovement;
     [ObservableProperty] private PointEditor _location;
     [ObservableProperty] private PointEditor _minimapViewportOffset;
     [ObservableProperty] private ObservableCollection<NodeViewModel> _nodes = new();
