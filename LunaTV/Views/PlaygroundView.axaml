@@ -71,7 +71,28 @@
             ViewportLocation="{Binding Location.Value}"
             ViewportSize="{Binding ViewportSize, Mode=OneWayToSource}"
             ViewportZoom="{Binding Zoom}">
-            <nodify:NodifyEditor.Resources />
+            <nodify:NodifyEditor.Styles>
+                <Style Selector="nodify|NodifyEditor">
+                    <Setter Property="ConnectionTemplate" Value="{StaticResource ConnectionTemplate}" />
+                    <!-- <Setter Property="ItemContainerTheme" Value="{StaticResource nodify:ItemContainer}" /> -->
+                </Style>
+
+                <Style Selector="nodify|PendingConnection">
+                    <!-- <Setter Property="Theme" Value="{StaticResource nodify:PendingConnection}" /> -->
+                </Style>
+
+                <Style Selector="nodify|Connector">
+                    <!-- <Setter Property="Theme" Value="{StaticResource nodify:Connector}" /> -->
+                </Style>
+
+                <Style Selector="nodify|NodeInput">
+                    <!-- <Setter Property="Theme" Value="{StaticResource nodify:NodeInput}" /> -->
+                </Style>
+
+                <Style Selector="nodify|NodeOutput">
+                    <!-- <Setter Property="Theme" Value="{StaticResource nodify:NodeOutput}" /> -->
+                </Style>
+            </nodify:NodifyEditor.Styles>
 
             <nodify:NodifyEditor.DataTemplates>
                 <DataTemplate DataType="{x:Type playground:KnotNodeViewModel}">
@@ -167,7 +188,8 @@
                 </DataTemplate>
             </nodify:Minimap.ItemTemplate>
             <nodify:Minimap.ItemContainerTheme>
-                <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}" TargetType="{x:Type nodify:MinimapItem}">
+                <ControlTheme BasedOn="{StaticResource {x:Type nodify:MinimapItem}}"
+                              TargetType="{x:Type nodify:MinimapItem}">
                     <Setter Property="Location" Value="{Binding Location}" />
                     <Setter Property="Width" Value="150" />
                     <Setter Property="Height" Value="130" />
