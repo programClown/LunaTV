@@ -8,8 +8,7 @@ using FluentAvalonia.UI.Controls;
 using LunaTV.Base.Web;
 using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
-using Nodify;
-using Nodify.Playground;
+using LunaTV.ViewModels.Playground;
 
 namespace LunaTV.ViewModels;
 
@@ -17,16 +16,7 @@ public partial class PlaygroundViewModel : PageViewModelBase
 {
     private readonly LunaHttpStaticPageServer _htmlServerProxy;
     [ObservableProperty] private ObservableCollection<ConnectionViewModel> _connections = new();
-    [ObservableProperty] private GroupingMovementMode _groupingNodeMovement;
-    [ObservableProperty] private PointEditor _location;
-    [ObservableProperty] private PointEditor _minimapViewportOffset;
     [ObservableProperty] private ObservableCollection<NodeViewModel> _nodes = new();
-    [ObservableProperty] private PendingConnectionViewModel? _pendingConnection;
-    [ObservableProperty] private bool _resizeToViewport;
-    [ObservableProperty] private ConnectionViewModel? _selectedConnection;
-    [ObservableProperty] private ObservableCollection<ConnectionViewModel> _selectedConnections = new();
-    [ObservableProperty] private NodeViewModel? _selectedNode;
-    [ObservableProperty] private ObservableCollection<NodeViewModel> _selectedNodes = new();
     [ObservableProperty] private bool _showGridLines;
     [ObservableProperty] private Size _viewportSize;
     [ObservableProperty] private double _zoom = 1.0;
@@ -35,7 +25,11 @@ public partial class PlaygroundViewModel : PageViewModelBase
     {
         _htmlServerProxy = new LunaHttpStaticPageServer();
         _htmlServerProxy?.Start(GlobalDefine.RootPath + "wwwroot/unfake", 8080);
+
+        PendingConnection = new PendingConnectionViewModel(this);
     }
+
+    public PendingConnectionViewModel PendingConnection { get; }
 
     public override string Title => "创作广场";
 
@@ -45,22 +39,48 @@ public partial class PlaygroundViewModel : PageViewModelBase
     [RelayCommand]
     private void ImageNode()
     {
-        var node = new FlowNodeViewModel
+        Nodes.Add(new NodeViewModel
         {
-            Title = "Node 1",
-            Location = new Point(200, 300)
-        };
-        Nodes.Add(node);
-        node.Input.Add(new ConnectorViewModel
-        {
-            Title = "NEW 1",
-            Shape = ConnectorShape.Circle
+            Title = "节点1",
+            Location = new Point(10, 10),
+            Input =
+            {
+                new ConnectorViewModel
+                {
+                    Title = "In 1"
+                }
+            },
+            Output =
+            {
+                new ConnectorViewModel
+                {
+                    Title = "Out 1"
+                }
+            }
         });
-        node.Input.Add(new ConnectorViewModel
+        Nodes.Add(new NodeViewModel
         {
-            Title = "NEW 2",
-            Shape = ConnectorShape.Square
+            Title = "节点2",
+            Location = new Point(10, 10),
+            Input =
+            {
+                new ConnectorViewModel
+                {
+                    Title = "In 2"
+                }
+            },
+            Output =
+            {
+                new ConnectorViewModel
+                {
+                    Title = "Out 2"
+                }
+            }
         });
+        Connections.Add(new ConnectionViewModel
+            (Nodes[0].Output[0],
+                Nodes[1].Input[0])
+        );
     }
 
 
@@ -73,5 +93,10 @@ public partial class PlaygroundViewModel : PageViewModelBase
     [RelayCommand]
     private void DisplayNode()
     {
+    }
+
+    public void Connect(ConnectorViewModel source, ConnectorViewModel target)
+    {
+        Connections.Add(new ConnectionViewModel(source, target));
     }
 }

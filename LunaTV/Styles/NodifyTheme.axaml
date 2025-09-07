@@ -2,12 +2,9 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:nodify="https://miroiu.github.io/nodify"
-    xmlns:playground="clr-namespace:Nodify.Playground;assembly=Nodify.Playground"
     xmlns:shared="clr-namespace:Nodify;assembly=Nodify.Shared">
 
     <shared:RandomBrushConverter x:Key="RandomBrushConverter" />
-    <playground:FlowToDirectionConverter x:Key="FlowToDirectionConverter" />
-    <playground:FlowToConnectorPositionConverter x:Key="FlowToConnectorPositionConverter" />
 
     <GeometryDrawing
         x:Key="SmallGridGeometry"
@@ -244,47 +241,6 @@
         TargetType="{x:Type nodify:Connector}">
         <!-- <Setter Property="Anchor" Value="{TemplateBinding Anchor, Mode=OneWayToSource}" /> -->
         <!-- <Setter Property="IsConnected" Value="{TemplateBinding IsConnected}" /> -->
-    </ControlTheme>
-
-    <ControlTheme
-        x:Key="{x:Type nodify:NodeInput}"
-        BasedOn="{StaticResource {x:Type nodify:NodeInput}}"
-        TargetType="{x:Type nodify:NodeInput}">
-        <Setter Property="HeaderTemplate">
-            <Setter.Value>
-                <DataTemplate DataType="{x:Type playground:ConnectorViewModel}">
-                    <TextBlock Text="{Binding Title}" />
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Header" Value="{TemplateBinding}" />
-        <!-- <Setter Property="Anchor" Value="{TemplateBinding Anchor, Mode=OneWayToSource}" /> -->
-        <!-- <Setter Property="IsConnected" Value="{TemplateBinding IsConnected}" /> -->
-        <Setter Property="Background" Value="Transparent" />
-    </ControlTheme>
-
-    <ControlTheme
-        x:Key="{x:Type nodify:NodeOutput}"
-        BasedOn="{StaticResource {x:Type nodify:NodeOutput}}"
-        TargetType="{x:Type nodify:NodeOutput}">
-        <Setter Property="(Interaction.Behaviors)">
-            <BehaviorCollectionTemplate>
-                <BehaviorCollection>
-                    <DataTrigger Property="Shape" Value="{x:Static playground:ConnectorShape.Square}">
-                        <PropertySetter Property="ConnectorTemplate" Value="{StaticResource SquareConnector}" />
-                        <PropertySetter Property="BorderBrush" Value="{StaticResource SquareConnectorColor}" />
-                    </DataTrigger>
-                    <DataTrigger Property="Shape" Value="{x:Static playground:ConnectorShape.Triangle}">
-                        <PropertySetter Property="ConnectorTemplate" Value="{StaticResource TriangleConnector}" />
-                        <PropertySetter Property="BorderBrush" Value="{StaticResource TriangleConnectorColor}" />
-                    </DataTrigger>
-                </BehaviorCollection>
-            </BehaviorCollectionTemplate>
-        </Setter>
-        <!-- <Setter Property="Header" Value="{TemplateBinding Title}" /> -->
-        <!-- <Setter Property="Anchor" Value="{TemplateBinding Anchor, Mode=OneWayToSource}" /> -->
-        <!-- <Setter Property="IsConnected" Value="{TemplateBinding IsConnected}" /> -->
-        <Setter Property="Background" Value="Transparent" />
     </ControlTheme>
 
     <ControlTheme

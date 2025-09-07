@@ -41,33 +41,19 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LunaTV.Base\LunaTV.Base.csproj"/>
-        <ProjectReference Include="..\Nodify.Playground\Nodify.Playground.csproj"/>
+        <ProjectReference Include="..\Nodify.Shared\Nodify.Shared.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Exceptions\"/>
+        <Folder Include="Views\Playground\"/>
         <None Include="wwwroot\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-        <AvaloniaXaml Remove="Assets\wwwroot\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Remove="Assets\wwwroot\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Remove="Assets\wwwroot\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <AdditionalFiles Remove="Assets\wwwroot\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="Assets\wwwroot\**"/>
+        <AvaloniaResource Remove="Assets\wwwroot\**"/>
     </ItemGroup>
 </Project>

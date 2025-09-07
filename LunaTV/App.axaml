@@ -13,7 +13,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="/Styles/IconPath.axaml" />
                 <ResourceInclude Source="/Styles/Theme.axaml" />
-                <ResourceInclude Source="/Styles/NodifyTheme.axaml" />
                 <ResourceInclude Source="avares://Nodify/Themes/Generic.xaml" />
                 <ResourceInclude Source="avares://Nodify/Themes/Nodify.xaml" />
                 <ResourceInclude Source="avares://Nodify.Shared/Themes/Generic.xaml" />
