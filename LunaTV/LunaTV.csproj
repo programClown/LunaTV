@@ -41,6 +41,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LunaTV.Base\LunaTV.Base.csproj"/>
+        <ProjectReference Include="..\M3U8Download\M3U8Download.csproj"/>
         <ProjectReference Include="..\Nodify.Shared\Nodify.Shared.csproj"/>
     </ItemGroup>
 

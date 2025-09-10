@@ -1,10 +1,13 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:u="https://irihi.tech/ursa"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="LunaTV.Views.TransferEverythingView">
+﻿<UserControl
+    x:Class="LunaTV.Views.TransferEverythingView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
 
     <UserControl.Styles>
         <Style Selector="PathIcon.Indicator">
@@ -15,37 +18,51 @@
 
     <Grid RowDefinitions="Auto, Auto, *">
         <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock HorizontalAlignment="Center" FontSize="32" Theme="{DynamicResource TitleTextBlock}"
-                       Foreground="{DynamicResource SemiPurple6Color}"
-                       Text="万物快传" />
-            <TextBlock HorizontalAlignment="Center" Classes="H5" Theme="{DynamicResource TitleTextBlock}"
-                       Text="安全、快速、简单的传输服务" />
-            <TextBlock HorizontalAlignment="Center" Classes="Tertiary"
-                       Text="基于WebRTC的端到端服务 - 无需注册，即传即用" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="32"
+                Foreground="{DynamicResource SemiPurple6Color}"
+                Text="万物快传"
+                Theme="{DynamicResource TitleTextBlock}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                Classes="H5"
+                Text="安全、快速、简单的传输服务"
+                Theme="{DynamicResource TitleTextBlock}" />
+            <TextBlock
+                HorizontalAlignment="Center"
+                Classes="Tertiary"
+                Text="基于WebRTC的端到端服务 - 无需注册，即传即用" />
 
             <Border
-                Opacity="0.3"
+                Height="2"
                 MaxWidth="600"
-                Height="2">
+                Opacity="0.3">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#FFDD9BE0" Offset="0.0" />
-                        <GradientStop Color="#FF490A61" Offset="0.5" />
-                        <GradientStop Color="#FFB449C2" Offset="1.0" />
+                        <GradientStop Offset="0.0" Color="#FFDD9BE0" />
+                        <GradientStop Offset="0.5" Color="#FF490A61" />
+                        <GradientStop Offset="1.0" Color="#FFB449C2" />
                     </LinearGradientBrush>
                 </Border.Background>
             </Border>
         </StackPanel>
 
-        <Border Grid.Row="1" Classes="Shadow"
-                HorizontalAlignment="Center"
-                Padding="0"
-                Margin="0,40,0,0"
-                Theme="{StaticResource CardBorder}">
+        <Border
+            Grid.Row="1"
+            Margin="0,40,0,0"
+            Padding="0"
+            HorizontalAlignment="Center"
+            Classes="Shadow"
+            Theme="{StaticResource CardBorder}">
             <u:SelectionList>
                 <u:SelectionList.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Margin="16,4" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="16" />
+                        <StackPanel
+                            Margin="16,4"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="16" />
                     </ItemsPanelTemplate>
                 </u:SelectionList.ItemsPanel>
                 <u:SelectionListItem>
@@ -81,11 +98,13 @@
 
         <Panel Grid.Row="2">
             <Grid RowDefinitions="Auto,*">
-                <Border Grid.Row="0" Classes="Shadow"
-                        HorizontalAlignment="Center"
-                        Padding="0"
-                        Margin="0,20,0,0"
-                        Theme="{StaticResource CardBorder}">
+                <Border
+                    Grid.Row="0"
+                    Margin="0,20,0,0"
+                    Padding="0"
+                    HorizontalAlignment="Center"
+                    Classes="Shadow"
+                    Theme="{StaticResource CardBorder}">
                     <u:SelectionList>
                         <u:SelectionList.Styles>
                             <Style Selector="u|SelectionListItem:selected">
@@ -94,8 +113,11 @@
                         </u:SelectionList.Styles>
                         <u:SelectionList.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Margin="16,4" HorizontalAlignment="Center" Orientation="Horizontal"
-                                            Spacing="16" />
+                                <StackPanel
+                                    Margin="16,4"
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="16" />
                             </ItemsPanelTemplate>
                         </u:SelectionList.ItemsPanel>
                         <u:SelectionListItem>
@@ -113,66 +135,133 @@
                     </u:SelectionList>
                 </Border>
 
-                <Border BorderThickness="2" Grid.Row="1" Classes="Shadow"
-                        HorizontalAlignment="Stretch"
-                        MaxWidth="1000"
-                        Padding="0"
-                        Margin="0,20,0,40"
-                        Theme="{StaticResource CardBorder}">
+                <Border
+                    Grid.Row="1"
+                    MaxWidth="1000"
+                    Margin="0,20,0,40"
+                    Padding="0"
+                    HorizontalAlignment="Stretch"
+                    BorderThickness="2"
+                    Classes="Shadow"
+                    Theme="{StaticResource CardBorder}">
 
 
                     <Grid Margin="40,10" RowDefinitions="Auto,*">
                         <DockPanel Grid.Row="0">
-                            <StackPanel Spacing="8" DockPanel.Dock="Left" Orientation="Horizontal">
+                            <StackPanel
+                                DockPanel.Dock="Left"
+                                Orientation="Horizontal"
+                                Spacing="8">
                                 <PathIcon Data="{DynamicResource SemiIconComment}" />
                                 <StackPanel Spacing="4">
-                                    <TextBlock Text="传送文字" Classes="H5" Theme="{DynamicResource TitleTextBlock}" />
-                                    <TextBlock Text="输入要传输的文本内容" Classes="Tertiary" />
+                                    <TextBlock
+                                        Classes="H5"
+                                        Text="传送文字"
+                                        Theme="{DynamicResource TitleTextBlock}" />
+                                    <TextBlock Classes="Tertiary" Text="输入要传输的文本内容" />
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel Spacing="4" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                                <TextBlock Text="未连接" Classes="Tertiary" FontWeight="Bold" FontSize="16" />
-                                <TextBlock Text="尚未创建房间" Classes="Tertiary" FontWeight="ExtraLight" FontSize="12" />
+                            <StackPanel
+                                HorizontalAlignment="Right"
+                                DockPanel.Dock="Right"
+                                Spacing="4">
+                                <TextBlock
+                                    Classes="Tertiary"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Text="未连接" />
+                                <TextBlock
+                                    Classes="Tertiary"
+                                    FontSize="12"
+                                    FontWeight="ExtraLight"
+                                    Text="尚未创建房间" />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="WS" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
-                                    <Border Height="12" Width="12" CornerRadius="6" Background="DarkRed" />
-                                    <TextBlock Text="未连接" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
-                                    <TextBlock Text="|" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
-                                    <TextBlock Text="RTC" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
-                                    <Border Height="12" Width="12" CornerRadius="6" Background="DarkRed" />
-                                    <TextBlock Text="未连接" Classes="Tertiary" FontSize="10" VerticalAlignment="Center" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="Tertiary"
+                                        FontSize="10"
+                                        Text="WS" />
+                                    <Border
+                                        Width="12"
+                                        Height="12"
+                                        Background="DarkRed"
+                                        CornerRadius="6" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="Tertiary"
+                                        FontSize="10"
+                                        Text="未连接" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="Tertiary"
+                                        FontSize="10"
+                                        Text="|" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="Tertiary"
+                                        FontSize="10"
+                                        Text="RTC" />
+                                    <Border
+                                        Width="12"
+                                        Height="12"
+                                        Background="DarkRed"
+                                        CornerRadius="6" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Classes="Tertiary"
+                                        FontSize="10"
+                                        Text="未连接" />
                                 </StackPanel>
                             </StackPanel>
                         </DockPanel>
 
-                        <Button Name="PushButton" Margin="0,20,0,10" Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch">
+                        <Button
+                            Name="PushButton"
+                            Grid.Row="1"
+                            Margin="0,20,0,10"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Click="PushButton_OnClick">
                             <Button.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
                                         <Grid>
-                                            <Rectangle StrokeThickness="2" Stroke="#FFC6CACD"
-                                                       StrokeDashArray="4,2"
-                                                       Width="{Binding Path=Bounds.Width,ElementName=PushButton}"
-                                                       Height="{Binding Path=Bounds.Height,ElementName=PushButton}" />
+                                            <Rectangle
+                                                Width="{Binding Path=Bounds.Width, ElementName=PushButton}"
+                                                Height="{Binding Path=Bounds.Height, ElementName=PushButton}"
+                                                Stroke="#FFC6CACD"
+                                                StrokeDashArray="4,2"
+                                                StrokeThickness="2" />
                                         </Grid>
                                     </VisualBrush.Visual>
                                 </VisualBrush>
                             </Button.BorderBrush>
                             <StackPanel Spacing="16">
-                                <Border Height="128" Width="128" CornerRadius="64"
-                                        Background="{DynamicResource SemiGrey2Color}">
-                                    <PathIcon Width="96" Height="96"
-                                              Data="{DynamicResource SemiIconCloudUploadStroked}" />
+                                <Border
+                                    Width="128"
+                                    Height="128"
+                                    Background="{DynamicResource SemiGrey2Color}"
+                                    CornerRadius="64">
+                                    <PathIcon
+                                        Width="96"
+                                        Height="96"
+                                        Data="{DynamicResource SemiIconCloudUploadStroked}" />
                                 </Border>
-                                <TextBlock HorizontalAlignment="Center" FontSize="32" Text="拖拽文件到这里" />
-                                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    FontSize="32"
+                                    Text="拖拽文件到这里" />
+                                <StackPanel
+                                    HorizontalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Spacing="8">
                                     <TextBlock Classes="Tertiary" Text="或者" />
                                     <TextBlock Classes="Underline" Text="点击选择文件" />
                                 </StackPanel>
-                                <TextBlock HorizontalAlignment="Center" Classes="Tertiary"
-                                           Text="支持多个文件同时上传，WebRTC点对点传输" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Classes="Tertiary"
+                                    Text="支持多个文件同时上传，WebRTC点对点传输" />
                             </StackPanel>
                         </Button>
                     </Grid>
