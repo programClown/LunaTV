@@ -2,7 +2,7 @@
 
 namespace N_m3u8DL_RE.Entity;
 
-internal class MuxOptions
+public class MuxOptions
 {
     public bool UseMkvmerge { get; set; } = false;
     public MuxFormat MuxFormat { get; set; } = MuxFormat.MP4;

@@ -2,7 +2,7 @@
 
 namespace N_m3u8DL_RE.Entity;
 
-internal class Mediainfo
+public class Mediainfo
 {
     public string? Id { get; set; }
     public string? Text { get; set; }
@@ -17,11 +17,13 @@ internal class Mediainfo
 
     public override string? ToString()
     {
-        return $"{(string.IsNullOrEmpty(Id) ? "NaN" : Id)}: " + string.Join(", ", new List<string?> { Type, BaseInfo, Resolution, Fps, Bitrate }.Where(i => !string.IsNullOrEmpty(i)));
+        return $"{(string.IsNullOrEmpty(Id) ? "NaN" : Id)}: " + string.Join(", ",
+            new List<string?> { Type, BaseInfo, Resolution, Fps, Bitrate }.Where(i => !string.IsNullOrEmpty(i)));
     }
 
     public string ToStringMarkUp()
     {
-        return "[steelblue]" + ToString().EscapeMarkup() + ((HDR && !DolbyVison) ? " [darkorange3_1][[HDR]][/]" : "") + (DolbyVison ? " [darkorange3_1][[DOVI]][/]" : "") + "[/]";
+        return "[steelblue]" + ToString().EscapeMarkup() + (HDR && !DolbyVison ? " [darkorange3_1][[HDR]][/]" : "") +
+               (DolbyVison ? " [darkorange3_1][[DOVI]][/]" : "") + "[/]";
     }
 }

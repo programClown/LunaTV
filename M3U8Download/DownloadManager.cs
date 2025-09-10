@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text;
-using N_m3u8DL_RE.CommandLine;
 using N_m3u8DL_RE.Common.Entity;
 using N_m3u8DL_RE.Common.Enum;
 using N_m3u8DL_RE.Common.Log;
@@ -17,7 +16,7 @@ namespace M3U8Download;
 
 public class DownloadManager
 {
-    private readonly MyOption? _option = new()
+    public DownloadOption? Option { get; set; } = new()
     {
         SavePattern = "<SaveName>_<Id>_<Codecs>_<Language>_<Ext>",
         TmpDir = Path.Combine(Environment.CurrentDirectory, "tmp"),
@@ -93,66 +92,66 @@ public class DownloadManager
 
     public void SetFFmpegPath(string ffmpegPath)
     {
-        if (_option == null) return;
-        _option.FFmpegBinaryPath = ffmpegPath;
+        if (Option == null) return;
+        Option.FFmpegBinaryPath = ffmpegPath;
     }
 
     public async Task<bool> DownloadAsync(string url, string savePath, string saveName)
     {
-        if (_option == null) return false;
+        if (Option == null) return false;
 
-        _option.Input = url;
-        _option.SaveDir = savePath;
-        _option.SaveName = saveName;
-        HTTPUtil.AppHttpClient.Timeout = TimeSpan.FromSeconds(_option.HttpRequestTimeout);
+        Option.Input = url;
+        Option.SaveDir = savePath;
+        Option.SaveName = saveName;
+        HTTPUtil.AppHttpClient.Timeout = TimeSpan.FromSeconds(Option.HttpRequestTimeout);
 
-        Logger.IsWriteFile = !_option.NoLog;
-        Logger.LogFilePath = _option.LogFilePath;
+        Logger.IsWriteFile = !Option.NoLog;
+        Logger.LogFilePath = Option.LogFilePath;
         Logger.InitLogFile();
-        Logger.LogLevel = _option.LogLevel;
+        Logger.LogLevel = Option.LogLevel;
 
-        if (_option.UseSystemProxy == false) HTTPUtil.HttpClientHandler.UseProxy = false;
+        if (Option.UseSystemProxy == false) HTTPUtil.HttpClientHandler.UseProxy = false;
 
-        if (_option.CustomProxy != null)
+        if (Option.CustomProxy != null)
         {
-            HTTPUtil.HttpClientHandler.Proxy = _option.CustomProxy;
+            HTTPUtil.HttpClientHandler.Proxy = Option.CustomProxy;
             HTTPUtil.HttpClientHandler.UseProxy = true;
         }
 
         // 检查互斥的选项
-        if (_option is { MuxAfterDone: false, MuxImports.Count: > 0 })
+        if (Option is { MuxAfterDone: false, MuxImports.Count: > 0 })
             throw new ArgumentException("MuxAfterDone disabled, MuxImports not allowed!");
 
         // LivePipeMux开启时 LiveRealTimeMerge必须开启
-        if (_option is { LivePipeMux: true, LiveRealTimeMerge: false })
+        if (Option is { LivePipeMux: true, LiveRealTimeMerge: false })
         {
             Logger.WarnMarkUp("LivePipeMux detected, forced enable LiveRealTimeMerge");
-            _option.LiveRealTimeMerge = true;
+            Option.LiveRealTimeMerge = true;
         }
 
         // 预先检查ffmpeg
-        _option.FFmpegBinaryPath ??= GlobalUtil.FindExecutable("ffmpeg");
+        Option.FFmpegBinaryPath ??= GlobalUtil.FindExecutable("ffmpeg");
 
-        if (string.IsNullOrEmpty(_option.FFmpegBinaryPath) || !File.Exists(_option.FFmpegBinaryPath))
+        if (string.IsNullOrEmpty(Option.FFmpegBinaryPath) || !File.Exists(Option.FFmpegBinaryPath))
             throw new FileNotFoundException(ResString.ffmpegNotFound);
 
-        Logger.Extra($"ffmpeg => {_option.FFmpegBinaryPath}");
+        Logger.Extra($"ffmpeg => {Option.FFmpegBinaryPath}");
 
         // 预先检查mkvmerge
-        if (_option is { MuxOptions.UseMkvmerge: true, MuxAfterDone: true })
+        if (Option is { MuxOptions.UseMkvmerge: true, MuxAfterDone: true })
         {
-            _option.MkvmergeBinaryPath ??= GlobalUtil.FindExecutable("mkvmerge");
-            if (string.IsNullOrEmpty(_option.MkvmergeBinaryPath) || !File.Exists(_option.MkvmergeBinaryPath))
+            Option.MkvmergeBinaryPath ??= GlobalUtil.FindExecutable("mkvmerge");
+            if (string.IsNullOrEmpty(Option.MkvmergeBinaryPath) || !File.Exists(Option.MkvmergeBinaryPath))
                 throw new FileNotFoundException(ResString.mkvmergeNotFound);
-            Logger.Extra($"mkvmerge => {_option.MkvmergeBinaryPath}");
+            Logger.Extra($"mkvmerge => {Option.MkvmergeBinaryPath}");
         }
 
         // 预先检查
-        if (_option.Keys is { Length: > 0 } || _option.KeyTextFile != null)
+        if (Option.Keys is { Length: > 0 } || Option.KeyTextFile != null)
         {
-            if (!string.IsNullOrEmpty(_option.DecryptionBinaryPath) && !File.Exists(_option.DecryptionBinaryPath))
-                throw new FileNotFoundException(_option.DecryptionBinaryPath);
-            switch (_option.DecryptionEngine)
+            if (!string.IsNullOrEmpty(Option.DecryptionBinaryPath) && !File.Exists(Option.DecryptionBinaryPath))
+                throw new FileNotFoundException(Option.DecryptionBinaryPath);
+            switch (Option.DecryptionEngine)
             {
                 case DecryptEngine.SHAKA_PACKAGER:
                 {
@@ -162,21 +161,21 @@ public class DownloadManager
                     var file4 = GlobalUtil.FindExecutable("packager-win-x64");
                     if (file == null && file2 == null && file3 == null && file4 == null)
                         throw new FileNotFoundException(ResString.shakaPackagerNotFound);
-                    _option.DecryptionBinaryPath = file ?? file2 ?? file3 ?? file4;
-                    Logger.Extra($"shaka-packager => {_option.DecryptionBinaryPath}");
+                    Option.DecryptionBinaryPath = file ?? file2 ?? file3 ?? file4;
+                    Logger.Extra($"shaka-packager => {Option.DecryptionBinaryPath}");
                     break;
                 }
                 case DecryptEngine.MP4DECRYPT:
                 {
                     var file = GlobalUtil.FindExecutable("mp4decrypt");
                     if (file == null) throw new FileNotFoundException(ResString.mp4decryptNotFound);
-                    _option.DecryptionBinaryPath = file;
-                    Logger.Extra($"mp4decrypt => {_option.DecryptionBinaryPath}");
+                    Option.DecryptionBinaryPath = file;
+                    Logger.Extra($"mp4decrypt => {Option.DecryptionBinaryPath}");
                     break;
                 }
                 case DecryptEngine.FFMPEG:
                 default:
-                    _option.DecryptionBinaryPath = _option.FFmpegBinaryPath;
+                    Option.DecryptionBinaryPath = Option.FFmpegBinaryPath;
                     break;
             }
         }
@@ -189,7 +188,7 @@ public class DownloadManager
         };
 
         // 添加或替换用户输入的headers
-        foreach (var item in _option.Headers)
+        foreach (var item in Option.Headers)
         {
             headers[item.Key] = item.Value;
             Logger.Extra($"User-Defined Header => {item.Key}: {item.Value}");
@@ -197,22 +196,22 @@ public class DownloadManager
 
         var parserConfig = new ParserConfig
         {
-            AppendUrlParams = _option.AppendUrlParams,
-            UrlProcessorArgs = _option.UrlProcessorArgs,
-            BaseUrl = _option.BaseUrl!,
+            AppendUrlParams = Option.AppendUrlParams,
+            UrlProcessorArgs = Option.UrlProcessorArgs,
+            BaseUrl = Option.BaseUrl!,
             Headers = headers,
-            CustomMethod = _option.CustomHLSMethod,
-            CustomeKey = _option.CustomHLSKey,
-            CustomeIV = _option.CustomHLSIv
+            CustomMethod = Option.CustomHLSMethod,
+            CustomeKey = Option.CustomHLSKey,
+            CustomeIV = Option.CustomHLSIv
         };
 
-        if (_option.AllowHlsMultiExtMap) parserConfig.CustomParserArgs.Add("AllowHlsMultiExtMap", "true");
+        if (Option.AllowHlsMultiExtMap) parserConfig.CustomParserArgs.Add("AllowHlsMultiExtMap", "true");
 
         // 等待任务开始时间
-        if (_option.TaskStartAt != null && _option.TaskStartAt > DateTime.Now)
+        if (Option.TaskStartAt != null && Option.TaskStartAt > DateTime.Now)
         {
-            Logger.InfoMarkUp(ResString.taskStartAt + _option.TaskStartAt);
-            while (_option.TaskStartAt > DateTime.Now) await Task.Delay(1000);
+            Logger.InfoMarkUp(ResString.taskStartAt + Option.TaskStartAt);
+            while (Option.TaskStartAt > DateTime.Now) await Task.Delay(1000);
         }
 
         // 流提取器配置
@@ -238,37 +237,37 @@ public class DownloadManager
         var subs = lists.Where(x => x.MediaType == MediaType.SUBTITLES).ToList();
 
         // 尝试从URL或文件读取文件名
-        if (string.IsNullOrEmpty(_option.SaveName)) _option.SaveName = OtherUtil.GetFileNameFromInput(_option.Input);
+        if (string.IsNullOrEmpty(Option.SaveName)) Option.SaveName = OtherUtil.GetFileNameFromInput(Option.Input);
 
         // 生成文件夹
-        var tmpDir = Path.Combine(_option.TmpDir ?? Environment.CurrentDirectory,
-            $"{_option.SaveName ?? DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}");
+        var tmpDir = Path.Combine(Option.TmpDir ?? Environment.CurrentDirectory,
+            $"{Option.SaveName ?? DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}");
         // 记录文件
         extractor.RawFiles["meta.json"] = GlobalUtil.ConvertToJson(lists);
         // 写出文件
-        await WriteRawFilesAsync(_option, extractor, tmpDir);
+        await WriteRawFilesAsync(Option, extractor, tmpDir);
 
         Logger.Info(ResString.streamsInfo, lists.Count, basicStreams.Count, audios.Count, subs.Count);
 
         foreach (var item in lists) Logger.InfoMarkUp(item.ToString());
 
         var selectedStreams = new List<StreamSpec>();
-        if (_option.DropVideoFilter != null || _option.DropAudioFilter != null || _option.DropSubtitleFilter != null)
+        if (Option.DropVideoFilter != null || Option.DropAudioFilter != null || Option.DropSubtitleFilter != null)
         {
-            basicStreams = FilterUtil.DoFilterDrop(basicStreams, _option.DropVideoFilter);
-            audios = FilterUtil.DoFilterDrop(audios, _option.DropAudioFilter);
-            subs = FilterUtil.DoFilterDrop(subs, _option.DropSubtitleFilter);
+            basicStreams = FilterUtil.DoFilterDrop(basicStreams, Option.DropVideoFilter);
+            audios = FilterUtil.DoFilterDrop(audios, Option.DropAudioFilter);
+            subs = FilterUtil.DoFilterDrop(subs, Option.DropSubtitleFilter);
             lists = basicStreams.Concat(audios).Concat(subs).ToList();
         }
 
-        if (_option.DropVideoFilter != null) Logger.Extra($"DropVideoFilter => {_option.DropVideoFilter}");
-        if (_option.DropAudioFilter != null) Logger.Extra($"DropAudioFilter => {_option.DropAudioFilter}");
-        if (_option.DropSubtitleFilter != null) Logger.Extra($"DropSubtitleFilter => {_option.DropSubtitleFilter}");
-        if (_option.VideoFilter != null) Logger.Extra($"VideoFilter => {_option.VideoFilter}");
-        if (_option.AudioFilter != null) Logger.Extra($"AudioFilter => {_option.AudioFilter}");
-        if (_option.SubtitleFilter != null) Logger.Extra($"SubtitleFilter => {_option.SubtitleFilter}");
+        if (Option.DropVideoFilter != null) Logger.Extra($"DropVideoFilter => {Option.DropVideoFilter}");
+        if (Option.DropAudioFilter != null) Logger.Extra($"DropAudioFilter => {Option.DropAudioFilter}");
+        if (Option.DropSubtitleFilter != null) Logger.Extra($"DropSubtitleFilter => {Option.DropSubtitleFilter}");
+        if (Option.VideoFilter != null) Logger.Extra($"VideoFilter => {Option.VideoFilter}");
+        if (Option.AudioFilter != null) Logger.Extra($"AudioFilter => {Option.AudioFilter}");
+        if (Option.SubtitleFilter != null) Logger.Extra($"SubtitleFilter => {Option.SubtitleFilter}");
 
-        if (_option.AutoSelect)
+        if (Option.AutoSelect)
         {
             if (basicStreams.Count != 0)
                 selectedStreams.Add(basicStreams.First());
@@ -278,15 +277,15 @@ public class DownloadManager
                     .ThenByDescending(GetOrder).First());
             selectedStreams.AddRange(subs);
         }
-        else if (_option.SubOnly)
+        else if (Option.SubOnly)
         {
             selectedStreams.AddRange(subs);
         }
-        else if (_option.VideoFilter != null || _option.AudioFilter != null || _option.SubtitleFilter != null)
+        else if (Option.VideoFilter != null || Option.AudioFilter != null || Option.SubtitleFilter != null)
         {
-            basicStreams = FilterUtil.DoFilterKeep(basicStreams, _option.VideoFilter);
-            audios = FilterUtil.DoFilterKeep(audios, _option.AudioFilter);
-            subs = FilterUtil.DoFilterKeep(subs, _option.SubtitleFilter);
+            basicStreams = FilterUtil.DoFilterKeep(basicStreams, Option.VideoFilter);
+            audios = FilterUtil.DoFilterKeep(audios, Option.AudioFilter);
+            subs = FilterUtil.DoFilterKeep(subs, Option.SubtitleFilter);
             selectedStreams = basicStreams.Concat(audios).Concat(subs).ToList();
         }
         else
@@ -305,7 +304,7 @@ public class DownloadManager
             await extractor.FetchPlayListAsync(selectedStreams);
 
         // 直播检测
-        var livingFlag = selectedStreams.Any(s => s.Playlist?.IsLive == true) && !_option.LivePerformAsVod;
+        var livingFlag = selectedStreams.Any(s => s.Playlist?.IsLive == true) && !Option.LivePerformAsVod;
         if (livingFlag) Logger.WarnMarkUp($"[white on darkorange3_1]{ResString.liveFound}[/]");
 
         // 无法识别的加密方式，自动开启二进制合并
@@ -314,15 +313,15 @@ public class DownloadManager
                     p.MediaSegments.Any(m => m.EncryptInfo.Method == EncryptMethod.UNKNOWN))))
         {
             Logger.WarnMarkUp($"[darkorange3_1]{ResString.autoBinaryMerge3}[/]");
-            _option.BinaryMerge = true;
+            Option.BinaryMerge = true;
         }
 
         // 应用用户自定义的分片范围
         if (!livingFlag)
-            FilterUtil.ApplyCustomRange(selectedStreams, _option.CustomRange);
+            FilterUtil.ApplyCustomRange(selectedStreams, Option.CustomRange);
 
         // 应用用户自定义的广告分片关键字
-        FilterUtil.CleanAd(selectedStreams, _option.AdKeywords);
+        FilterUtil.CleanAd(selectedStreams, Option.AdKeywords);
 
         // 记录文件
         extractor.RawFiles["meta_selected.json"] = GlobalUtil.ConvertToJson(selectedStreams);
@@ -331,22 +330,22 @@ public class DownloadManager
         foreach (var item in selectedStreams) Logger.InfoMarkUp(item.ToString());
 
         // 写出文件
-        await WriteRawFilesAsync(_option, extractor, tmpDir);
+        await WriteRawFilesAsync(Option, extractor, tmpDir);
 
-        if (_option.SkipDownload) return false;
+        if (Option.SkipDownload) return false;
 
 
         // 开始MuxAfterDone后自动使用二进制版
-        if (_option is { BinaryMerge: false, MuxAfterDone: true })
+        if (Option is { BinaryMerge: false, MuxAfterDone: true })
         {
-            _option.BinaryMerge = true;
+            Option.BinaryMerge = true;
             Logger.WarnMarkUp($"[darkorange3_1]{ResString.autoBinaryMerge6}[/]");
         }
 
         // 下载配置
         var downloadConfig = new DownloaderConfig
         {
-            MyOptions = _option,
+            MyOptions = Option,
             DirPrefix = tmpDir,
             Headers = parserConfig.Headers // 使用命令行解析得到的Headers
         };
@@ -373,7 +372,7 @@ public class DownloadManager
         return result;
     }
 
-    private static async Task WriteRawFilesAsync(MyOption option, StreamExtractor extractor, string tmpDir)
+    private static async Task WriteRawFilesAsync(DownloadOption option, StreamExtractor extractor, string tmpDir)
     {
         // 写出json文件
         if (option.WriteMetaJson)
