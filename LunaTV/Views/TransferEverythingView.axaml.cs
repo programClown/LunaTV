@@ -19,8 +19,8 @@ public partial class TransferEverythingView : UserControl
         {
             var downloadManager = new DownloadManager();
             downloadManager.SetFFmpegPath("C:\\Users\\zhaom\\Downloads\\N_m3u8DL-RE\\ffmpeg.exe");
-            await downloadManager.DownloadAsync("https://vip.dytt-luck.com/20250827/19419_91c53075/index.m3u8", "D:\\",
-                "test.mp4");
+            await downloadManager.DownloadAsync("https://vod.360zyx.vip/20250708/7T2xjBRd/index.m3u8", "D:\\",
+                "test");
         });
     }
 }
