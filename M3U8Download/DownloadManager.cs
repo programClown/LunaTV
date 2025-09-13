@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 using N_m3u8DL_RE.Common.Entity;
 using N_m3u8DL_RE.Common.Enum;
 using N_m3u8DL_RE.Common.Log;
@@ -10,14 +9,16 @@ using N_m3u8DL_RE.DownloadManager;
 using N_m3u8DL_RE.Enum;
 using N_m3u8DL_RE.Parser;
 using N_m3u8DL_RE.Parser.Config;
+using N_m3u8DL_RE.Processor;
 using N_m3u8DL_RE.Util;
 
 namespace M3U8Download;
 
 public class DownloadManager
 {
-    public DownloadOption? Option { get; set; } = new()
+    public DownloadOption? Option { get; } = new()
     {
+        AdKeywords = [],
         SavePattern = "<SaveName>_<Id>_<Codecs>_<Language>_<Ext>",
         TmpDir = Path.Combine(Environment.CurrentDirectory, "tmp"),
         UILanguage = "zh-CN",
@@ -47,13 +48,13 @@ public class DownloadManager
         ConcurrentDownload = false,
         NoLog = false,
         AllowHlsMultiExtMap = false,
-        MaxSpeed = long.MaxValue,
+        MaxSpeed = 1024 * 1024 * 1024, //1G
         UseSystemProxy = false,
-        CustomProxy = new WebProxy(), //代理选项
+        CustomProxy = null, //代理选项
         CustomRange = null, //只下载部分分片
 
         // 自定义KEY等
-        CustomHLSMethod = EncryptMethod.NONE,
+        CustomHLSMethod = null,
         CustomHLSKey = null,
         CustomHLSIv = null,
 
@@ -207,6 +208,13 @@ public class DownloadManager
 
         if (Option.AllowHlsMultiExtMap) parserConfig.CustomParserArgs.Add("AllowHlsMultiExtMap", "true");
 
+        // demo1
+        parserConfig.ContentProcessors.Insert(0, new DemoProcessor());
+        // demo2
+        parserConfig.KeyProcessors.Insert(0, new DemoProcessor2());
+        // for www.nowehoryzonty.pl
+        parserConfig.UrlProcessors.Insert(0, new NowehoryzontyUrlProcessor());
+
         // 等待任务开始时间
         if (Option.TaskStartAt != null && Option.TaskStartAt > DateTime.Now)
         {
@@ -350,7 +358,7 @@ public class DownloadManager
             Headers = parserConfig.Headers // 使用命令行解析得到的Headers
         };
 
-        var result = false;
+        bool result;
 
         if (extractor.ExtractorType == ExtractorType.HTTP_LIVE)
         {
@@ -360,7 +368,7 @@ public class DownloadManager
         else if (!livingFlag)
         {
             // 开始下载
-            var sdm = new SimpleDownloadManager(downloadConfig, selectedStreams, extractor);
+            var sdm = new LunaDownloadManager(downloadConfig, selectedStreams, extractor);
             result = await sdm.StartDownloadAsync();
         }
         else
