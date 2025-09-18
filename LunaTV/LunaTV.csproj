@@ -51,7 +51,6 @@
 
     <ItemGroup>
         <Folder Include="Exceptions\"/>
-        <Folder Include="Views\Playground\"/>
         <None Include="wwwroot\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
