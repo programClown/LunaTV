@@ -131,7 +131,8 @@ public static class ServiceCollectionExtenstion
                 {
                     provider.GetRequiredService<TVShowViewModel>(),
                     provider.GetRequiredService<PlaygroundViewModel>(),
-                    provider.GetRequiredService<TransferEverythingViewModel>()
+                    provider.GetRequiredService<TransferEverythingViewModel>(),
+                    provider.GetRequiredService<InnovationPlazaViewModel>()
                 },
                 FooterPages =
                 {

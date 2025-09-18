@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;</TargetFrameworks>
+        <LangVersion>default</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <AssemblyName>Luna.LibMpv</AssemblyName>
+        <RootNamespace>Luna.LibMpv</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2"/>
+        <PackageReference Include="HanumanInstitute.Validators" Version="1.2.2"/>
+    </ItemGroup>
+</Project>
