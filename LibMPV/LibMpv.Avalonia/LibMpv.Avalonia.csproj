@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;</TargetFrameworks>
+        <LangVersion>default</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Luna.LibMpv.Avalonia</AssemblyName>
+        <RootNamespace>Luna.LibMpv.Avalonia</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.2"/>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\LibMpv\LibMpv.csproj"/>
+    </ItemGroup>
+</Project>

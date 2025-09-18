@@ -18,7 +18,7 @@ public partial class TransferEverythingView : UserControl
         Task.Run(async () =>
         {
             var downloadManager = new DownloadManager();
-            downloadManager.SetFFmpegPath("C:\\Users\\zhaom\\Downloads\\N_m3u8DL-RE\\ffmpeg.exe");
+            downloadManager.SetFFmpegPath("C:\\Users\\Austin\\Downloads\\ffmpeg.exe");
             await downloadManager.DownloadAsync("https://vod.360zyx.vip/20250708/7T2xjBRd/index.m3u8", "D:\\",
                 "test");
         });

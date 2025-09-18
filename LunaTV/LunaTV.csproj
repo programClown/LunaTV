@@ -40,6 +40,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\LibMPV\MpvDll\MpvDll.csproj" Exclude="All">
+            <ExcludeAssets>All</ExcludeAssets>
+        </ProjectReference>
+        <ProjectReference Include="..\LibMPV\LibMpv.Avalonia\LibMpv.Avalonia.csproj"/>
         <ProjectReference Include="..\LunaTV.Base\LunaTV.Base.csproj"/>
         <ProjectReference Include="..\M3U8Download\M3U8Download.csproj"/>
         <ProjectReference Include="..\Nodify.Shared\Nodify.Shared.csproj"/>
