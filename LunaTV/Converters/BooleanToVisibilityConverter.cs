@@ -6,7 +6,7 @@ namespace LunaTV.Converters;
 
 public class BooleanToVisibilityConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool boolValue)
         {
@@ -17,7 +17,7 @@ public class BooleanToVisibilityConverter : IValueConverter
         return false;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool visibility)
         {
