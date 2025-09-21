@@ -13,8 +13,10 @@ public class OpenGlView : OpenGlControlBase, IVideoView
     private GetProcAddress? _getProcAddress;
 
     // MpvContext property
-    public static readonly DirectProperty<OpenGlView, MpvContext> MpvContextProperty = AvaloniaProperty.RegisterDirect<OpenGlView, MpvContext>(
-        nameof(MpvContext), o => o.MpvContext, defaultBindingMode: BindingMode.OneWayToSource);
+    public static readonly DirectProperty<OpenGlView, MpvContext> MpvContextProperty =
+        AvaloniaProperty.RegisterDirect<OpenGlView, MpvContext>(
+            nameof(MpvContext), o => o.MpvContext, defaultBindingMode: BindingMode.OneWayToSource);
+
     public MpvContext MpvContext { get; } = new();
 
     protected override void OnOpenGlRender(GlInterface gl, int fbo)
@@ -28,8 +30,12 @@ public class OpenGlView : OpenGlControlBase, IVideoView
 
     protected override void OnOpenGlInit(GlInterface gl)
     {
-        if (_getProcAddress != null) { return; }
-        
+        MpvContext.SetOptionString("vo", "libmpv");
+        if (_getProcAddress != null)
+        {
+            return;
+        }
+
         _getProcAddress = gl.GetProcAddress;
         MpvContext?.StopRendering();
         MpvContext?.StartOpenGlRendering((name) => _getProcAddress(name), this.UpdateVideoView);
@@ -59,7 +65,7 @@ public class OpenGlView : OpenGlControlBase, IVideoView
             MpvContext?.Dispose();
         }
     }
-    
+
     public void Dispose()
     {
         Dispose(true);

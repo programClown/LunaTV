@@ -40,6 +40,7 @@
 
                     <!--  Seek Slider  -->
                     <Slider
+                        Name="PART_SeekBar"
                         Margin="10,0"
                         VerticalAlignment="Center"
                         IsHitTestVisible="True"
@@ -69,7 +70,8 @@
                                 ToolTip.Tip="结束">
                                 <fa:SymbolIcon FontSize="18" Symbol="StopFilled" />
                             </Button>
-                            <Button Theme="{DynamicResource BorderlessButton}" ToolTip.Tip="移到开头">
+                            <Button Command="{Binding GoHeadCommand}" Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="移到开头">
                                 <fa:SymbolIcon FontSize="18" Symbol="PreviousFilled" />
                             </Button>
                             <Button
@@ -78,7 +80,9 @@
                                 ToolTip.Tip="播放/暂停">
                                 <fa:SymbolIcon FontSize="32" Symbol="PlayFilled" />
                             </Button>
-                            <Button Theme="{DynamicResource BorderlessButton}" ToolTip.Tip="移到结尾">
+                            <Button Command="{Binding GoTailCommand}" Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="移到结尾">
+
                                 <fa:SymbolIcon FontSize="18" Symbol="NextFilled" />
                             </Button>
                         </StackPanel>

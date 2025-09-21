@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +14,8 @@ using HanumanInstitute.LibMpv.Avalonia;
 using HanumanInstitute.LibMpv.Core;
 using LunaTV.Utils;
 using LunaTV.ViewModels.Base;
+using LunaTV.ViewModels.Media;
+using LunaTV.Views;
 using LunaTV.Views.Media;
 
 namespace LunaTV.ViewModels;
@@ -20,7 +23,6 @@ namespace LunaTV.ViewModels;
 public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 {
     [ObservableProperty] private string _mediaUrl = "https://vip.dytt-luck.com/20250827/19457_e0c4ac2b/index.m3u8";
-    [ObservableProperty] private VideoRenderer _renderer;
     [ObservableProperty] private int _volume = 100;
     [ObservableProperty] private double _speed = 1.0f; //0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0
     [ObservableProperty] private bool _loop; //循环播放
@@ -44,7 +46,7 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     /// <summary>
     /// Gets or sets whether the user is dragging the seek bar.
     /// </summary>
-    private bool IsSeekBarPressed { get; set; }
+    public bool IsSeekBarPressed { get; set; }
 
     // Restart won't be triggered after Stop while this timer is running.
     private bool _isStopping;
@@ -166,26 +168,57 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
     }
 
+    [RelayCommand]
+    private async Task GoHead()
+    {
+        // if (!IsMediaLoaded)
+        // {
+        //     return;
+        // }
+        //
+        // Position = TimeSpan.Zero;
+        var videoAll = new FilePickerFileType("All Videos")
+        {
+            Patterns = new string[6] { "*.mp4", "*.mkv", "*.avi", "*.mov", "*.wmv", "*.flv" },
+            AppleUniformTypeIdentifiers = new string[1] { "public.video" },
+            MimeTypes = new string[1] { "video/*" }
+        };
+
+
+        var file = await App.StorageProvider?.OpenFilePickerAsync(
+            new FilePickerOpenOptions()
+            {
+                Title = "打开文件",
+                FileTypeFilter = new[]
+                {
+                    videoAll,
+                    FilePickerFileTypes.All,
+                },
+                AllowMultiple = false,
+            });
+
+        if (file is { Count: > 0 })
+        {
+            MediaUrl = file[0].Path.LocalPath;
+        }
+    }
+
+    [RelayCommand]
+    private void GoTail()
+    {
+        if (!IsMediaLoaded)
+        {
+            return;
+        }
+
+        Position = Duration;
+    }
+
     /// <summary>
     /// Restarts playback.
     /// </summary>
     public virtual void Restart()
     {
-    }
-
-    public void Software()
-    {
-        Renderer = VideoRenderer.Software;
-    }
-
-    public void OpenGl()
-    {
-        Renderer = VideoRenderer.OpenGl;
-    }
-
-    public void Native()
-    {
-        Renderer = VideoRenderer.Native;
     }
 
     private void PlayerFileLoaded(object? sender, EventArgs e)
@@ -288,24 +321,24 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
     }
 
-    partial void OnMediaUrlChanged(string value)
-    {
-        if (Design.IsDesignMode)
-        {
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(value))
-        {
-            Status = PlaybackStatus.Loading;
-            _ = LoadMediaAsync();
-        }
-        else
-        {
-            Status = PlaybackStatus.Stopped;
-            Mpv?.Stop().Invoke();
-        }
-    }
+    // partial void OnMediaUrlChanged(string value)
+    // {
+    //     if (Design.IsDesignMode)
+    //     {
+    //         return;
+    //     }
+    //
+    //     if (!string.IsNullOrEmpty(value))
+    //     {
+    //         Status = PlaybackStatus.Loading;
+    //         _ = LoadMediaAsync();
+    //     }
+    //     else
+    //     {
+    //         Status = PlaybackStatus.Stopped;
+    //         Mpv?.Stop().Invoke();
+    //     }
+    // }
 
     partial void OnPositionChanged(TimeSpan value)
     {
