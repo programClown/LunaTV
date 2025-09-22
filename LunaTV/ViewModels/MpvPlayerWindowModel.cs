@@ -41,30 +41,18 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     // public event EventHandler? MediaPlayerInitialized;
     private bool _isLoaded;
     private bool _isSettingPosition;
-    private readonly TimedAction<TimeSpan> _positionBarTimedUpdate;
 
     /// <summary>
     /// Gets or sets whether the user is dragging the seek bar.
     /// </summary>
     public bool IsSeekBarPressed { get; set; }
 
-    // Restart won't be triggered after Stop while this timer is running.
-    private bool _isStopping;
-    private DispatcherTimer? _stopTimer;
-
     public async Task OnWindowLoaded()
     {
-        _stopTimer = new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background, (_, _) =>
-        {
-            _stopTimer?.Stop();
-            _isStopping = false;
-        });
-
         await Task.Delay(100); // Fails to load if we don't give a slight delay.
 
-        Mpv!.FileLoaded += PlayerFileLoaded;
-        Mpv!.EndFile += PlayerEndFile;
-
+        Mpv.FileLoaded += PlayerFileLoaded;
+        Mpv.EndFile += PlayerEndFile;
         Mpv.TimePos.Changed += PlayerPositionChanged;
 
         var options = new MpvAsyncOptions { WaitForResponse = false };
@@ -80,6 +68,7 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         get => _status;
         protected set
         {
+            _status = value;
             var text = _status switch
             {
                 PlaybackStatus.Loading => "Loading...",
@@ -103,20 +92,13 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
         if (!_isLoaded)
         {
-            await Mpv!.Stop().InvokeAsync();
+            await Mpv.Stop().InvokeAsync();
             await Mpv.Pause.SetAsync(false);
             if (!string.IsNullOrEmpty(MediaUrl))
             {
-                _isLoaded = true;
-                Thread.Sleep(10);
-                await Mpv.Pause.SetAsync(false);
                 await Mpv.LoadFile(MediaUrl!).InvokeAsync();
                 IsPlaying = true;
-
-                _isStopping = true;
-                // Use timer for Loop feature if player doesn't support it natively, but not after pressing Stop.
-                _stopTimer?.Stop();
-                _stopTimer?.Start();
+                _isLoaded = true;
             }
             else
             {
@@ -136,11 +118,10 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         Mpv.Stop().Invoke();
         Mpv.Pause.Set(false);
 
-        _isStopping = true;
-        // Use timer for Loop feature if player doesn't support it natively, but not after pressing Stop.
-        _stopTimer?.Stop();
-        _stopTimer?.Start();
         MediaUrl = string.Empty;
+        _isLoaded = false;
+        IsPlaying = false;
+        Status = PlaybackStatus.Stopped;
     }
 
     [RelayCommand]
@@ -225,7 +206,9 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     {
         Status = PlaybackStatus.Playing;
         Duration = TimeSpan.FromSeconds(Mpv!.Duration.Get()!.Value);
-        OnMediaLoaded();
+
+        SetPositionNoSeek(TimeSpan.Zero);
+        IsMediaLoaded = true;
     }
 
     private void PlayerEndFile(object? sender, MpvEndFileEventArgs e)
@@ -235,7 +218,9 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
             Status = PlaybackStatus.Error;
         }
 
-        OnMediaUnloaded();
+        IsMediaLoaded = false;
+        Duration = TimeSpan.FromSeconds(1);
+        IsPlaying = false;
     }
 
     private void PlayerPositionChanged(object? sender, MpvValueChangedEventArgs<double, double> e)
@@ -257,45 +242,6 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
     }
 
-    /// <summary>
-    /// Must be called by the derived class when media is loaded.
-    /// </summary>
-    private void OnMediaLoaded()
-    {
-        SetPositionNoSeek(TimeSpan.Zero);
-        IsMediaLoaded = true;
-
-        PlayerMediaLoaded();
-    }
-
-    /// <summary>
-    /// Must be called by the derived class when media is unloaded.
-    /// </summary>
-    private void OnMediaUnloaded()
-    {
-        if (Loop && !_isStopping)
-        {
-            Restart();
-        }
-        else
-        {
-            IsMediaLoaded = false;
-            Duration = TimeSpan.FromSeconds(1);
-        }
-
-        PlayerMediaUnloaded();
-    }
-
-    private void PlayerMediaLoaded()
-    {
-        PlayerPositionChanged(TimeSpan.Zero);
-    }
-
-    private void PlayerMediaUnloaded()
-    {
-        PositionBar = TimeSpan.Zero;
-    }
-
     private void PlayerPositionChanged(TimeSpan value)
     {
         if (!IsSeekBarPressed && IsMediaLoaded)
@@ -303,42 +249,6 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
             PositionBar = Position;
         }
     }
-
-    private async Task LoadMediaAsync()
-    {
-        if (Design.IsDesignMode)
-        {
-            return;
-        }
-
-        await Mpv!.Stop().InvokeAsync();
-        if (!string.IsNullOrEmpty(MediaUrl))
-        {
-            _isLoaded = true;
-            Thread.Sleep(10);
-            await Mpv.Pause.SetAsync(false);
-            await Mpv.LoadFile(MediaUrl!).InvokeAsync();
-        }
-    }
-
-    // partial void OnMediaUrlChanged(string value)
-    // {
-    //     if (Design.IsDesignMode)
-    //     {
-    //         return;
-    //     }
-    //
-    //     if (!string.IsNullOrEmpty(value))
-    //     {
-    //         Status = PlaybackStatus.Loading;
-    //         _ = LoadMediaAsync();
-    //     }
-    //     else
-    //     {
-    //         Status = PlaybackStatus.Stopped;
-    //         Mpv?.Stop().Invoke();
-    //     }
-    // }
 
     partial void OnPositionChanged(TimeSpan value)
     {
@@ -371,7 +281,6 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     {
         if (IsSeekBarPressed)
         {
-            // _positionBarTimedUpdate.ExecuteAtInterval(PositionBar);
             Position = value;
         }
     }

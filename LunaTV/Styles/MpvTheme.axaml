@@ -11,6 +11,7 @@
 
     <converters:TimeSpanToDoubleConverter x:Key="TimeSpanToDoubleConverter" />
     <converters:BoundsToPathDataConverter x:Key="BoundsToPathDataConverter" />
+    <converters:TimeSpanToMinutesSecondsConverter x:Key="TimeSpanToMinutesSecondsConverter" />
 
     <ControlTheme x:Key="MediaPlayerToolbar" TargetType="Button">
         <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
@@ -139,8 +140,12 @@
                                                     Command="{Binding PlayPauseCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
                                                     IsVisible="{Binding IsPlayPauseVisible, RelativeSource={RelativeSource TemplatedParent}}">
                                                     <Grid>
-                                                        <TextBlock IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" Text="P" />
-                                                        <TextBlock IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" Text="Q" />
+                                                        <TextBlock
+                                                            IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                            Text="P" />
+                                                        <TextBlock
+                                                            IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                            Text="Q" />
                                                         <!--<Image Source="{Binding Source={StaticResource PlayIcon}, Path=Source}" IsVisible="{Binding !IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
                                                         <Image Source="{Binding Source={StaticResource PauseIcon}, Path=Source}" IsVisible="{Binding IsPlaying, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />-->
                                                     </Grid>

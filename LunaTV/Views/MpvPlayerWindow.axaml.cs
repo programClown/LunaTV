@@ -20,47 +20,47 @@ public partial class MpvPlayerWindow : UrsaWindow
     /// <summary>
     /// Gets the name of the seek bar.
     /// </summary>
-    public const string SeekBarPartName = "PART_SeekBar";
+    private const string SeekBarPartName = "PART_SeekBar";
 
     /// <summary>
     /// Gets the seek bar slider control.
     /// </summary>
-    public Slider? SeekBarPart { get; private set; }
+    private Slider? SeekBarPart { get; set; }
 
     /// <summary>
     /// Gets the name of the track within the seek bar.
     /// </summary>
-    public const string SeekBarTrackPartName = "PART_Track";
+    private const string SeekBarTrackPartName = "PART_Track";
 
     /// <summary>
     /// Gets the track within the seek bar.
     /// </summary>
-    public Track? SeekBarTrackPart { get; private set; }
+    private Track? SeekBarTrackPart { get; set; }
 
     /// <summary>
     /// The name of the seek bar decrease button.
     /// </summary>
-    public const string SeekBarDecreaseName = "PART_DecreaseButton";
+    private const string SeekBarDecreaseName = "PART_DecreaseButton";
 
     /// <summary>
     /// Gets the seek bar decrease button. 
     /// </summary>
-    public RepeatButton? SeekBarDecreasePart { get; private set; }
+    private RepeatButton? SeekBarDecreasePart { get; set; }
 
     /// <summary>
     /// The name of the seek bar increase button.
     /// </summary>
-    public const string SeekBarIncreaseName = "PART_IncreaseButton";
+    private const string SeekBarIncreaseName = "PART_IncreaseButton";
 
     /// <summary>
     /// Gets the seek bar increase button.
     /// </summary>
-    public RepeatButton? SeekBarIncreasePart { get; private set; }
+    private RepeatButton? SeekBarIncreasePart { get; set; }
 
     /// <summary>
     /// Gets the thumb within the seek bar. 
     /// </summary>
-    public Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
+    private Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
 
     private readonly MpvPlayerWindowModel _viewModel;
 
@@ -104,7 +104,7 @@ public partial class MpvPlayerWindow : UrsaWindow
     {
         base.OnAttachedToVisualTree(e);
 
-        (DataContext as MpvPlayerWindowModel)?.OnWindowLoaded();
+        _viewModel?.OnWindowLoaded().GetAwaiter().GetResult();
     }
 
     /// <inheritdoc />

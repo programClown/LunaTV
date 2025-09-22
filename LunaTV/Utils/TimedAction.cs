@@ -19,9 +19,10 @@ public class TimedAction<T>
         priority ??= DispatcherPriority.Normal;
         MinInterval = minInterval;
         Action = action;
-        _timer = new DispatcherTimer(minInterval, priority.Value, Timer_Elapsed);
+        _timer = new DispatcherTimer(minInterval, priority.Value, TimerElapsed);
     }
-    private void Timer_Elapsed(object? sender, EventArgs e)
+
+    private void TimerElapsed(object? sender, EventArgs e)
     {
         _timer.Stop();
         if (_hasWaitingAction)
@@ -35,10 +36,12 @@ public class TimedAction<T>
     /// The minimum interval between action invocations.
     /// </summary>
     public TimeSpan MinInterval { get; set; }
+
     /// <summary>
     /// The action to invoke.
     /// </summary>
     public Action<T> Action { get; private set; }
+
     private readonly DispatcherTimer _timer;
     private bool _hasWaitingAction;
     private T _waitingParam = default!;

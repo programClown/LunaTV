@@ -5,10 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:media="using:LunaTV.Views.Media"
     xmlns:mpv="clr-namespace:HanumanInstitute.LibMpv.Avalonia;assembly=Luna.LibMpv.Avalonia"
     xmlns:u="https://irihi.tech/ursa"
-    xmlns:utils="clr-namespace:LunaTV.Utils"
     xmlns:vm="using:LunaTV.ViewModels"
     Title="LunaTV"
     d:DesignHeight="450"
@@ -44,9 +42,12 @@
                         Margin="10,0"
                         VerticalAlignment="Center"
                         IsHitTestVisible="True"
-                        Maximum="100"
                         Minimum="0"
-                        Value="32" />
+                        Focusable="False"
+                        LargeChange="10"
+                        SmallChange="1"
+                        Maximum="{Binding Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
+                        Value="{Binding PositionBar, Converter={StaticResource TimeSpanToDoubleConverter}}" />
 
                     <Grid Grid.Row="1" ColumnDefinitions="*,*,*">
                         <StackPanel
@@ -55,10 +56,12 @@
                             Orientation="Horizontal"
                             Spacing="4">
                             <!--  Current Position Display  -->
-                            <TextBlock VerticalAlignment="Center" Text="00:00" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{Binding Position, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
                             <TextBlock VerticalAlignment="Center" Text="/" />
                             <!--  Maximum Duration Display  -->
-                            <TextBlock VerticalAlignment="Center" Text="1:00:00" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{Binding Duration, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
                         </StackPanel>
                         <StackPanel
                             Grid.Column="1"
@@ -105,17 +108,19 @@
                                 <fa:SymbolIcon FontSize="18" Symbol="Mute" />
                             </Button>
                             <Slider
-                                Width="150"
+                                Width="150" Focusable="False"
                                 Margin="0,0,20,0"
                                 VerticalAlignment="Center"
-                                Maximum="1"
-                                Minimum="0"
-                                Value="35" />
+                                LargeChange="20"
+                                Maximum="100"
+                                SmallChange="5"
+                                Value="{Binding Volume}" />
                             <TextBlock
                                 Margin="-16,0,8,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
-                                Text="35" />
+                                Width="20"
+                                Text="{Binding Volume, StringFormat={}{0:N0}}" />
                             <TextBlock VerticalAlignment="Center" Text="倍速" />
                             <ToggleButton
                                 Margin="4,0,0,0"
