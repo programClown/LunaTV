@@ -29,11 +29,15 @@ public sealed class GlobalDefine
     public static string DataPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LunaTV");
 
+    public static string DownloadPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "LunaTV");
+
     /// <summary>
     /// App数据库连接字符串
     /// </summary>
     public static string DbConn => Path.Combine(DataPath, "lunatv.sqlite");
-    
+
     public static string AppJsonPath =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LunaTV", "lunatv-app.json");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LunaTV",
+            "lunatv-app.json");
 }

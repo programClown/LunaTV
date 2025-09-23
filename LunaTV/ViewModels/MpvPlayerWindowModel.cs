@@ -1,39 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HanumanInstitute.LibMpv;
-using HanumanInstitute.LibMpv.Avalonia;
 using HanumanInstitute.LibMpv.Core;
-using LunaTV.Utils;
+using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
-using LunaTV.ViewModels.Media;
-using LunaTV.Views;
 using LunaTV.Views.Media;
+using Notification = Ursa.Controls.Notification;
+using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
 
 namespace LunaTV.ViewModels;
+
+public class SpeedMenuItemViewModel
+{
+    public string? Header { get; set; }
+    public ICommand? Command { get; set; }
+    public double CommandParameter { get; set; }
+}
 
 public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 {
     [ObservableProperty] private string _mediaUrl = "https://vip.dytt-luck.com/20250827/19457_e0c4ac2b/index.m3u8";
-    [ObservableProperty] private int _volume = 100;
+    [ObservableProperty] private int _volume = 70;
     [ObservableProperty] private double _speed = 1.0f; //0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0
+    [ObservableProperty] private string _speedText = "1x";
     [ObservableProperty] private bool _loop; //循环播放
     [ObservableProperty] private bool _isMediaLoaded;
-    [ObservableProperty] private TimeSpan _position;
+    [ObservableProperty] private bool _isMuted;
+    [ObservableProperty] private TimeSpan _position = TimeSpan.Zero;
     [ObservableProperty] private TimeSpan _duration = TimeSpan.FromSeconds(1);
     [ObservableProperty] private bool _isPlaying;
-    [ObservableProperty] private string? _title;
-    [ObservableProperty] private string _text = string.Empty;
-    [ObservableProperty] private TimeSpan _positionBar = TimeSpan.Zero;
+    [ObservableProperty] private string? _title = "无";
+    [ObservableProperty] private int _kanBanWidth;
+    [ObservableProperty] private bool _isVideosKanbanChecked;
+
+    public IList<SpeedMenuItemViewModel> SpeedMenuItems { get; }
+
     public MpvContext Mpv { get; set; } = default!;
+    public WindowNotificationManager? Notification { get; set; }
 
     // /// <summary>
     // /// Occurs after the media player is initialized.
@@ -47,11 +60,28 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     /// </summary>
     public bool IsSeekBarPressed { get; set; }
 
+    public MpvPlayerWindowModel()
+    {
+        SpeedMenuItems = new List<SpeedMenuItemViewModel>();
+
+        for (int i = 8; i >= 1; i--)
+        {
+            SpeedMenuItems.Add(
+                new SpeedMenuItemViewModel()
+                {
+                    Header = $"{i * 0.5}x",
+                    Command = SpeedChangeCommand,
+                    CommandParameter = i * 0.5,
+                }
+            );
+        }
+    }
+
     public async Task OnWindowLoaded()
     {
         await Task.Delay(100); // Fails to load if we don't give a slight delay.
 
-        Mpv.FileLoaded += PlayerFileLoaded;
+        Mpv!.FileLoaded += PlayerFileLoaded;
         Mpv.EndFile += PlayerEndFile;
         Mpv.TimePos.Changed += PlayerPositionChanged;
 
@@ -68,7 +98,7 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         get => _status;
         protected set
         {
-            _status = value;
+            SetProperty(ref _status, value);
             var text = _status switch
             {
                 PlaybackStatus.Loading => "Loading...",
@@ -77,13 +107,12 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
                 _ => ""
             };
 
-            App.Notification?.Show(new Notification("播放信息", text, NotificationType.Information),
+            Notification?.Show(new Notification("播放信息", text, NotificationType.Information),
                 NotificationType.Information);
         }
     }
 
-    [RelayCommand]
-    private async Task PlayPause()
+    public async Task PlayPause()
     {
         if (string.IsNullOrEmpty(MediaUrl) || Design.IsDesignMode)
         {
@@ -92,11 +121,12 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
         if (!_isLoaded)
         {
-            await Mpv.Stop().InvokeAsync();
+            await Mpv!.Stop().InvokeAsync();
             await Mpv.Pause.SetAsync(false);
             if (!string.IsNullOrEmpty(MediaUrl))
             {
                 await Mpv.LoadFile(MediaUrl!).InvokeAsync();
+                Title = "笑傲江湖";
                 IsPlaying = true;
                 _isLoaded = true;
             }
@@ -107,24 +137,22 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
         else
         {
-            await Mpv.Pause.SetAsync(IsPlaying);
+            await Mpv!.Pause.SetAsync(IsPlaying);
             IsPlaying = !IsPlaying;
         }
     }
 
-    [RelayCommand]
-    private void Stop()
+    public void Stop()
     {
-        Mpv.Stop().Invoke();
         Mpv.Pause.Set(false);
-
+        Mpv!.Stop().Invoke();
         MediaUrl = string.Empty;
         _isLoaded = false;
         IsPlaying = false;
         Status = PlaybackStatus.Stopped;
+        Title = "无";
     }
 
-    [RelayCommand]
     private void Seek(int seconds)
     {
         if (!IsMediaLoaded)
@@ -144,89 +172,109 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
         if (newPos != Position)
         {
-            PositionBar = newPos;
             Position = newPos;
         }
     }
 
     [RelayCommand]
-    private async Task GoHead()
+    private void GoHead()
     {
-        // if (!IsMediaLoaded)
-        // {
-        //     return;
-        // }
-        //
-        // Position = TimeSpan.Zero;
-        var videoAll = new FilePickerFileType("All Videos")
+        Position = TimeSpan.Zero;
+        if (IsMediaLoaded)
         {
-            Patterns = new string[6] { "*.mp4", "*.mkv", "*.avi", "*.mov", "*.wmv", "*.flv" },
-            AppleUniformTypeIdentifiers = new string[1] { "public.video" },
-            MimeTypes = new string[1] { "video/*" }
-        };
-
-
-        var file = await App.StorageProvider?.OpenFilePickerAsync(
-            new FilePickerOpenOptions()
+            lock (Mpv!)
             {
-                Title = "打开文件",
-                FileTypeFilter = new[]
-                {
-                    videoAll,
-                    FilePickerFileTypes.All,
-                },
-                AllowMultiple = false,
-            });
-
-        if (file is { Count: > 0 })
-        {
-            MediaUrl = file[0].Path.LocalPath;
+                Mpv.TimePos.Set(0);
+            }
         }
     }
 
     [RelayCommand]
     private void GoTail()
     {
-        if (!IsMediaLoaded)
+        Position = TimeSpan.FromSeconds(Duration.TotalSeconds - 1);
+        if (IsMediaLoaded)
         {
-            return;
+            lock (Mpv!)
+            {
+                // var pos = TimeSpan.FromTicks(Position.Ticks);
+                Mpv.TimePos.Set(Position.TotalSeconds);
+            }
         }
-
-        Position = Duration;
     }
 
-    /// <summary>
-    /// Restarts playback.
-    /// </summary>
-    public virtual void Restart()
+    [RelayCommand]
+    private void Screenshot()
     {
+        if (IsMediaLoaded)
+        {
+            var path = Path.Combine(GlobalDefine.DownloadPath);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            Mpv.ScreenshotToFile(Path.Combine(path, $"{DateTime.Now:yyyyMMddHHmmssfff}.png"))
+                .Invoke();
+            Notification?.Show(new Notification("截图已保存到", path, NotificationType.Information),
+                NotificationType.Information);
+        }
+    }
+
+    [RelayCommand]
+    private async Task Mute()
+    {
+        if (IsMediaLoaded)
+        {
+            await Mpv.Mute.SetAsync(!IsMuted, new MpvAsyncOptions() { WaitForResponse = false });
+        }
+
+        IsMuted = !IsMuted;
+    }
+
+    [RelayCommand]
+    private void SpeedChange(double value)
+    {
+        SpeedText = $"{value}x";
+        Speed = value;
     }
 
     private void PlayerFileLoaded(object? sender, EventArgs e)
     {
-        Status = PlaybackStatus.Playing;
-        Duration = TimeSpan.FromSeconds(Mpv!.Duration.Get()!.Value);
+        Dispatcher.UIThread.Post((() =>
+        {
+            Status = PlaybackStatus.Playing;
+            Duration = TimeSpan.FromSeconds(Mpv!.Duration.Get()!.Value);
 
-        SetPositionNoSeek(TimeSpan.Zero);
-        IsMediaLoaded = true;
+            SetPositionNoSeek(TimeSpan.FromSeconds(0));
+            IsMediaLoaded = true;
+        }));
     }
 
     private void PlayerEndFile(object? sender, MpvEndFileEventArgs e)
     {
-        if (e.Reason == MpvEndFileReason.Error)
+        Dispatcher.UIThread.Post((() =>
         {
-            Status = PlaybackStatus.Error;
-        }
+            if (e.Reason == MpvEndFileReason.Error)
+            {
+                Status = PlaybackStatus.Error;
+            }
 
-        IsMediaLoaded = false;
-        Duration = TimeSpan.FromSeconds(1);
-        IsPlaying = false;
+            IsMediaLoaded = false;
+            Duration = TimeSpan.FromSeconds(1);
+            IsPlaying = false;
+            Status = PlaybackStatus.Stopped;
+            _isLoaded = false;
+        }));
     }
 
+    /// MPV播放刷新进度条
     private void PlayerPositionChanged(object? sender, MpvValueChangedEventArgs<double, double> e)
     {
-        SetPositionNoSeek(TimeSpan.FromSeconds(e.NewValue!.Value));
+        // SetPositionNoSeek(TimeSpan.FromSeconds(e.NewValue!.Value));
+        Dispatcher.UIThread.Post(() => SetPositionNoSeek(TimeSpan.FromSeconds(e.NewValue!.Value)));
     }
+
 
     /// <summary>
     /// Sets the position without raising PositionChanged.
@@ -234,29 +282,21 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     /// <param name="pos">The position value to set.</param>
     private void SetPositionNoSeek(TimeSpan pos)
     {
-        lock (Mpv)
+        if (!IsSeekBarPressed)
         {
-            _isSettingPosition = true;
+            _isSettingPosition = true; //不要更新播放进度
             Position = pos;
-            _isSettingPosition = false;
-        }
-    }
-
-    private void PlayerPositionChanged(TimeSpan value)
-    {
-        if (!IsSeekBarPressed && IsMediaLoaded)
-        {
-            PositionBar = Position;
+            _isSettingPosition = false; //更新播放进度
         }
     }
 
     partial void OnPositionChanged(TimeSpan value)
     {
-        var pos = TimeSpan.FromTicks(Math.Max(0, Math.Min(Duration.Ticks, value.Ticks)));
-        lock (Mpv!)
+        if (IsSeekBarPressed && IsMediaLoaded && !_isSettingPosition)
         {
-            if (IsMediaLoaded && _isSettingPosition)
+            lock (Mpv!)
             {
+                var pos = TimeSpan.FromTicks(Math.Max(0, Math.Min(Duration.Ticks, value.Ticks)));
                 Mpv.TimePos.Set(pos.TotalSeconds);
             }
         }
@@ -264,25 +304,25 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
     partial void OnVolumeChanged(int value)
     {
-        Mpv?.Volume.Set(value);
+        if (IsMediaLoaded)
+            Mpv?.Volume.Set(value);
     }
 
     partial void OnSpeedChanged(double value)
     {
-        Mpv?.Speed.Set(value);
+        if (IsMediaLoaded)
+            Mpv?.Speed.Set(value);
     }
 
     partial void OnLoopChanged(bool value)
     {
-        Mpv?.LoopFile.Set(value ? "yes" : "no");
+        if (IsMediaLoaded)
+            Mpv?.LoopFile.Set(value ? "yes" : "no");
     }
 
-    partial void OnPositionBarChanged(TimeSpan value)
+    partial void OnIsVideosKanbanCheckedChanged(bool value)
     {
-        if (IsSeekBarPressed)
-        {
-            Position = value;
-        }
+        KanBanWidth = value ? 300 : 0;
     }
 
     private bool _disposed;

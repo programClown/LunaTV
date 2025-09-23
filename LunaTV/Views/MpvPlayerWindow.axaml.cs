@@ -1,16 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
-using HanumanInstitute.LibMpv;
 using LunaTV.Extensions;
 using LunaTV.ViewModels;
-using LunaTV.Views.Media;
 using Ursa.Controls;
 
 namespace LunaTV.Views;
@@ -70,6 +63,8 @@ public partial class MpvPlayerWindow : UrsaWindow
 
         _viewModel = new MpvPlayerWindowModel();
         DataContext = _viewModel;
+
+        _viewModel.Notification = new WindowNotificationManager(this);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -98,20 +93,15 @@ public partial class MpvPlayerWindow : UrsaWindow
                 SeekBarThumbPart!.DragStarted += (_, _) => _viewModel.IsSeekBarPressed = true;
                 SeekBarThumbPart!.DragCompleted += (_, _) => _viewModel.IsSeekBarPressed = false;
             };
-    }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        base.OnAttachedToVisualTree(e);
-
-        _viewModel?.OnWindowLoaded().GetAwaiter().GetResult();
+        _viewModel?.OnWindowLoaded();
     }
 
     /// <inheritdoc />
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnClosing(WindowClosingEventArgs e)
     {
-        base.OnDetachedFromVisualTree(e);
-        _viewModel?.StopCommand.Execute(null);
+        _viewModel?.Stop();
+        base.OnClosing(e);
     }
 
     private void SeekBarPointerPressed(object? sender, PointerPressedEventArgs e)
