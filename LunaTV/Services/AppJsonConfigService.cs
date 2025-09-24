@@ -7,16 +7,17 @@ namespace LunaTV.Services;
 
 public class AppJsonConfigService
 {
-    public T ReadJson<T>()
+    public T? ReadJson<T>()
     {
         // 使用FileShare.Read允许其他进程读取但不允许写入
-        using (var stream = new FileStream(GlobalDefine.AppJsonPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read))
+        using (var stream = new FileStream(GlobalDefine.AppJsonPath, FileMode.OpenOrCreate, FileAccess.Read,
+                   FileShare.Read))
         using (var reader = new StreamReader(stream))
         {
             string json = reader.ReadToEnd();
             if (string.IsNullOrEmpty(json))
                 return default(T);
-                
+
             return JsonSerializer.Deserialize<T>(json);
         }
     }

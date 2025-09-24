@@ -15,7 +15,6 @@ using LunaTV.Base.Models;
 using LunaTV.Constants;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
-using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using LunaTV.Views.TVShowPages;
 using Microsoft.Extensions.DependencyInjection;
@@ -178,7 +177,7 @@ public partial class TVShowHomeViewModel : ViewModelBase
         MovieChecked = true;
         await SwitchMovieOrTv("电影");
     }
-    
+
     [RelayCommand]
     private async void OpenLocalVideo()
     {
@@ -204,13 +203,13 @@ public partial class TVShowHomeViewModel : ViewModelBase
 
         if (file is { Count: > 0 })
         {
-            var win = new PlayerWindow();
+            var win = new MpvPlayerWindow();
             (App.VisualRoot as MainWindow)?.Hide();
             win.Show();
-            if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
+            if (win.DataContext is MpvPlayerWindowModel videoModel)
             {
-                videoModel.VideoPath = file[0].Path.LocalPath;
-                videoModel.VideoName = file[0].Path.LocalPath.Substring(file[0].Path.LocalPath.LastIndexOf('\\') + 1);
+                videoModel.MediaUrl = file[0].Path.LocalPath;
+                videoModel.Title = file[0].Path.LocalPath.Substring(file[0].Path.LocalPath.LastIndexOf('\\') + 1);
             }
         }
     }

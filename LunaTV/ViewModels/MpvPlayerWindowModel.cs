@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Collections;
@@ -12,9 +13,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HanumanInstitute.LibMpv;
 using HanumanInstitute.LibMpv.Core;
+using LunaTV.Base.Models;
 using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
+using LunaTV.ViewModels.TVShowPages;
+using LunaTV.Views;
 using LunaTV.Views.Media;
+using Ursa.Controls;
 using Notification = Ursa.Controls.Notification;
 using WindowNotificationManager = Ursa.Controls.WindowNotificationManager;
 
@@ -43,7 +48,11 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     [ObservableProperty] private int _kanBanWidth;
     [ObservableProperty] private bool _isVideosKanbanChecked;
 
-    public IList<SpeedMenuItemViewModel> SpeedMenuItems { get; }
+    public Window? Window { get; set; }
+
+    private readonly LoadingWaitViewModel _loadingWaitViewModel = new();
+
+    public IList<SpeedMenuItemViewModel> SpeedMenuItems { get; } = new List<SpeedMenuItemViewModel>();
 
     public MpvContext Mpv { get; set; } = default!;
     public WindowNotificationManager? Notification { get; set; }
@@ -62,8 +71,6 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
     public MpvPlayerWindowModel()
     {
-        SpeedMenuItems = new List<SpeedMenuItemViewModel>();
-
         for (int i = 8; i >= 1; i--)
         {
             SpeedMenuItems.Add(
@@ -75,6 +82,8 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
                 }
             );
         }
+
+        DbServiceInit();
     }
 
     public async Task OnWindowLoaded()
@@ -125,10 +134,11 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
             await Mpv.Pause.SetAsync(false);
             if (!string.IsNullOrEmpty(MediaUrl))
             {
+                _ = Loading();
                 await Mpv.LoadFile(MediaUrl!).InvokeAsync();
-                Title = "笑傲江湖";
                 IsPlaying = true;
                 _isLoaded = true;
+                MediaPlayerOnLoaded();
             }
             else
             {
@@ -142,18 +152,32 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
     }
 
-    public void Stop()
+    private void Stoped()
     {
-        Mpv.Pause.Set(false);
-        Mpv!.Stop().Invoke();
+        if (string.IsNullOrEmpty(MediaUrl) && !IsMediaLoaded)
+        {
+            return;
+        }
+
+        SaveViewHistory();
         MediaUrl = string.Empty;
         _isLoaded = false;
         IsPlaying = false;
         Status = PlaybackStatus.Stopped;
-        Title = "无";
+        IsMediaLoaded = false;
+        Duration = TimeSpan.FromSeconds(1);
+        Position = TimeSpan.Zero;
     }
 
-    private void Seek(int seconds)
+    public void Stop()
+    {
+        Mpv.Pause.Set(false);
+        Mpv!.Stop().Invoke();
+        SpeedChange(1.0f);
+        Stoped();
+    }
+
+    public void Seek(int seconds)
     {
         if (!IsMediaLoaded)
         {
@@ -172,8 +196,27 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
         if (newPos != Position)
         {
-            Position = newPos;
+            // Position = newPos;
+            lock (Mpv)
+            {
+                Mpv.TimePos.Set(newPos.TotalSeconds);
+            }
         }
+    }
+
+    public void ChangeVolume(int value)
+    {
+        int newVolume = Volume + value;
+        if (newVolume < 0)
+        {
+            newVolume = 0;
+        }
+        else if (newVolume > 100)
+        {
+            newVolume = 100;
+        }
+
+        Volume = newVolume;
     }
 
     [RelayCommand]
@@ -222,14 +265,10 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private async Task Mute()
+    private void Mute()
     {
-        if (IsMediaLoaded)
-        {
-            await Mpv.Mute.SetAsync(!IsMuted, new MpvAsyncOptions() { WaitForResponse = false });
-        }
-
         IsMuted = !IsMuted;
+        SaveMute();
     }
 
     [RelayCommand]
@@ -239,33 +278,58 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         Speed = value;
     }
 
+    [RelayCommand]
+    private void KanbanSelect(EpisodeSubjectItem item)
+    {
+        // Stop();
+        IsVideosKanbanChecked = false;
+        IsVideosKanbanChecked = false;
+        KanBanWidth = 0;
+        ViewHistory.PlaybackPosition = 0;
+        ViewHistory.Episode = item.Name;
+        ViewHistory.Url = item.Url;
+        MediaUrl = item.Url;
+        Title = $"{ViewHistory?.Name} {item.Name}";
+        Episodes.ToList().ForEach(episode => episode.Watched = episode.Name == item.Name);
+    }
+
     private void PlayerFileLoaded(object? sender, EventArgs e)
     {
         Dispatcher.UIThread.Post((() =>
         {
+            _loadingWaitViewModel.Close();
+
             Status = PlaybackStatus.Playing;
             Duration = TimeSpan.FromSeconds(Mpv!.Duration.Get()!.Value);
 
-            SetPositionNoSeek(TimeSpan.FromSeconds(0));
             IsMediaLoaded = true;
+            if (Duration > TimeSpan.FromSeconds(1))
+            {
+                lock (Mpv!)
+                {
+                    Mpv.TimePos.Set(ViewHistory?.PlaybackPosition ?? 0);
+                }
+            }
+            else
+            {
+                SetPositionNoSeek(TimeSpan.Zero);
+            }
         }));
     }
 
     private void PlayerEndFile(object? sender, MpvEndFileEventArgs e)
     {
-        Dispatcher.UIThread.Post((() =>
+        Dispatcher.UIThread.Post(() =>
         {
             if (e.Reason == MpvEndFileReason.Error)
             {
                 Status = PlaybackStatus.Error;
             }
 
-            IsMediaLoaded = false;
-            Duration = TimeSpan.FromSeconds(1);
-            IsPlaying = false;
-            Status = PlaybackStatus.Stopped;
-            _isLoaded = false;
-        }));
+            Stop();
+
+            MediaPlayerOnEndReached();
+        });
     }
 
     /// MPV播放刷新进度条
@@ -290,6 +354,20 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         }
     }
 
+    partial void OnMediaUrlChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            // bug：会触发数据库重复添加
+            // Stop();
+            // Title = "无";
+        }
+        else
+        {
+            Dispatcher.UIThread.InvokeAsync(async () => { await PlayPause(); });
+        }
+    }
+
     partial void OnPositionChanged(TimeSpan value)
     {
         if (IsSeekBarPressed && IsMediaLoaded && !_isSettingPosition)
@@ -304,25 +382,48 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
 
     partial void OnVolumeChanged(int value)
     {
-        if (IsMediaLoaded)
-            Mpv?.Volume.Set(value);
+        Mpv?.Volume.Set(value);
+        SaveVolume();
     }
 
     partial void OnSpeedChanged(double value)
     {
-        if (IsMediaLoaded)
-            Mpv?.Speed.Set(value);
+        Mpv?.Speed.Set(value);
     }
 
     partial void OnLoopChanged(bool value)
     {
-        if (IsMediaLoaded)
-            Mpv?.LoopFile.Set(value ? "yes" : "no");
+        Mpv?.LoopFile.Set(value ? "yes" : "no");
+    }
+
+    partial void OnIsMutedChanged(bool value)
+    {
+        Mpv.Mute.Set(value);
     }
 
     partial void OnIsVideosKanbanCheckedChanged(bool value)
     {
         KanBanWidth = value ? 300 : 0;
+    }
+
+    public async Task Loading()
+    {
+        var options = new DialogOptions
+        {
+            Title = "",
+            Mode = DialogMode.None,
+            Button = DialogButton.None,
+            ShowInTaskBar = false,
+            IsCloseButtonVisible = true,
+            StartupLocation = WindowStartupLocation.CenterScreen,
+            CanDragMove = true,
+            CanResize = false,
+            StyleClass = ""
+        };
+
+        _loadingWaitViewModel.TimerStart();
+
+        await Dialog.ShowModal<LoadingWaitView, LoadingWaitViewModel>(_loadingWaitViewModel, Window, options: options);
     }
 
     private bool _disposed;

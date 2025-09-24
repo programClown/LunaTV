@@ -6,10 +6,10 @@
     xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mpv="clr-namespace:HanumanInstitute.LibMpv.Avalonia;assembly=Luna.LibMpv.Avalonia"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:tvShowPages="clr-namespace:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
-    xmlns:view="clr-namespace:LunaTV.Views"
     xmlns:vm="using:LunaTV.ViewModels"
+    xmlns:utils="using:LunaTV.Utils"
     Title="LunaTV"
     d:DesignHeight="450"
     d:DesignWidth="1000"
@@ -18,8 +18,22 @@
     IsFullScreenButtonVisible="True"
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
+    PointerEntered="OnPointerEntered"
+    PointerMoved="OnPointerMoved"
     mc:Ignorable="d">
-    <Window.KeyBindings />
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Space" Command="{Binding  PlayPause}" />
+        <KeyBinding Gesture="Right" Command="{Binding Seek}" CommandParameter="{utils:Int32 1}" />
+        <KeyBinding Gesture="Ctrl+Right" Command="{Binding Seek}"
+                    CommandParameter="{utils:Int32 10}" />
+        <KeyBinding Gesture="Left" Command="{Binding Seek}" CommandParameter="{utils:Int32 -1}" />
+        <KeyBinding Gesture="Ctrl+Left" Command="{Binding Seek}"
+                    CommandParameter="{utils:Int32 -10}" />
+        <KeyBinding Gesture="Up" Command="{Binding ChangeVolume}"
+                    CommandParameter="{utils:Int32 5}" />
+        <KeyBinding Gesture="Down" Command="{Binding ChangeVolume}"
+                    CommandParameter="{utils:Int32 -5}" />
+    </Window.KeyBindings>
 
     <Window.Styles>
         <Style Selector="fa|SymbolIcon.PlayIcon">
@@ -61,6 +75,7 @@
 
                 <!--  Bottom Toolbar  -->
                 <Border
+                    Name="PlayBar"
                     Margin="0,0,0,8"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Bottom"
@@ -87,10 +102,12 @@
                                 Orientation="Horizontal"
                                 Spacing="4">
                                 <!--  Current Position Display  -->
-                                <TextBlock VerticalAlignment="Center" Text="{Binding Position, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
+                                <TextBlock VerticalAlignment="Center"
+                                           Text="{Binding Position, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
                                 <TextBlock VerticalAlignment="Center" Text="/" />
                                 <!--  Maximum Duration Display  -->
-                                <TextBlock VerticalAlignment="Center" Text="{Binding Duration, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
+                                <TextBlock VerticalAlignment="Center"
+                                           Text="{Binding Duration, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
                             </StackPanel>
                             <StackPanel
                                 Grid.Column="1"
@@ -191,7 +208,8 @@
                 </Border>
             </Panel>
 
-            <Border Grid.Column="1" Width="{Binding KanBanWidth}">
+            <Border Grid.Column="1"
+                    Width="{Binding KanBanWidth}">
                 <Grid RowDefinitions="Auto,*">
                     <TextBlock
                         HorizontalAlignment="Left"
@@ -199,7 +217,7 @@
                         FontSize="18"
                         FontWeight="ExtraBold"
                         IsHitTestVisible="False"
-                        Text="{Binding Title, Mode=OneWay}">
+                        Text="{Binding Title}">
                         <TextBlock.Foreground>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                                 <GradientStop Offset="0" Color="#FF6094EA" />
@@ -211,7 +229,40 @@
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <ScrollViewer Grid.Row="1" Margin="4" />
+                    <ScrollViewer Grid.Row="1" Margin="4">
+                        <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding Episodes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="tvShowPages:EpisodeSubjectItem">
+
+                                    <Button
+                                        Width="100"
+                                        Margin="0,4"
+                                        Padding="0"
+                                        Classes="EpisodeCard"
+                                        Command="{Binding $parent[u:UrsaWindow].((vm:MpvPlayerWindowModel)DataContext).KanbanSelectCommand}"
+                                        CommandParameter="{Binding}">
+                                        <Button.Styles>
+                                            <Style Selector="Button.EpisodeCard:pointerover">
+                                                <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <TextBlock Classes.Warning="{Binding Watched}" Text="{Binding Name}">
+                                            <TextBlock.Styles>
+                                                <Style Selector="TextBlock.Warning">
+                                                    <Setter Property="ToolTip.Tip" Value="已经看过" />
+                                                </Style>
+                                            </TextBlock.Styles>
+                                        </TextBlock>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ItemSpacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Border>
         </Grid>

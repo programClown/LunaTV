@@ -12,7 +12,6 @@ using LunaTV.Base.Models;
 using LunaTV.Constants;
 using LunaTV.Models;
 using LunaTV.ViewModels.Base;
-using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Notification = Ursa.Controls.Notification;
@@ -65,13 +64,13 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
 
         Episodes.ForEach(episode => episode.Watched = episode.Name == episodeSubject.Name);
 
-        var win = new PlayerWindow();
+        var win = new MpvPlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();
         win.Show();
-        if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
+        if (win.DataContext is MpvPlayerWindowModel videoModel)
         {
-            videoModel.VideoPath = episodeSubject.Url;
-            videoModel.VideoName = $"{VideoName} {episodeSubject.Name}";
+            videoModel.MediaUrl = episodeSubject.Url;
+            videoModel.Title = $"{VideoName} {episodeSubject.Name}";
             videoModel.Episodes = new ObservableCollection<EpisodeSubjectItem>(Episodes);
 
             var viewHistory = _viewHistoryTable.GetSingle(his =>

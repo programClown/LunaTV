@@ -6,7 +6,6 @@ using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
 using LunaTV.Extensions;
 using LunaTV.ViewModels.Base;
-using LunaTV.ViewModels.Media;
 using LunaTV.Views;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -90,14 +89,14 @@ public partial class TVShowHistoryViewModel : ViewModelBase
         var historyItem = _viewHistoryTable.GetById(value.Id);
         if (historyItem == null) return;
 
-        var win = new PlayerWindow();
+        var win = new MpvPlayerWindow();
         (App.VisualRoot as MainWindow)?.Hide();
 
         win.Show();
-        if (win.VideoPlayer.DataContext is VideoPlayerViewModel videoModel)
+        if (win.DataContext is MpvPlayerWindowModel videoModel)
         {
-            videoModel.VideoPath = historyItem.Url;
-            videoModel.VideoName = $"{historyItem.Name} {historyItem.Episode}";
+            videoModel.MediaUrl = historyItem.Url;
+            videoModel.Title = $"{historyItem.Name} {historyItem.Episode}";
             videoModel.ViewHistory = historyItem;
             videoModel.UpdateFromHistory(historyItem.Source, historyItem.VodId, historyItem.Episode);
         }

@@ -10,7 +10,6 @@ using Avalonia.Threading;
 using HanumanInstitute.LibMpv;
 using HanumanInstitute.LibMpv.Avalonia;
 using HanumanInstitute.LibMpv.Core;
-using LibVLCSharp.Shared;
 
 namespace LunaTV.Views.Media;
 
@@ -35,10 +34,12 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     {
         Dispose(false);
     }
-    
+
     // MpvContext property
-    public static readonly DirectProperty<MpvView, MpvContext?> MpvContextProperty = AvaloniaProperty.RegisterDirect<MpvView, MpvContext?>(
-        nameof(MpvContext), o => o.MpvContext, defaultBindingMode: BindingMode.OneWayToSource);
+    public static readonly DirectProperty<MpvView, MpvContext?> MpvContextProperty =
+        AvaloniaProperty.RegisterDirect<MpvView, MpvContext?>(
+            nameof(MpvContext), o => o.MpvContext, defaultBindingMode: BindingMode.OneWayToSource);
+
     public MpvContext? MpvContext => PlayerView.MpvContext;
 
     /// <summary>
@@ -56,8 +57,11 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     /// <inheritdoc />
     protected override void SourceChanged(string? value)
     {
-        if (!IsLoaded || Design.IsDesignMode) { return; }
-        
+        if (!IsLoaded || Design.IsDesignMode)
+        {
+            return;
+        }
+
         if (!string.IsNullOrEmpty(value))
         {
             Status = PlaybackStatus.Loading;
@@ -76,7 +80,9 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     public static readonly DirectProperty<MpvPlayerHost, PlaybackStatus> StatusProperty =
         AvaloniaProperty.RegisterDirect<MpvPlayerHost, PlaybackStatus>(nameof(Status), o => o.Status,
             (o, v) => o.Status = v);
+
     private PlaybackStatus _status = PlaybackStatus.Stopped;
+
     /// <summary>
     /// Gets the playback status of the media player.
     /// </summary>
@@ -95,7 +101,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
         base.OnLoaded(e);
 
         await Task.Delay(100); // Fails to load if we don't give a slight delay.
-        
+
         MpvContext!.FileLoaded += Player_FileLoaded;
         MpvContext!.EndFile += Player_EndFile;
 
@@ -130,6 +136,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
             {
                 Status = PlaybackStatus.Error;
             }
+
             OnMediaUnloaded();
         });
     }
@@ -194,8 +201,11 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
 
     private async Task LoadMediaAsync()
     {
-        if (!IsLoaded || Design.IsDesignMode) { return; }
-        
+        if (!IsLoaded || Design.IsDesignMode)
+        {
+            return;
+        }
+
         MpvContext!.Stop().Invoke();
         if (!string.IsNullOrEmpty(Source))
         {
@@ -214,6 +224,7 @@ public class MpvPlayerHost : PlayerHostBase, IDisposable
     }
 
     private bool _disposed;
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>

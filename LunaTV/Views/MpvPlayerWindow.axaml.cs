@@ -1,7 +1,9 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using LunaTV.Extensions;
 using LunaTV.ViewModels;
 using Ursa.Controls;
@@ -56,6 +58,7 @@ public partial class MpvPlayerWindow : UrsaWindow
     private Thumb? SeekBarThumbPart => SeekBarTrackPart?.Thumb;
 
     private readonly MpvPlayerWindowModel _viewModel;
+    private readonly DispatcherTimer _overlayTimer;
 
     public MpvPlayerWindow()
     {
@@ -65,6 +68,17 @@ public partial class MpvPlayerWindow : UrsaWindow
         DataContext = _viewModel;
 
         _viewModel.Notification = new WindowNotificationManager(this);
+        _viewModel.Window = this;
+
+        _overlayTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(6)
+        };
+        _overlayTimer.Tick += (s, e) =>
+        {
+            _overlayTimer.Stop();
+            PlayBar.IsVisible = false;
+        };
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -104,6 +118,13 @@ public partial class MpvPlayerWindow : UrsaWindow
         base.OnClosing(e);
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        _overlayTimer.Stop();
+        base.OnClosed(e);
+        (App.VisualRoot as MainWindow)?.Show();
+    }
+
     private void SeekBarPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _viewModel.IsSeekBarPressed = true;
@@ -112,5 +133,22 @@ public partial class MpvPlayerWindow : UrsaWindow
     private void SeekBarPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _viewModel.IsSeekBarPressed = false;
+    }
+
+    private void OnPointerEntered(object? sender, PointerEventArgs e)
+    {
+        _overlayTimer.Stop();
+        _overlayTimer.Start();
+        PlayBar.IsVisible = true;
+    }
+
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!PlayBar.IsVisible)
+        {
+            _overlayTimer.Stop();
+            _overlayTimer.Start();
+            PlayBar.IsVisible = true;
+        }
     }
 }
