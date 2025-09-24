@@ -74,13 +74,14 @@ public static class SqlSugarServiceExtensions
         services.AddScoped<SugarRepository<ApiSource>>();
         services.AddScoped<SugarRepository<ViewHistory>>();
         services.AddScoped<SugarRepository<PlayerConfig>>();
+        services.AddScoped<SugarRepository<MediaDownload>>();
     }
 
     public static Type[] GetDbTypes()
     {
         return
         [
-            typeof(SearchHistory), typeof(ApiSource), typeof(ViewHistory), typeof(PlayerConfig)
+            typeof(SearchHistory), typeof(ApiSource), typeof(ViewHistory), typeof(PlayerConfig), typeof(MediaDownload)
         ];
     }
 }

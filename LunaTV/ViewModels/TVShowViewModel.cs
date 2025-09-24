@@ -77,8 +77,13 @@ public partial class TVShowViewModel : PageViewModelBase
             },
             new()
             {
+                Name = "下载",
+                Data = App.TopLevel.TryFindResource("SemiIconDownload", out var value5) ? (StreamGeometry)value5 : null
+            },
+            new()
+            {
                 Name = "配置",
-                Data = App.TopLevel.TryFindResource("SemiIconSetting", out var value5) ? (StreamGeometry)value5 : null
+                Data = App.TopLevel.TryFindResource("SemiIconSetting", out var value6) ? (StreamGeometry)value6 : null
             }
         };
         SelectedItem = Items[0];
@@ -123,6 +128,10 @@ public partial class TVShowViewModel : PageViewModelBase
                 "配置" => new TVShowSettingView
                 {
                     DataContext = new TVShowSettingViewModel()
+                },
+                "下载" => new TVDownloadView()
+                {
+                    DataContext = new TVDownloadViewModel()
                 },
                 _ => null
             };

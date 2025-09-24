@@ -28,6 +28,7 @@
         <styling:FluentAvaloniaTheme UseSystemFontOnWindows="True" />
         <semi:SemiTheme Locale="zh-CN" />
         <semi:SemiPopupAnimations />
+        <semi:DataGridSemiTheme />
         <u-semi:SemiTheme Locale="zh-CN" />
     </Application.Styles>
 </Application>
