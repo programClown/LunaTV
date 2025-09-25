@@ -9,6 +9,20 @@
     d:DesignWidth="800"
     x:DataType="vm:TVDownloadViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="Button.TransparentButton:pointerover">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Setter Property="RenderTransform" Value="scale(1.01,1.01)" />
+        </Style>
+        <Style Selector="Button.TransparentButton:pressed">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
     <Grid RowDefinitions="Auto, Auto, *">
         <StackPanel Grid.Row="0" Spacing="8">
             <TextBlock
@@ -78,45 +92,95 @@
             ItemsSource="{Binding MediaDownloads}">
             <DataGrid.Columns>
                 <DataGridTextColumn
+                    Width="4*"
                     x:DataType="vm:MediaDownloadViewModel"
                     Binding="{Binding Name}"
                     Header="影视名称" />
                 <DataGridTextColumn
+                    Width="2*"
                     x:DataType="vm:MediaDownloadViewModel"
                     Binding="{Binding Episode}"
                     Header="剧集" />
                 <DataGridTextColumn
+                    Width="2*"
                     x:DataType="vm:MediaDownloadViewModel"
                     Binding="{Binding SourceName}"
                     Header="来源" />
                 <DataGridTemplateColumn x:DataType="vm:MediaDownloadViewModel" Header="链接">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="vm:MediaDownloadViewModel">
-                            <Label
-                                Classes="Blue"
-                                Theme="{StaticResource TagLabel}"
+                            <Button
+                                Classes="TransparentButton"
+                                Theme="{DynamicResource BorderlessButton}"
                                 ToolTip.Tip="{Binding Url}">
-                                <PathIcon
-                                    Classes="Small"
-                                    Data="{DynamicResource SemiIconLink}"
-                                    Theme="{DynamicResource InnerPathIcon}" />
-                            </Label>
+                                <PathIcon Data="{DynamicResource SemiIconLink}" Theme="{DynamicResource InnerPathIcon}" />
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn x:DataType="vm:MediaDownloadViewModel" Header="本地路径">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="vm:MediaDownloadViewModel">
-                            <Button Theme="{DynamicResource BorderlessButton}" ToolTip.Tip="{Binding LocalPath}">
-                                <PathIcon
-                                    Classes="Small"
-                                    Data="{DynamicResource SemiIconVideo}"
-                                    Theme="{DynamicResource InnerPathIcon}" />
+                            <Button
+                                Classes="TransparentButton"
+                                Theme="{DynamicResource BorderlessButton}"
+                                ToolTip.Tip="{Binding LocalPath}">
+                                <PathIcon Data="{DynamicResource SemiIconVideo}" Theme="{DynamicResource InnerPathIcon}" />
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn
+                    Width="2*"
+                    x:DataType="vm:MediaDownloadViewModel"
+                    Header="操作">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:MediaDownloadViewModel">
+                            <StackPanel
+                                Margin="4,4"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                                <Button
+                                    Classes="TransparentButton"
+                                    Command="{Binding DownloadActionCommand}"
+                                    Content="{Binding ActionText}"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <Button
+                                    Classes="TransparentButton"
+                                    Content="删除"
+                                    Theme="{DynamicResource OutlineButton}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn
+                    Width="3*"
+                    x:DataType="vm:MediaDownloadViewModel"
+                    Header="状态">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:MediaDownloadViewModel">
+                            <StackPanel
+                                Margin="8,4"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                                <Label
+                                    Classes="Solid"
+                                    Classes.Lime="{Binding ActionIndicate}"
+                                    Classes.Red="{Binding !ActionIndicate}"
+                                    Content="{Binding Status}"
+                                    Theme="{StaticResource TagLabel}" />
+                                <ProgressBar
+                                    IsIndeterminate="{Binding StatusIndicate}"
+                                    Maximum="100"
+                                    Minimum="0"
+                                    ShowProgressText="True"
+                                    Value="20" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn
+                    Width="2*"
                     x:DataType="vm:MediaDownloadViewModel"
                     Binding="{Binding UpdateTime, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}"
                     Header="下载时间" />
