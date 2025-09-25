@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Avalonia.Collections;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.ViewModels.Base;
+using M3U8Download;
 
 namespace LunaTV.ViewModels.TVShowPages;
 
-public class TVDownloadViewModel : ViewModelBase
+public partial class TVDownloadViewModel : ViewModelBase
 {
+    [ObservableProperty] private string _downloadUrl = "https://vod.360zyx.vip/20250708/7T2xjBRd/index.m3u8";
+    [ObservableProperty] private string _speed = string.Empty;
+    [ObservableProperty] private string _sizeStr = string.Empty;
+    [ObservableProperty] private string _remainingTime = string.Empty;
+
     public DataGridCollectionView MediaDownloads { get; set; }
     public ObservableCollection<MediaDownloadViewModel> MediaDownloadViewModels { get; set; }
+
+    private DownloadManager? _downloadManager;
 
     public TVDownloadViewModel()
     {
@@ -55,6 +65,42 @@ public class TVDownloadViewModel : ViewModelBase
         };
         MediaDownloads = new DataGridCollectionView(MediaDownloadViewModels);
         MediaDownloads.GroupDescriptions.Add(new DataGridPathGroupDescription("Name"));
+
+        _downloadManager = new DownloadManager();
+        _downloadManager.SetFFmpegPath("C:\\Users\\Austin\\Downloads\\ffmpeg.exe");
+    }
+
+    [RelayCommand]
+    private void Download()
+    {
+        // 开始下载
+        Task.Run(async () =>
+        {
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1),
+            };
+
+
+            timer.Tick += (_, _) =>
+            {
+                if (_downloadManager!.DownloadStatus.Count > 0)
+                {
+                    Speed = _downloadManager.DownloadStatus[0].speed;
+                    SizeStr = _downloadManager.DownloadStatus[0].sizeStr;
+                    RemainingTime = _downloadManager.DownloadStatus[0].remainingTimeStr;
+                }
+            };
+            timer.Start();
+            var result = await _downloadManager!.DownloadAsync(DownloadUrl, "D:\\", "test");
+            timer.Stop();
+            if (_downloadManager!.DownloadStatus.Count > 0)
+            {
+                Speed = _downloadManager.DownloadStatus[0].speed;
+                SizeStr = _downloadManager.DownloadStatus[0].sizeStr;
+                RemainingTime = _downloadManager.DownloadStatus[0].remainingTimeStr;
+            }
+        });
     }
 }
 
@@ -72,7 +118,7 @@ public partial class MediaDownloadViewModel : ObservableObject
     [ObservableProperty] private string? _actionText = "开始"; // 状态 开始/暂停/重新下载
     [ObservableProperty] private string? _status = "未开始";
     [ObservableProperty] private bool _statusIndicate; // 状态指示
-
+    [ObservableProperty] private int _progress;
     public DateTime UpdateTime { get; set; }
 
     partial void OnActionTextChanged(string? value)

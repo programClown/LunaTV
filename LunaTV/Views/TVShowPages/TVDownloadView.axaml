@@ -53,11 +53,13 @@
             <TextBox
                 Width="500"
                 Classes="ClearButton Large"
+                Text="{Binding DownloadUrl}"
                 Watermark="请输入m3u8链接">
                 <TextBox.InnerRightContent>
                     <Button
                         Margin="0,0,-10,0"
                         Classes="Large"
+                        Command="{Binding DownloadCommand}"
                         Content="下载" />
                 </TextBox.InnerRightContent>
             </TextBox>
@@ -71,13 +73,24 @@
                 Text="下载管理"
                 Theme="{DynamicResource TitleTextBlock}" />
 
-            <TextBlock HorizontalAlignment="Right">
+            <!-- 92.54% 55.66MB/60.15MB 1.90MBps 00:00:02 -->
+
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right">
+                <Run Text="{Binding Speed}" />
+                <Run Text="  " />
+                <Run Text="{Binding SizeStr}" />
+                <Run Text="  " />
+                <Run Text="{Binding RemainingTime}" />
+            </TextBlock>
+
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right">
                 <Run Text="下载中：" />
                 <Run Text="1" />
                 <Run Text="  等待中：" />
-                <Run Text="20" />
+                <Run Text="1" />
                 <Run Text="  总共：" />
-                <Run Text="100" />
+                <Run Text="1" />
+                <Run Text="  |  " />
             </TextBlock>
         </DockPanel>
 
@@ -125,7 +138,8 @@
                                 Classes="TransparentButton"
                                 Theme="{DynamicResource BorderlessButton}"
                                 ToolTip.Tip="{Binding LocalPath}">
-                                <PathIcon Data="{DynamicResource SemiIconVideo}" Theme="{DynamicResource InnerPathIcon}" />
+                                <PathIcon Data="{DynamicResource SemiIconVideo}"
+                                          Theme="{DynamicResource InnerPathIcon}" />
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -174,7 +188,7 @@
                                     Maximum="100"
                                     Minimum="0"
                                     ShowProgressText="True"
-                                    Value="20" />
+                                    Value="{Binding Progress}" />
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

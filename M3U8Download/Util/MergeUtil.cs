@@ -50,7 +50,8 @@ internal static class MergeUtil
             Arguments = command,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
         p.ErrorDataReceived += (sendProcess, output) =>
         {
@@ -74,7 +75,8 @@ internal static class MergeUtil
         var index = 0; // 序号
 
         // 按照div的容量分割为小数组
-        var li = Enumerable.Range(0, files.Length / div + 1).Select(x => files.Skip(x * div).Take(div).ToArray()).ToArray();
+        var li = Enumerable.Range(0, files.Length / div + 1).Select(x => files.Skip(x * div).Take(div).ToArray())
+            .ToArray();
         foreach (var items in li)
         {
             if (items.Length == 0)
@@ -87,15 +89,18 @@ internal static class MergeUtil
             {
                 File.Delete(item);
             }
+
             index++;
         }
 
         return newFiles.ToArray();
     }
 
-    public static bool MergeByFFmpeg(string binary, string[] files, string outputPath, string muxFormat, bool useAACFilter,
+    public static bool MergeByFFmpeg(string binary, string[] files, string outputPath, string muxFormat,
+        bool useAACFilter,
         bool fastStart = false,
-        bool writeDate = true, bool useConcatDemuxer = false, string poster = "", string audioName = "", string title = "",
+        bool writeDate = true, bool useConcatDemuxer = false, string poster = "", string audioName = "",
+        string title = "",
         string copyright = "", string comment = "", string encodingTool = "", string recTime = "")
     {
         // 改为绝对路径
@@ -106,7 +111,9 @@ internal static class MergeUtil
         StringBuilder command = new StringBuilder("-loglevel warning -nostdin ");
         string ddpAudio = string.Empty;
         string addPoster = "-map 1 -c:v:1 copy -disposition:v:1 attached_pic";
-        ddpAudio = (File.Exists($"{Path.GetFileNameWithoutExtension(outputPath + ".mp4")}.txt") ? File.ReadAllText($"{Path.GetFileNameWithoutExtension(outputPath + ".mp4")}.txt") : "");
+        ddpAudio = (File.Exists($"{Path.GetFileNameWithoutExtension(outputPath + ".mp4")}.txt")
+            ? File.ReadAllText($"{Path.GetFileNameWithoutExtension(outputPath + ".mp4")}.txt")
+            : "");
         if (!string.IsNullOrEmpty(ddpAudio)) useAACFilter = false;
 
         if (useConcatDemuxer)
@@ -133,24 +140,32 @@ internal static class MergeUtil
                 command.Append("\" " + (string.IsNullOrEmpty(poster) ? "" : "-i \"" + poster + "\""));
                 command.Append(" " + (string.IsNullOrEmpty(ddpAudio) ? "" : "-i \"" + ddpAudio + "\""));
                 command.Append(
-                    $" -map 0:v? {(string.IsNullOrEmpty(ddpAudio) ? "-map 0:a?" : $"-map {(string.IsNullOrEmpty(poster) ? "1" : "2")}:a -map 0:a?")} -map 0:s? " + (string.IsNullOrEmpty(poster) ? "" : addPoster)
+                    $" -map 0:v? {(string.IsNullOrEmpty(ddpAudio) ? "-map 0:a?" : $"-map {(string.IsNullOrEmpty(poster) ? "1" : "2")}:a -map 0:a?")} -map 0:s? " +
+                    (string.IsNullOrEmpty(poster) ? "" : addPoster)
                     + (writeDate ? " -metadata date=\"" + dateString + "\"" : "") +
                     " -metadata encoding_tool=\"" + encodingTool + "\" -metadata title=\"" + title +
                     "\" -metadata copyright=\"" + copyright + "\" -metadata comment=\"" + comment +
-                    $"\" -metadata:s:a:{(string.IsNullOrEmpty(ddpAudio) ? "0" : "1")} title=\"" + audioName + $"\" -metadata:s:a:{(string.IsNullOrEmpty(ddpAudio) ? "0" : "1")} handler=\"" + audioName + "\" ");
-                command.Append(string.IsNullOrEmpty(ddpAudio) ? "" : " -metadata:s:a:0 title=\"DD+\" -metadata:s:a:0 handler=\"DD+\" ");
+                    $"\" -metadata:s:a:{(string.IsNullOrEmpty(ddpAudio) ? "0" : "1")} title=\"" + audioName +
+                    $"\" -metadata:s:a:{(string.IsNullOrEmpty(ddpAudio) ? "0" : "1")} handler=\"" + audioName + "\" ");
+                command.Append(string.IsNullOrEmpty(ddpAudio)
+                    ? ""
+                    : " -metadata:s:a:0 title=\"DD+\" -metadata:s:a:0 handler=\"DD+\" ");
                 if (fastStart)
                     command.Append("-movflags +faststart");
-                command.Append("  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" + outputPath + ".mp4\"");
+                command.Append("  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" + outputPath +
+                               ".mp4\"");
                 break;
             case ("MKV"):
-                command.Append("\" -map 0  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" + outputPath + ".mkv\"");
+                command.Append("\" -map 0  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" +
+                               outputPath + ".mkv\"");
                 break;
             case ("FLV"):
-                command.Append("\" -map 0  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" + outputPath + ".flv\"");
+                command.Append("\" -map 0  -c copy -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" +
+                               outputPath + ".flv\"");
                 break;
             case ("M4A"):
-                command.Append("\" -map 0  -c copy -f mp4 -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" + outputPath + ".m4a\"");
+                command.Append("\" -map 0  -c copy -f mp4 -y " + (useAACFilter ? "-bsf:a aac_adtstoasc" : "") + " \"" +
+                               outputPath + ".m4a\"");
                 break;
             case ("TS"):
                 command.Append("\" -map 0  -c copy -y -f mpegts -bsf:v h264_mp4toannexb \"" + outputPath + ".ts\"");
@@ -171,7 +186,8 @@ internal static class MergeUtil
         return code == 0;
     }
 
-    public static bool MuxInputsByFFmpeg(string binary, OutputFile[] files, string outputPath, MuxFormat muxFormat, bool dateinfo)
+    public static bool MuxInputsByFFmpeg(string binary, OutputFile[] files, string outputPath, MuxFormat muxFormat,
+        bool dateinfo)
     {
         var ext = OtherUtil.GetMuxExtension(muxFormat);
         string dateString = DateTime.Now.ToString("o");
@@ -213,6 +229,7 @@ internal static class MergeUtil
             {
                 command.Append($" -metadata:s:{streamIndex} title=\"{files[i].Description}\" ");
             }
+
             /**
              * -metadata:s:xx标记的是 输出的第xx个流的metadata，
              * 若输入文件存在不止一个流时，这里单纯使用files的index
@@ -224,7 +241,8 @@ internal static class MergeUtil
                 streamIndex++;
         }
 
-        var videoTracks = files.Where(x => x.MediaType != Common.Enum.MediaType.AUDIO && x.MediaType != Common.Enum.MediaType.SUBTITLES);
+        var videoTracks = files.Where(x =>
+            x.MediaType != Common.Enum.MediaType.AUDIO && x.MediaType != Common.Enum.MediaType.SUBTITLES);
         var audioTracks = files.Where(x => x.MediaType == Common.Enum.MediaType.AUDIO);
         var subTracks = files.Where(x => x.MediaType == Common.Enum.MediaType.AUDIO);
         if (videoTracks.Any()) command.Append(" -disposition:v:0 default ");
@@ -273,6 +291,7 @@ internal static class MergeUtil
                     command.Append($" --default-track 0:no ");
                 dFlag = true;
             }
+
             if (!string.IsNullOrEmpty(files[i].Description))
                 command.Append($" --track-name 0:\"{files[i].Description}\" ");
             command.Append($" \"{files[i].FilePath}\" ");

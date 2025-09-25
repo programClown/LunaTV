@@ -10,7 +10,9 @@ namespace N_m3u8DL_RE.Util;
 internal static partial class MP4DecryptUtil
 {
     private static readonly string ZeroKid = "00000000000000000000000000000000";
-    public static async Task<bool> DecryptAsync(DecryptEngine decryptEngine, string bin, string[]? keys, string source, string dest, string? kid, string init = "", bool isMultiDRM=false)
+
+    public static async Task<bool> DecryptAsync(DecryptEngine decryptEngine, string bin, string[]? keys, string source,
+        string dest, string? kid, string init = "", bool isMultiDRM = false)
     {
         if (keys == null || keys.Length == 0) return false;
 
@@ -45,7 +47,7 @@ internal static partial class MP4DecryptUtil
             keyPairs = keyPairs.Select(x => $"{kid}:{x}").ToList();
             keyPair = keyPairs.First();
         }
-            
+
         if (keyPair == null) return false;
 
         // shakaPackager/ffmpeg 无法单独解密init文件
@@ -78,16 +80,19 @@ internal static partial class MP4DecryptUtil
             {
                 cmd = string.Join(" ", keyPairs.Select(k => $"--key {trackId}:{k.Split(':')[1]}"));
             }
+
             // 解决mp4decrypt中文问题 切换到源文件所在目录并改名再解密
             workDir = Path.GetDirectoryName(source)!;
             tmpEncFile = Path.Combine(workDir, $"{Guid.NewGuid()}{Path.GetExtension(source)}");
-            tmpDecFile = Path.Combine(workDir, $"{Path.GetFileNameWithoutExtension(tmpEncFile)}_dec{Path.GetExtension(tmpEncFile)}");
+            tmpDecFile = Path.Combine(workDir,
+                $"{Path.GetFileNameWithoutExtension(tmpEncFile)}_dec{Path.GetExtension(tmpEncFile)}");
             File.Move(source, tmpEncFile);
             if (init != "")
             {
                 var infoFile = Path.GetDirectoryName(init) == workDir ? Path.GetFileName(init) : init;
                 cmd += $" --fragments-info \"{infoFile}\" ";
             }
+
             cmd += $" \"{Path.GetFileName(tmpEncFile)}\" \"{Path.GetFileName(tmpDecFile)}\"";
         }
         else
@@ -100,12 +105,12 @@ internal static partial class MP4DecryptUtil
                 MergeUtil.CombineMultipleFilesIntoSingleFile([init, source], tmpFile);
                 enc = tmpFile;
             }
-            
+
             cmd = $"-loglevel error -nostdin -decryption_key {keyPair.Split(':')[1]} -i \"{enc}\" -c copy \"{dest}\"";
         }
 
         var isSuccess = await RunCommandAsync(bin, cmd, workDir);
-        
+
         // mp4decrypt 还原文件改名操作
         if (workDir is not null)
         {
@@ -118,7 +123,7 @@ internal static partial class MP4DecryptUtil
             if (tmpFile != "" && File.Exists(tmpFile)) File.Delete(tmpFile);
             return true;
         }
-        
+
         Logger.Error(ResString.decryptionFailed);
         return false;
     }
@@ -151,7 +156,7 @@ internal static partial class MP4DecryptUtil
     {
         try
         {
-            if (string.IsNullOrEmpty(file) || !File.Exists(file) || string.IsNullOrEmpty(kid)) 
+            if (string.IsNullOrEmpty(file) || !File.Exists(file) || string.IsNullOrEmpty(kid))
                 return null;
 
             Logger.InfoMarkUp(ResString.searchKey);
@@ -160,7 +165,7 @@ internal static partial class MP4DecryptUtil
             while (await reader.ReadLineAsync() is { } line)
             {
                 if (!line.Trim().StartsWith(kid)) continue;
-                
+
                 Logger.InfoMarkUp($"[green]OK[/] [grey]{line.Trim()}[/]");
                 return line.Trim();
             }
@@ -169,6 +174,7 @@ internal static partial class MP4DecryptUtil
         {
             Logger.ErrorMarkUp(ex.Message);
         }
+
         return null;
     }
 
@@ -206,7 +212,8 @@ internal static partial class MP4DecryptUtil
             Arguments = cmd,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
         p.Start();
         var errorOutput = p.StandardError.ReadToEnd();

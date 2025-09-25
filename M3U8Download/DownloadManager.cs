@@ -16,6 +16,8 @@ namespace M3U8Download;
 
 public class DownloadManager
 {
+    public Dictionary<int, DownloadStatus> DownloadStatus { get; private set; } = new Dictionary<int, DownloadStatus>();
+
     public DownloadOption? Option { get; } = new()
     {
         AdKeywords = [],
@@ -368,7 +370,7 @@ public class DownloadManager
         else if (!livingFlag)
         {
             // 开始下载
-            var sdm = new LunaDownloadManager(downloadConfig, selectedStreams, extractor);
+            var sdm = new LunaDownloadManager(downloadConfig, selectedStreams, extractor, DownloadStatus);
             result = await sdm.StartDownloadAsync();
         }
         else

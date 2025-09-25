@@ -8,22 +8,31 @@ internal static partial class MediainfoUtil
 {
     [GeneratedRegex("  Stream #.*")]
     private static partial Regex TextRegex();
+
     [GeneratedRegex(@"#0:\d(\[0x\w+?\])")]
     private static partial Regex IdRegex();
+
     [GeneratedRegex(": (\\w+): (.*)")]
     private static partial Regex TypeRegex();
+
     [GeneratedRegex("(.*?)(,|$)")]
     private static partial Regex BaseInfoRegex();
+
     [GeneratedRegex(@" \/ 0x\w+")]
     private static partial Regex ReplaceRegex();
+
     [GeneratedRegex(@"\d{2,}x\d+")]
     private static partial Regex ResRegex();
+
     [GeneratedRegex(@"\d+ kb\/s")]
     private static partial Regex BitrateRegex();
+
     [GeneratedRegex(@"(\d+(\.\d+)?) fps")]
     private static partial Regex FpsRegex();
+
     [GeneratedRegex(@"DOVI configuration record.*profile: (\d).*compatibility id: (\d)")]
     private static partial Regex DoViRegex();
+
     [GeneratedRegex(@"Duration.*?start: (\d+\.?\d{0,3})")]
     private static partial Regex StartRegex();
 
@@ -40,7 +49,8 @@ internal static partial class MediainfoUtil
             Arguments = cmd,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            CreateNoWindow = true
         })!;
         var output = await p.StandardError.ReadToEndAsync();
         await p.WaitForExitAsync();

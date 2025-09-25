@@ -5,6 +5,7 @@ using N_m3u8DL_RE.Common.Entity;
 using N_m3u8DL_RE.Common.Enum;
 using N_m3u8DL_RE.Common.Log;
 using N_m3u8DL_RE.Common.Resource;
+using N_m3u8DL_RE.Common.Util;
 using N_m3u8DL_RE.Config;
 using N_m3u8DL_RE.Downloader;
 using N_m3u8DL_RE.Entity;
@@ -23,15 +24,17 @@ internal class LunaDownloadManager
     private readonly List<StreamSpec> SelectedSteams;
     private readonly StreamExtractor StreamExtractor;
     private int _taskId;
+    private Dictionary<int, DownloadStatus> _downloadStatus;
     private List<OutputFile> OutputFiles = [];
 
     public LunaDownloadManager(DownloaderConfig downloaderConfig, List<StreamSpec> selectedSteams,
-        StreamExtractor streamExtractor)
+        StreamExtractor streamExtractor, Dictionary<int, DownloadStatus> downloadStatus)
     {
         DownloaderConfig = downloaderConfig;
         SelectedSteams = selectedSteams;
         StreamExtractor = streamExtractor;
         Downloader = new SimpleDownloader(DownloaderConfig);
+        _downloadStatus = downloadStatus;
     }
 
     // 从文件读取KEY
@@ -681,6 +684,10 @@ internal class LunaDownloadManager
         var dic = SelectedSteams.Select((item, id) =>
         {
             var description = item.ToShortShortString();
+            _downloadStatus[_taskId] = new DownloadStatus
+            {
+                description = description
+            };
             var task = new ProgressTask(_taskId++, description, 100, false);
             SpeedContainerDic[id] = new SpeedContainer(); // 速度计算
             // 限速设置
@@ -694,7 +701,12 @@ internal class LunaDownloadManager
             foreach (var kp in dic)
             {
                 var task = kp.Value;
+                var goTimer = new System.Timers.Timer(1000);
+                goTimer.Elapsed += (_, _) => { RunTask(task, SpeedContainerDic); };
+                goTimer.Start();
                 var result = await DownloadStreamAsync(kp.Key, task, SpeedContainerDic[task.Id]);
+                goTimer.Stop();
+                RunTask(task, SpeedContainerDic);
                 Results[kp.Key] = result;
                 // 失败不再下载后续
                 if (!result) break;
@@ -773,5 +785,47 @@ internal class LunaDownloadManager
         }
 
         return success;
+    }
+
+    private void RunTask(ProgressTask task, ConcurrentDictionary<int, SpeedContainer> speedContainerDic)
+    {
+        var ds = _downloadStatus[task.Id];
+        ds.percentage = task.Percentage;
+
+        var speedContainer = speedContainerDic[task.Id];
+        ds.size = speedContainer.RDownloaded;
+        ds.totalSize = speedContainer.SingleSegment
+            ? (speedContainer.ResponseLength ?? 0)
+            : (long)(ds.size / (task.Value / task.MaxValue));
+        ds.sizeStr = $"{GlobalUtil.FormatFileSize(ds.size)}/{GlobalUtil.FormatFileSize(ds.totalSize)}";
+
+        speedContainer.NowSpeed = speedContainer.Downloaded;
+        // 速度为0，计数增加
+        if (speedContainer.Downloaded <= 0)
+        {
+            speedContainer.AddLowSpeedCount();
+        }
+        else speedContainer.ResetLowSpeedCount();
+
+        speedContainer.Reset();
+
+        ds.speed = GlobalUtil.FormatFileSize(speedContainer.NowSpeed) + "ps";
+
+        ds.remainingTime = task.RemainingTime;
+
+        if (!ds.remainingTime.HasValue)
+        {
+            ds.remainingTimeStr = "--:--:--";
+        }
+        else if (ds.remainingTime.Value.TotalHours > 99.0)
+        {
+            ds.remainingTimeStr = "**:**:**";
+        }
+        else
+        {
+            ds.remainingTimeStr = $"{ds.remainingTime.Value:hh\\:mm\\:ss}";
+        }
+
+        Console.WriteLine($"download {ds.percentage:F2}% {ds.sizeStr} {ds.speed} {ds.remainingTimeStr}");
     }
 }
