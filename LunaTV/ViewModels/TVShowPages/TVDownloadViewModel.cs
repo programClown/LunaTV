@@ -34,14 +34,14 @@ public partial class TVDownloadViewModel : ViewModelBase
     [ObservableProperty] private int _totalCount = 0;
     private readonly SugarRepository<MediaDownload> _mediaDownloadTable;
 
-    private Task _downloadTask;
-    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly DispatcherTimer _downloadTimer;
+    private bool _isDownloading;
 
     public DataGridCollectionView MediaDownloads { get; set; }
     public ObservableCollection<MediaDownloadViewModel> MediaDownloadViewModels { get; set; }
     private Queue<int> WaitList { get; set; }
 
-    private DownloadManager? _downloadManager;
+    private readonly DownloadManager? _downloadManager;
 
     public TVDownloadViewModel()
     {
@@ -57,38 +57,40 @@ public partial class TVDownloadViewModel : ViewModelBase
         // check ffmpeg
 
         // task
-        WaitList = new Queue<int>([1, 2, 3]);
-        _downloadTask = RunDownloadPeriodicTask();
+        WaitList = new Queue<int>();
+        _downloadTimer = new DispatcherTimer
+            (TimeSpan.FromSeconds(1), DispatcherPriority.Background, DownloadTimerOnTick);
+        _downloadTimer.Start();
+    }
+
+    private async void DownloadTimerOnTick(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (!_isDownloading && WaitList.Count > 0)
+            {
+                int index = WaitList.Dequeue();
+                var mvm = MediaDownloadViewModels.FirstOrDefault(x => x.Id == index);
+
+                if (mvm != null)
+                {
+                    Downloading(mvm);
+                }
+
+                Console.WriteLine("dowing");
+            }
+
+            WaitingCount = WaitList.Count;
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+        }
     }
 
     ~TVDownloadViewModel()
     {
-        _cancellationTokenSource.Cancel();
-        _downloadTask.Wait();
-    }
-
-    private async Task RunDownloadPeriodicTask()
-    {
-        try
-        {
-            while (!_cancellationTokenSource.IsCancellationRequested)
-            {
-                if (WaitList.Count > 0)
-                {
-                    int index = WaitList.Dequeue();
-                    var mvm = MediaDownloadViewModels.FirstOrDefault(x => x.Id == index);
-                    if (mvm != null) await Downloading(mvm);
-                }
-
-                WaitingCount = WaitList.Count;
-
-                await Task.Delay(1000, _cancellationTokenSource.Token);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+        _downloadTimer.Stop();
     }
 
     public void AddTvDownload(string name, string url, string episode, bool check = true)
@@ -128,7 +130,7 @@ public partial class TVDownloadViewModel : ViewModelBase
             Episode = episode,
             Url = url,
             IsDownloaded = isDownload,
-            LocalPath = Path.Combine(GlobalDefine.DownloadPath, name),
+            LocalPath = GlobalDefine.DownloadPath,
         };
 
         _mediaDownloadTable.InsertOrUpdate(md);
@@ -146,8 +148,9 @@ public partial class TVDownloadViewModel : ViewModelBase
         AddTvDownload(name, url, String.Empty, check);
     }
 
-    private async Task<bool> Downloading(MediaDownloadViewModel mdvm)
+    private bool Downloading(MediaDownloadViewModel mdvm)
     {
+        _isDownloading = true;
         // 开始下载
         var timer = new DispatcherTimer
         {
@@ -166,7 +169,13 @@ public partial class TVDownloadViewModel : ViewModelBase
         DownloadingCount = 1;
         timer.Start();
         var fileName = string.IsNullOrEmpty(mdvm.Episode) ? $"{mdvm.Name}-{mdvm.Episode}" : $"{mdvm.Name}";
-        var result = await _downloadManager!.DownloadAsync(mdvm.Url!, mdvm.LocalPath!, fileName);
+        var result = Task.Run(async () =>
+        {
+            await _downloadManager!.DownloadAsync(mdvm.Url!, mdvm.LocalPath!, fileName);
+            _isDownloading = false;
+        });
+
+        Console.WriteLine("122222222222222222222222222222");
         timer.Stop();
         if (_downloadManager!.DownloadStatus.Count > 0)
         {
@@ -176,7 +185,7 @@ public partial class TVDownloadViewModel : ViewModelBase
         }
 
         DownloadingCount = 0;
-        return result;
+        return true;
     }
 
     [RelayCommand]
