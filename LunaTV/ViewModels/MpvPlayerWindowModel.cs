@@ -159,7 +159,6 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
             return;
         }
 
-        SaveViewHistory();
         MediaUrl = string.Empty;
         _isLoaded = false;
         IsPlaying = false;
@@ -174,6 +173,7 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
         Mpv.Pause.Set(false);
         Mpv!.Stop().Invoke();
         SpeedChange(1.0f);
+        SaveViewHistory();
         Stoped();
     }
 
@@ -281,16 +281,20 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void KanbanSelect(EpisodeSubjectItem item)
     {
-        // Stop();
-        IsVideosKanbanChecked = false;
-        IsVideosKanbanChecked = false;
-        KanBanWidth = 0;
-        ViewHistory.PlaybackPosition = 0;
-        ViewHistory.Episode = item.Name;
-        ViewHistory.Url = item.Url;
-        MediaUrl = item.Url;
-        Title = $"{ViewHistory?.Name} {item.Name}";
-        Episodes.ToList().ForEach(episode => episode.Watched = episode.Name == item.Name);
+        Stop();
+        Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            await Task.Delay(1000);
+            IsVideosKanbanChecked = false;
+            KanBanWidth = 0;
+            ViewHistory.PlaybackPosition = 0;
+            ViewHistory.Episode = item.Name;
+            ViewHistory.Url = item.Url;
+            MediaUrl = item.Url;
+            Title = $"{ViewHistory?.Name} {item.Name}";
+            Episodes.ToList().ForEach(episode => episode.Watched = episode.Name == item.Name);
+            SaveViewHistory();
+        });
     }
 
     private void PlayerFileLoaded(object? sender, EventArgs e)
@@ -309,6 +313,8 @@ public partial class MpvPlayerWindowModel : ViewModelBase, IDisposable
                 {
                     Mpv.TimePos.Set(ViewHistory?.PlaybackPosition ?? 0);
                 }
+
+                SaveViewHistory();
             }
             else
             {

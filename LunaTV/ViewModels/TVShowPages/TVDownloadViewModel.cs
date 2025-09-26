@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -52,7 +53,10 @@ public partial class TVDownloadViewModel : ViewModelBase
         MediaDownloads.GroupDescriptions.Add(new DataGridPathGroupDescription("Name"));
 
         _downloadManager = new DownloadManager();
-        _downloadManager.SetFFmpegPath("C:\\Users\\Austin\\Downloads\\ffmpeg.exe");
+        if (OperatingSystem.IsWindows())
+        {
+            _downloadManager.SetFFmpegPath(GlobalDefine.WinFFmpegPath);
+        }
 
         // check ffmpeg
 
@@ -76,8 +80,6 @@ public partial class TVDownloadViewModel : ViewModelBase
                 {
                     Downloading(mvm);
                 }
-
-                Console.WriteLine("dowing");
             }
 
             WaitingCount = WaitList.Count;
@@ -193,8 +195,6 @@ public partial class TVDownloadViewModel : ViewModelBase
     {
         // 外部资源下载
         AddMovieDownload(OtherUtil.GetFileNameFromInput(DownloadUrl), DownloadUrl, true);
-        TotalCount += 1;
-        WaitingCount += 1;
     }
 }
 
@@ -238,5 +238,30 @@ public partial class MediaDownloadViewModel : ObservableObject
             "重新下载" => "开始",
             _ => "开始"
         };
+    }
+
+    [RelayCommand]
+    public void OpenFolder()
+    {
+        if (string.IsNullOrEmpty(LocalPath))
+        {
+            return;
+        }
+
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                Process.Start("explorer.exe", LocalPath);
+            }
+            else
+            {
+                Process.Start("open", LocalPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

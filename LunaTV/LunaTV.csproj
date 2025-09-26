@@ -2,12 +2,13 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <Version>0.9.3</Version>
-        <AssemblyVersion>0.9.3.3</AssemblyVersion>
+        <Version>0.9.4</Version>
+        <AssemblyVersion>0.9.4.0</AssemblyVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -54,5 +55,12 @@
     <ItemGroup>
         <Compile Remove="Assets\wwwroot\**"/>
         <AvaloniaResource Remove="Assets\wwwroot\**"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'==''">
+        <Content Include="ffmpeg\**">
+            <Link>%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 </Project>

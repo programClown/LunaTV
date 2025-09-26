@@ -40,4 +40,6 @@ public sealed class GlobalDefine
     public static string AppJsonPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LunaTV",
             "lunatv-app.json");
+
+    public static string WinFFmpegPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe");
 }

@@ -73,9 +73,12 @@
                 Text="下载管理"
                 Theme="{DynamicResource TitleTextBlock}" />
 
-            <!-- 92.54% 55.66MB/60.15MB 1.90MBps 00:00:02 -->
+            <!--  92.54% 55.66MB/60.15MB 1.90MBps 00:00:02  -->
 
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Right">
                 <Run Text="{Binding Speed}" />
                 <Run Text="  " />
                 <Run Text="{Binding SizeStr}" />
@@ -83,14 +86,17 @@
                 <Run Text="{Binding RemainingTime}" />
             </TextBlock>
 
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Right">
                 <Run Text="下载中:" />
-                <Run Text="{Binding DownloadingCount}" Foreground="{DynamicResource SemiLime3}" />
+                <Run Foreground="{DynamicResource SemiLime3}" Text="{Binding DownloadingCount}" />
                 <Run Text="  等待中：" />
-                <Run Text="{Binding WaitingCount}" Foreground="{DynamicResource SemiAmber6}" />
+                <Run Foreground="{DynamicResource SemiAmber6}" Text="{Binding WaitingCount}" />
                 <Run Text="  总共：" />
-                <Run Text="{Binding TotalCount}" Foreground="{DynamicResource SemiGrey7}" />
-                <Run Text="  |  " FontSize="20" />
+                <Run Foreground="{DynamicResource SemiGrey7}" Text="{Binding TotalCount}" />
+                <Run FontSize="20" Text="  |  " />
             </TextBlock>
         </DockPanel>
 
@@ -131,10 +137,10 @@
                         <DataTemplate x:DataType="vm:MediaDownloadViewModel">
                             <Button
                                 Classes="TransparentButton"
+                                Command="{Binding OpenFolderCommand}"
                                 Theme="{DynamicResource BorderlessButton}"
                                 ToolTip.Tip="{Binding LocalPath}">
-                                <PathIcon Data="{DynamicResource SemiIconVideo}"
-                                          Theme="{DynamicResource InnerPathIcon}" />
+                                <PathIcon Data="{DynamicResource SemiIconFolderOpen}" Theme="{DynamicResource InnerPathIcon}" />
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
