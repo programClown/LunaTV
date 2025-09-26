@@ -4,8 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:nodify="https://miroiu.github.io/nodify"
-    xmlns:pvm="clr-namespace:LunaTV.ViewModels.Playground"
+    xmlns:viewModelBase="clr-namespace:NodifyM.Avalonia.ViewModelBase;assembly=NodifyM.Avalonia"
+    xmlns:nodify="clr-namespace:NodifyM.Avalonia.Controls;assembly=NodifyM.Avalonia"
+    xmlns:nc="clr-namespace:NodifyM.Avalonia.Converters;assembly=NodifyM.Avalonia"
     xmlns:vm="clr-namespace:LunaTV.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -40,78 +41,13 @@
     </UserControl.Resources>
 
     <Grid>
-        <nodify:NodifyEditor
-            x:Name="EditorView"
-            CanSelectMultipleConnections="True"
-            CanSelectMultipleItems="True"
-            Connections="{Binding Connections}"
-            ItemsSource="{Binding Nodes}">
-            <nodify:NodifyEditor.ItemTemplate>
-                <DataTemplate DataType="{x:Type pvm:NodeViewModel}">
-                    <nodify:Node
-                        Header="{Binding Title}"
-                        Input="{Binding Input}"
-                        Output="{Binding Output}">
-                        <!--  输入连接器模板  -->
-                        <nodify:Node.InputConnectorTemplate>
-                            <DataTemplate DataType="{x:Type pvm:ConnectorViewModel}">
-                                <nodify:NodeInput
-                                    Anchor="{Binding Anchor}"
-                                    Header="{Binding Title}"
-                                    IsConnected="{Binding IsConnected}">
-                                    <nodify:NodeInput.HeaderTemplate>
-                                        <DataTemplate DataType="{x:Type pvm:ConnectorViewModel}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock
-                                                    Margin="0,0,5,0"
-                                                    VerticalAlignment="Center"
-                                                    Text="{Binding Title}" />
-                                                <TextBox Text="Fuck" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </nodify:NodeInput.HeaderTemplate>
-                                </nodify:NodeInput>
-                            </DataTemplate>
-                        </nodify:Node.InputConnectorTemplate>
-
-                        <!--  输出连接器模板  -->
-                        <nodify:Node.OutputConnectorTemplate>
-                            <DataTemplate DataType="{x:Type pvm:ConnectorViewModel}">
-                                <nodify:NodeOutput
-                                    Anchor="{Binding Anchor, Mode=OneWayToSource}"
-                                    Header="{Binding Title}"
-                                    IsConnected="{Binding IsConnected}" />
-                            </DataTemplate>
-                        </nodify:Node.OutputConnectorTemplate>
-                    </nodify:Node>
-                </DataTemplate>
-            </nodify:NodifyEditor.ItemTemplate>
-
-            <nodify:NodifyEditor.ConnectionTemplate>
-                <DataTemplate DataType="{x:Type pvm:ConnectionViewModel}">
-                    <nodify:LineConnection Source="{Binding Source.Anchor}" Target="{Binding Target.Anchor}" />
-                </DataTemplate>
-            </nodify:NodifyEditor.ConnectionTemplate>
-
-            <nodify:NodifyEditor.PendingConnectionTemplate>
-                <DataTemplate DataType="{x:Type pvm:PendingConnectionViewModel}">
-                    <nodify:PendingConnection
-                        AllowOnlyConnectors="True"
-                        CompletedCommand="{Binding FinishCommand}"
-                        StartedCommand="{Binding StartCommand}" />
-                </DataTemplate>
-            </nodify:NodifyEditor.PendingConnectionTemplate>
-
-
-        </nodify:NodifyEditor>
-
-        <!--  <Grid  -->
-        <!--  Background="{StaticResource LargeGridLinesDrawingBrush}"  -->
-        <!--  IsVisible="{Binding ShowGridLines, Mode=OneWay}"  -->
-        <!--  ZIndex="-2" />  -->
+        <StackPanel ZIndex="1">
+            <TextBlock Text="{Binding #Editor.SelectedItem}"></TextBlock>
+        </StackPanel>
 
 
         <Border
+            ZIndex="2"
             Margin="20,0,0,20"
             HorizontalAlignment="Left"
             VerticalAlignment="Center">
@@ -122,12 +58,12 @@
             </StackPanel>
         </Border>
 
-        <Border
-            Margin="20,0,0,20"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
-            Background="#1e293b"
-            CornerRadius="3">
+        <Border ZIndex="2"
+                Margin="20,0,0,20"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Background="#1e293b"
+                CornerRadius="3">
             <Border.Effect>
                 <DropShadowDirectionEffect ShadowDepth="1" />
             </Border.Effect>
@@ -135,21 +71,21 @@
             <StackPanel>
                 <StackPanel.Resources />
 
-                <Button Command="{x:Static nodify:EditorCommands.ZoomIn}">
+                <Button>
                     <PathIcon
                         Classes="Small"
                         Data="{DynamicResource SemiIconPlus}"
                         Theme="{DynamicResource InnerPathIcon}" />
                 </Button>
 
-                <Button Command="{x:Static nodify:EditorCommands.ZoomOut}">
+                <Button>
                     <PathIcon
                         Classes="Small"
                         Data="{DynamicResource SemiIconMinus}"
                         Theme="{DynamicResource InnerPathIcon}" />
                 </Button>
 
-                <Button Command="{x:Static nodify:EditorCommands.FitToScreen}">
+                <Button>
                     <PathIcon
                         Classes="Small"
                         Data="{DynamicResource SemiIconMaximize}"
@@ -164,6 +100,171 @@
                 </Button>
             </StackPanel>
         </Border>
+
+
+        <nodify:NodifyEditor x:Name="Editor"
+                             Background="Transparent"
+                             ItemsSource="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.Nodes}"
+                             Connections="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.Connections}"
+                             PendingConnection="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.PendingConnection}"
+                             DisconnectConnectorCommand="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.DisconnectConnectorCommand}">
+            <nodify:NodifyEditor.DataTemplates>
+                <DataTemplate DataType="viewModelBase:KnotNodeViewModel">
+                    <nodify:KnotNode
+                        Location="{Binding Location,Mode=TwoWay}"
+                        Content="{Binding Connector}">
+                        <nodify:KnotNode.ContentTemplate>
+                            <DataTemplate DataType="viewModelBase:ConnectorViewModelBase">
+                                <nodify:Connector
+                                    VerticalAlignment="Center"
+                                    IsConnected="{Binding IsConnected}"
+                                    Anchor="{Binding Anchor, Mode=OneWayToSource}">
+                                    <nodify:Connector.BorderBrush>
+                                        <SolidColorBrush
+                                            Color="CornflowerBlue"
+                                            Opacity="0.5" />
+                                    </nodify:Connector.BorderBrush>
+                                </nodify:Connector>
+                            </DataTemplate>
+                        </nodify:KnotNode.ContentTemplate>
+                    </nodify:KnotNode>
+                </DataTemplate>
+
+            </nodify:NodifyEditor.DataTemplates>
+            <nodify:NodifyEditor.Resources>
+                <nc:FlowToDirectionConverter x:Key="FlowToDirectionConverter" />
+
+            </nodify:NodifyEditor.Resources>
+            <nodify:NodifyEditor.GridLineTemplate>
+                <DataTemplate>
+                    <nodify:LargeGridLine Width="{Binding $parent[nodify:NodifyEditor].Bounds.Width}"
+                                          OffsetX="{Binding $parent[nodify:NodifyEditor].OffsetX}"
+                                          OffsetY="{Binding $parent[nodify:NodifyEditor].OffsetY}"
+                                          Zoom="{Binding $parent[nodify:NodifyEditor].Zoom}"
+                                          Height="{Binding $parent[nodify:NodifyEditor].Bounds.Height}"
+                                          Spacing="30"
+                                          Thickness="0.5"
+                                          Brush="{StaticResource GridLinesColorBrush}"
+                                          ZIndex="-2" />
+                </DataTemplate>
+            </nodify:NodifyEditor.GridLineTemplate>
+            <nodify:NodifyEditor.ConnectionTemplate>
+                <DataTemplate DataType="{x:Type viewModelBase:ConnectionViewModelBase}">
+                    <Grid>
+                        <nodify:Connection
+                            TextBrush="{StaticResource Connection.TextColorBrush}"
+                            Text="{Binding Text}"
+                            TextPoint="50%,50%"
+                            SplitCommand="{Binding SplitConnectionCommand}"
+                            DisconnectCommand="{Binding DisconnectConnectionCommand}"
+                            Direction="{Binding .,Converter={StaticResource FlowToDirectionConverter}}"
+                            Source="{Binding Source.Anchor}" Focusable="True"
+                            Target="{Binding Target.Anchor}">
+                            <nodify:Connection.Stroke>
+                                <SolidColorBrush Color="Red"
+                                                 Opacity="0.5" />
+                            </nodify:Connection.Stroke>
+                            <nodify:Connection.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="_Delete" />
+                                </ContextMenu>
+                            </nodify:Connection.ContextMenu>
+                        </nodify:Connection>
+                    </Grid>
+
+                </DataTemplate>
+            </nodify:NodifyEditor.ConnectionTemplate>
+            <nodify:NodifyEditor.PendingConnectionTemplate>
+                <DataTemplate DataType="{x:Type viewModelBase:PendingConnectionViewModelBase}">
+                    <nodify:PendingConnection
+                        StartedCommand="{Binding StartCommand}"
+                        CompletedCommand="{Binding FinishCommand}"
+                        EnablePreview="True"
+                        EnableSnapping="True"
+                        Direction="{Binding Source.Flow,Converter={StaticResource FlowToDirectionConverter}}"
+                        PreviewTarget="{Binding PreviewTarget, Mode=OneWayToSource}">
+                        <nodify:PendingConnection.Stroke>
+                            <SolidColorBrush Color="Red"
+                                             Opacity="0.5" />
+
+                        </nodify:PendingConnection.Stroke>
+                        <nodify:PendingConnection.Background>
+                            <SolidColorBrush Color="DodgerBlue"
+                                             Opacity="0.8" />
+                        </nodify:PendingConnection.Background>
+                        <TextBlock Text="{Binding PreviewText}" />
+
+
+                    </nodify:PendingConnection>
+
+                </DataTemplate>
+            </nodify:NodifyEditor.PendingConnectionTemplate>
+            <nodify:NodifyEditor.ItemTemplate>
+                <DataTemplate DataType="viewModelBase:NodeViewModelBase">
+                    <nodify:Node x:Name="Node"
+                                 Input="{Binding Input}"
+                                 Header="{Binding Title}"
+                                 Location="{Binding Location,Mode=TwoWay}"
+                                 VerticalAlignment="Center"
+                                 Output="{Binding Output}">
+                        <nodify:Node.Styles>
+                            <Style Selector="nodify|Node[IsSelected=False]:pointerover">
+                                <Setter Property="BorderBrush" Value="AliceBlue"></Setter>
+                            </Style>
+                        </nodify:Node.Styles>
+                        <nodify:Node.InputConnectorTemplate>
+                            <DataTemplate DataType="{x:Type viewModelBase:ConnectorViewModelBase}">
+                                <nodify:NodeInput
+                                    x:Name="NodeInput"
+                                    VerticalAlignment="Center"
+                                    IsConnected="{Binding IsConnected}"
+                                    Anchor="{Binding Anchor, Mode=OneWayToSource}">
+                                    <nodify:NodeInput.Header>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                                    HorizontalAlignment="Right">
+
+                                            <TextBlock VerticalAlignment="Center" x:Name="textBlock"
+                                                       Text="{Binding Title}" />
+                                        </StackPanel>
+                                    </nodify:NodeInput.Header>
+                                    <nodify:NodeInput.BorderBrush>
+                                        <SolidColorBrush
+                                            Color="CornflowerBlue"
+                                            Opacity="0.5" />
+                                    </nodify:NodeInput.BorderBrush>
+                                </nodify:NodeInput>
+                            </DataTemplate>
+                        </nodify:Node.InputConnectorTemplate>
+
+                        <nodify:Node.OutputConnectorTemplate>
+                            <DataTemplate DataType="{x:Type viewModelBase:ConnectorViewModelBase}">
+                                <nodify:NodeOutput
+                                    x:Name="NodeOutput"
+                                    VerticalAlignment="Center"
+                                    IsConnected="{Binding IsConnected}"
+                                    Anchor="{Binding Anchor, Mode=OneWayToSource}">
+                                    <nodify:NodeOutput.Header>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                                    HorizontalAlignment="Right">
+
+                                            <TextBlock VerticalAlignment="Center" x:Name="textBlock"
+                                                       Text="{Binding Title}" />
+                                        </StackPanel>
+                                    </nodify:NodeOutput.Header>
+                                    <nodify:NodeOutput.BorderBrush>
+                                        <SolidColorBrush
+                                            Color="CornflowerBlue"
+                                            Opacity="0.5" />
+                                    </nodify:NodeOutput.BorderBrush>
+                                </nodify:NodeOutput>
+                            </DataTemplate>
+                        </nodify:Node.OutputConnectorTemplate>
+                    </nodify:Node>
+                </DataTemplate>
+
+            </nodify:NodifyEditor.ItemTemplate>
+
+        </nodify:NodifyEditor>
     </Grid>
 
 </UserControl>

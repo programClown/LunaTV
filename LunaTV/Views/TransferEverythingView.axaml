@@ -71,18 +71,7 @@
                         <TextBlock Text="文件传输" />
                     </StackPanel>
                 </u:SelectionListItem>
-                <u:SelectionListItem>
-                    <u:SelectionListItem.Styles>
-                        <Style Selector="u|SelectionListItem:selected">
-                            <Setter Property="Foreground" Value="{DynamicResource SemiGreen7Color}" />
-                        </Style>
-                    </u:SelectionListItem.Styles>
-                    <StackPanel Orientation="Horizontal" Spacing="4">
-                        <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconComment}" />
-                        <TextBlock Text="文本消息" />
-                    </StackPanel>
-                </u:SelectionListItem>
-                <u:SelectionListItem>
+                <u:SelectionListItem IsEnabled="False">
                     <u:SelectionListItem.Styles>
                         <Style Selector="u|SelectionListItem:selected">
                             <Setter Property="Foreground" Value="{DynamicResource SemiPurple7Color}" />
@@ -97,177 +86,138 @@
         </Border>
 
         <Panel Grid.Row="2">
-            <Grid RowDefinitions="Auto,*">
-                <Border
-                    Grid.Row="0"
-                    Margin="0,20,0,0"
-                    Padding="0"
-                    HorizontalAlignment="Center"
-                    Classes="Shadow"
-                    Theme="{StaticResource CardBorder}">
-                    <u:SelectionList>
-                        <u:SelectionList.Styles>
-                            <Style Selector="u|SelectionListItem:selected">
-                                <Setter Property="Foreground" Value="{DynamicResource SemiPurple7Color}" />
-                            </Style>
-                        </u:SelectionList.Styles>
-                        <u:SelectionList.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel
-                                    Margin="16,4"
-                                    HorizontalAlignment="Center"
-                                    Orientation="Horizontal"
-                                    Spacing="16" />
-                            </ItemsPanelTemplate>
-                        </u:SelectionList.ItemsPanel>
-                        <u:SelectionListItem>
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconSend}" />
-                                <TextBlock Text="发送文字" />
-                            </StackPanel>
-                        </u:SelectionListItem>
-                        <u:SelectionListItem>
-                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                <PathIcon Classes="Indicator" Data="{DynamicResource SemiIconDownloadStroked}" />
-                                <TextBlock Text="加入房间" />
-                            </StackPanel>
-                        </u:SelectionListItem>
-                    </u:SelectionList>
-                </Border>
 
-                <Border
-                    Grid.Row="1"
-                    MaxWidth="1000"
-                    Margin="0,20,0,40"
-                    Padding="0"
-                    HorizontalAlignment="Stretch"
-                    BorderThickness="2"
-                    Classes="Shadow"
-                    Theme="{StaticResource CardBorder}">
+            <Border
+                Grid.Row="1"
+                MaxWidth="1000"
+                Margin="0,20,0,40"
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                BorderThickness="2"
+                Classes="Shadow"
+                Theme="{StaticResource CardBorder}">
 
 
-                    <Grid Margin="40,10" RowDefinitions="Auto,*">
-                        <DockPanel Grid.Row="0">
-                            <StackPanel
-                                DockPanel.Dock="Left"
-                                Orientation="Horizontal"
-                                Spacing="8">
-                                <PathIcon Data="{DynamicResource SemiIconComment}" />
-                                <StackPanel Spacing="4">
-                                    <TextBlock
-                                        Classes="H5"
-                                        Text="传送文字"
-                                        Theme="{DynamicResource TitleTextBlock}" />
-                                    <TextBlock Classes="Tertiary" Text="输入要传输的文本内容" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel
-                                HorizontalAlignment="Right"
-                                DockPanel.Dock="Right"
-                                Spacing="4">
+                <Grid Margin="40,10" RowDefinitions="Auto,*">
+                    <DockPanel Grid.Row="0">
+                        <StackPanel
+                            DockPanel.Dock="Left"
+                            Orientation="Horizontal"
+                            Spacing="8">
+                            <PathIcon Data="{DynamicResource SemiIconComment}" />
+                            <StackPanel Spacing="4">
                                 <TextBlock
+                                    Classes="H5"
+                                    Text="传送文字"
+                                    Theme="{DynamicResource TitleTextBlock}" />
+                                <TextBlock Classes="Tertiary" Text="输入要传输的文本内容" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel
+                            HorizontalAlignment="Right"
+                            DockPanel.Dock="Right"
+                            Spacing="4">
+                            <TextBlock
+                                Classes="Tertiary"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Text="未连接" />
+                            <TextBlock
+                                Classes="Tertiary"
+                                FontSize="12"
+                                FontWeight="ExtraLight"
+                                Text="尚未创建房间" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock
+                                    VerticalAlignment="Center"
                                     Classes="Tertiary"
-                                    FontSize="16"
-                                    FontWeight="Bold"
+                                    FontSize="10"
+                                    Text="WS" />
+                                <Border
+                                    Width="12"
+                                    Height="12"
+                                    Background="DarkRed"
+                                    CornerRadius="6" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Classes="Tertiary"
+                                    FontSize="10"
                                     Text="未连接" />
                                 <TextBlock
+                                    VerticalAlignment="Center"
                                     Classes="Tertiary"
-                                    FontSize="12"
-                                    FontWeight="ExtraLight"
-                                    Text="尚未创建房间" />
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Classes="Tertiary"
-                                        FontSize="10"
-                                        Text="WS" />
-                                    <Border
-                                        Width="12"
-                                        Height="12"
-                                        Background="DarkRed"
-                                        CornerRadius="6" />
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Classes="Tertiary"
-                                        FontSize="10"
-                                        Text="未连接" />
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Classes="Tertiary"
-                                        FontSize="10"
-                                        Text="|" />
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Classes="Tertiary"
-                                        FontSize="10"
-                                        Text="RTC" />
-                                    <Border
-                                        Width="12"
-                                        Height="12"
-                                        Background="DarkRed"
-                                        CornerRadius="6" />
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        Classes="Tertiary"
-                                        FontSize="10"
-                                        Text="未连接" />
-                                </StackPanel>
-                            </StackPanel>
-                        </DockPanel>
-
-                        <Button
-                            Name="PushButton"
-                            Grid.Row="1"
-                            Margin="0,20,0,10"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            Click="PushButton_OnClick">
-                            <Button.BorderBrush>
-                                <VisualBrush>
-                                    <VisualBrush.Visual>
-                                        <Grid>
-                                            <Rectangle
-                                                Width="{Binding Path=Bounds.Width, ElementName=PushButton}"
-                                                Height="{Binding Path=Bounds.Height, ElementName=PushButton}"
-                                                Stroke="#FFC6CACD"
-                                                StrokeDashArray="4,2"
-                                                StrokeThickness="2" />
-                                        </Grid>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Button.BorderBrush>
-                            <StackPanel Spacing="16">
+                                    FontSize="10"
+                                    Text="|" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Classes="Tertiary"
+                                    FontSize="10"
+                                    Text="RTC" />
                                 <Border
-                                    Width="128"
-                                    Height="128"
-                                    Background="{DynamicResource SemiGrey2Color}"
-                                    CornerRadius="64">
-                                    <PathIcon
-                                        Width="96"
-                                        Height="96"
-                                        Data="{DynamicResource SemiIconCloudUploadStroked}" />
-                                </Border>
+                                    Width="12"
+                                    Height="12"
+                                    Background="DarkRed"
+                                    CornerRadius="6" />
                                 <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="32"
-                                    Text="拖拽文件到这里" />
-                                <StackPanel
-                                    HorizontalAlignment="Center"
-                                    Orientation="Horizontal"
-                                    Spacing="8">
-                                    <TextBlock Classes="Tertiary" Text="或者" />
-                                    <TextBlock Classes="Underline" Text="点击选择文件" />
-                                </StackPanel>
-                                <TextBlock
-                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
                                     Classes="Tertiary"
-                                    Text="支持多个文件同时上传，WebRTC点对点传输" />
+                                    FontSize="10"
+                                    Text="未连接" />
                             </StackPanel>
-                        </Button>
-                    </Grid>
+                        </StackPanel>
+                    </DockPanel>
 
-                </Border>
-            </Grid>
+                    <Button
+                        Name="PushButton"
+                        Grid.Row="1"
+                        Margin="0,20,0,10"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <Button.BorderBrush>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <Grid>
+                                        <Rectangle
+                                            Width="{Binding Path=Bounds.Width, ElementName=PushButton}"
+                                            Height="{Binding Path=Bounds.Height, ElementName=PushButton}"
+                                            Stroke="#FFC6CACD"
+                                            StrokeDashArray="4,2"
+                                            StrokeThickness="2" />
+                                    </Grid>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Button.BorderBrush>
+                        <StackPanel Spacing="16">
+                            <Border
+                                Width="128"
+                                Height="128"
+                                Background="{DynamicResource SemiGrey2Color}"
+                                CornerRadius="64">
+                                <PathIcon
+                                    Width="96"
+                                    Height="96"
+                                    Data="{DynamicResource SemiIconCloudUploadStroked}" />
+                            </Border>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="32"
+                                Text="拖拽文件到这里" />
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                                <TextBlock Classes="Tertiary" Text="或者" />
+                                <TextBlock Classes="Underline" Text="点击选择文件" />
+                            </StackPanel>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                Classes="Tertiary"
+                                Text="支持多个文件同时上传，WebRTC点对点传输" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+            </Border>
         </Panel>
     </Grid>
 </UserControl>
