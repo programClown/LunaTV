@@ -68,9 +68,7 @@
                 <DropShadowDirectionEffect ShadowDepth="1" />
             </Border.Effect>
 
-            <StackPanel>
-                <StackPanel.Resources />
-
+            <StackPanel Spacing="8">
                 <Button>
                     <PathIcon
                         Classes="Small"
@@ -103,11 +101,12 @@
 
 
         <nodify:NodifyEditor x:Name="Editor"
+                             x:DataType="vm:PlaygroundNodeViewModel"
                              Background="Transparent"
-                             ItemsSource="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.Nodes}"
-                             Connections="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.Connections}"
-                             PendingConnection="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.PendingConnection}"
-                             DisconnectConnectorCommand="{Binding $parent[UserControl].((vm:PlaygroundViewModel)DataContext).PlaygroundNodeViewModel.DisconnectConnectorCommand}">
+                             ItemsSource="{Binding Nodes}"
+                             Connections="{Binding Connections}"
+                             PendingConnection="{Binding PendingConnection}"
+                             DisconnectConnectorCommand="{Binding DisconnectConnectorCommand}">
             <nodify:NodifyEditor.DataTemplates>
                 <DataTemplate DataType="viewModelBase:KnotNodeViewModel">
                     <nodify:KnotNode
