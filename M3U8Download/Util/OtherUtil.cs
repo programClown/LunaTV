@@ -4,13 +4,13 @@ using System.Text.RegularExpressions;
 
 namespace N_m3u8DL_RE.Util;
 
-internal static partial class OtherUtil
+public static partial class OtherUtil
 {
     public static Dictionary<string, string> SplitHeaderArrayToDic(string[]? headers)
     {
         Dictionary<string, string> dic = new();
         if (headers == null) return dic;
-        
+
         foreach (string header in headers)
         {
             var index = header.IndexOf(':');
@@ -23,16 +23,20 @@ internal static partial class OtherUtil
         return dic;
     }
 
-    private static readonly char[] InvalidChars = "34,60,62,124,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,58,42,63,92,47"
-        .Split(',').Select(s => (char)int.Parse(s)).ToArray();
+    private static readonly char[] InvalidChars =
+        "34,60,62,124,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,58,42,63,92,47"
+            .Split(',').Select(s => (char)int.Parse(s)).ToArray();
+
     public static string GetValidFileName(string input, string re = "_", bool filterSlash = false)
     {
-        var title = InvalidChars.Aggregate(input, (current, invalidChar) => current.Replace(invalidChar.ToString(), re));
+        var title = InvalidChars.Aggregate(input,
+            (current, invalidChar) => current.Replace(invalidChar.ToString(), re));
         if (filterSlash)
         {
             title = title.Replace("/", re);
             title = title.Replace("\\", re);
         }
+
         return title.Trim('.');
     }
 
@@ -55,6 +59,7 @@ internal static partial class OtherUtil
             var name = Path.GetFileNameWithoutExtension(uri.LocalPath);
             saveName = GetValidFileName(name) + "_" + saveName;
         }
+
         return saveName;
     }
 
@@ -125,6 +130,7 @@ internal static partial class OtherUtil
         {
             return;
         }
+
         SafeDeleteDir(parent);
     }
 
@@ -140,13 +146,16 @@ internal static partial class OtherUtil
             await using (var fileToDecompressAsStream = File.OpenRead(filePath))
             {
                 await using var decompressedStream = File.Create(deGzipFile);
-                await using var decompressionStream = new GZipStream(fileToDecompressAsStream, CompressionMode.Decompress);
+                await using var decompressionStream =
+                    new GZipStream(fileToDecompressAsStream, CompressionMode.Decompress);
                 await decompressionStream.CopyToAsync(decompressedStream);
-            };
+            }
+
+            ;
             File.Delete(filePath);
             File.Move(deGzipFile, filePath);
         }
-        catch 
+        catch
         {
             if (File.Exists(deGzipFile)) File.Delete(deGzipFile);
         }

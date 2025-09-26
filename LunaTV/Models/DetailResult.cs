@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using LunaTV.Base.Constants;
+using LunaTV.Base.Models;
 
 namespace LunaTV.Models;
 
@@ -28,9 +29,9 @@ public class DetailResult
 
 
     //添加信息
-    /// 对应<see cref="ApiSourceInfo.ApiSitesConfig"/>的key
+    /// 对应<see cref="ApiSource.Source"/>
     public string? Source { get; set; }
 
-    /// Source是自定义的复制“自定义源”，对应<see cref="ApiSourceInfo.ApiSitesConfig"/>的value.Name
+    /// Source是自定义的复制“自定义源”，对应<see cref="ApiSource.Name"/>
     public string? SourceName { get; set; }
 }

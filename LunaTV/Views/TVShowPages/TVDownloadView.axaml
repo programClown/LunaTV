@@ -59,7 +59,7 @@
                     <Button
                         Margin="0,0,-10,0"
                         Classes="Large"
-                        Command="{Binding DownloadCommand}"
+                        Command="{Binding DownloadActionCommand}"
                         Content="下载" />
                 </TextBox.InnerRightContent>
             </TextBox>
@@ -75,7 +75,7 @@
 
             <!-- 92.54% 55.66MB/60.15MB 1.90MBps 00:00:02 -->
 
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right">
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Run Text="{Binding Speed}" />
                 <Run Text="  " />
                 <Run Text="{Binding SizeStr}" />
@@ -83,14 +83,14 @@
                 <Run Text="{Binding RemainingTime}" />
             </TextBlock>
 
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right">
-                <Run Text="下载中：" />
-                <Run Text="1" />
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Run Text="下载中:" />
+                <Run Text="{Binding DownloadingCount}" Foreground="{DynamicResource SemiLime3}" />
                 <Run Text="  等待中：" />
-                <Run Text="1" />
+                <Run Text="{Binding WaitingCount}" Foreground="{DynamicResource SemiAmber6}" />
                 <Run Text="  总共：" />
-                <Run Text="1" />
-                <Run Text="  |  " />
+                <Run Text="{Binding TotalCount}" Foreground="{DynamicResource SemiGrey7}" />
+                <Run Text="  |  " FontSize="20" />
             </TextBlock>
         </DockPanel>
 
@@ -114,11 +114,6 @@
                     x:DataType="vm:MediaDownloadViewModel"
                     Binding="{Binding Episode}"
                     Header="剧集" />
-                <DataGridTextColumn
-                    Width="2*"
-                    x:DataType="vm:MediaDownloadViewModel"
-                    Binding="{Binding SourceName}"
-                    Header="来源" />
                 <DataGridTemplateColumn x:DataType="vm:MediaDownloadViewModel" Header="链接">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="vm:MediaDownloadViewModel">
@@ -184,6 +179,7 @@
                                     Content="{Binding Status}"
                                     Theme="{StaticResource TagLabel}" />
                                 <ProgressBar
+                                    MinWidth="120"
                                     IsIndeterminate="{Binding StatusIndicate}"
                                     Maximum="100"
                                     Minimum="0"
