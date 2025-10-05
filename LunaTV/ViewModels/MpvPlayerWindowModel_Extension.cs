@@ -57,7 +57,14 @@ public partial class MpvPlayerWindowModel
             ViewHistory.PlaybackPosition = (int)Position.TotalSeconds;
             ViewHistory.Duration = (int)Duration.TotalSeconds;
             ViewHistory.UpdateTime = DateTime.Now;
-            _viewHistoryTable.InsertOrUpdate(ViewHistory);
+            if (ViewHistory.Id == 0)
+            {
+                ViewHistory.Id = _viewHistoryTable.InsertReturnIdentity(ViewHistory);
+            }
+            else
+            {
+                _viewHistoryTable.Update(ViewHistory);
+            }
         }
     }
 

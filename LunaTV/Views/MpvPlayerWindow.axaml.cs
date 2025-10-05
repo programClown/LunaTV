@@ -111,15 +111,10 @@ public partial class MpvPlayerWindow : UrsaWindow
         _viewModel?.OnWindowLoaded();
     }
 
-    /// <inheritdoc />
-    protected override void OnClosing(WindowClosingEventArgs e)
-    {
-        _viewModel?.Stop();
-        base.OnClosing(e);
-    }
 
     protected override void OnClosed(EventArgs e)
     {
+        _viewModel?.Stop();
         _overlayTimer.Stop();
         base.OnClosed(e);
         (App.VisualRoot as MainWindow)?.Show();
