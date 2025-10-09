@@ -120,10 +120,9 @@ public static class ServiceCollectionExtenstion
     {
         // page view model
         serviceCollection.AddTransient<TVShowViewModel>();
-        serviceCollection.AddTransient<InnovationPlazaViewModel>();
         serviceCollection.AddTransient<SettingsViewModel>();
         serviceCollection.AddTransient<PlaygroundViewModel>();
-        serviceCollection.AddTransient<TransferEverythingViewModel>();
+        // serviceCollection.AddTransient<TransferEverythingViewModel>();
         serviceCollection.AddSingleton<MainViewModel>(provider =>
             new MainViewModel
             {
@@ -131,8 +130,7 @@ public static class ServiceCollectionExtenstion
                 {
                     provider.GetRequiredService<TVShowViewModel>(),
                     provider.GetRequiredService<PlaygroundViewModel>(),
-                    provider.GetRequiredService<TransferEverythingViewModel>(),
-                    // provider.GetRequiredService<InnovationPlazaViewModel>()
+                    // provider.GetRequiredService<TransferEverythingViewModel>(),
                 },
                 FooterPages =
                 {
@@ -149,10 +147,9 @@ public static class ServiceCollectionExtenstion
     public static void AddViews(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<TVShowView>();
-        serviceCollection.AddTransient<InnovationPlazaView>();
         serviceCollection.AddSingleton<SettingsView>();
         serviceCollection.AddTransient<PlaygroundView>();
-        serviceCollection.AddTransient<TransferEverythingView>();
+        // serviceCollection.AddTransient<TransferEverythingView>();
     }
 
     /// <summary>

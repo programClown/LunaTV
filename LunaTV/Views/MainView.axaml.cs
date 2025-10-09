@@ -73,12 +73,6 @@ public partial class MainView : UserControl
                 ? (IconSource)value
                 : null;
         }
-        else if (item is InnovationPlazaViewModel)
-        {
-            item.IconSource = this.TryFindResource(selected ? "ColorLineIconFilled" : "ColorLineIcon", out var value)
-                ? (IconSource)value
-                : null;
-        }
         else if (item is SettingsViewModel)
         {
             item.IconSource = this.TryFindResource(selected ? "SettingsIconFilled" : "SettingsIcon", out var value)

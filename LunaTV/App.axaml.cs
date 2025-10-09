@@ -42,27 +42,6 @@ public class App : Application
             Dispatcher.UIThread.UnhandledException += UIThreadOnUnhandledException;
         }
 
-        try
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Console.WriteLine("Running on Windows");
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Console.WriteLine("Running on Linux");
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                Console.WriteLine("Running on macOS");
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
-                Console.WriteLine("Running on FreeBSD");
-            else
-                Console.WriteLine("Running on an unknown platform");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            var win = new CrashWindow(e.ToString());
-            win.Show();
-            return;
-        }
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
