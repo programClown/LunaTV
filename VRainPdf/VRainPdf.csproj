@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MuPDFCore.MuPDFRenderer" Version="2.0.1"/>
+        <PackageReference Include="VectSharp.PDF" Version="3.2.0"/>
+    </ItemGroup>
+
+</Project>

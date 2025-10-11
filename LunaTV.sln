@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMpv", "LibMPV\LibMpv\Lib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMpv.Avalonia", "LibMPV\LibMpv.Avalonia\LibMpv.Avalonia.csproj", "{2B26688B-7F3F-4522-A90F-C0887FE68FA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRainPdf", "VRainPdf\VRainPdf.csproj", "{CAD4F82F-BED6-4924-AE62-DF1E306EA408}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{2B26688B-7F3F-4522-A90F-C0887FE68FA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B26688B-7F3F-4522-A90F-C0887FE68FA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B26688B-7F3F-4522-A90F-C0887FE68FA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAD4F82F-BED6-4924-AE62-DF1E306EA408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAD4F82F-BED6-4924-AE62-DF1E306EA408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAD4F82F-BED6-4924-AE62-DF1E306EA408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAD4F82F-BED6-4924-AE62-DF1E306EA408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD424C80-3CDE-49BE-B63F-385727784409} = {5D56D18B-8C02-4640-B99A-1CEA6C4809AB}

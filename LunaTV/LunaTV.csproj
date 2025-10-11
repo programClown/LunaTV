@@ -56,7 +56,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'==''">
-        <Content Include="ffmpeg\**">
+        <Content Include="ffmpeg\ffmpeg.exe">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
