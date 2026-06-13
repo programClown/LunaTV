@@ -10,7 +10,7 @@
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Panel Margin="40,20,0,0">
+    <Panel Margin="12,20,12,0">
         <TextBlock
             FontSize="32"
             FontWeight="ExtraBold"

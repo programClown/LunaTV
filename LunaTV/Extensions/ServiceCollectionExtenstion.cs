@@ -97,8 +97,18 @@ public static class ServiceCollectionExtenstion
                 {
                     options.Retry.MaxRetryAttempts = 3;
                     options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30); // 总的超时时间
-                    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5); //每次重试的超时时间
-                    options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30); //熔断时间
+                    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15); //每次重试的超时时间
+                    options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(60); //熔断时间
+                }
+            );
+
+        // IMovieTvApi named HttpClient — bounded per-request timeout without a shared circuit breaker.
+        // Source-level health is tracked by MovieTvService so one flaky source won't open a
+        // global breaker for every source using the same Refit interface.
+        serviceCollection
+            .AddHttpClient(nameof(IMovieTvApi), client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(12);
                 }
             );
 
@@ -125,8 +135,10 @@ public static class ServiceCollectionExtenstion
     /// <param name="serviceCollection"></param>
     public static void AddViews(this IServiceCollection serviceCollection)
     {
-        // 主窗口
+        // 主窗口 (desktop only — not resolved on Android)
+#if !ANDROID
         serviceCollection.AddSingleton<MainWindow>();
+#endif
         serviceCollection.AddSingleton<MainView>();
         serviceCollection.AddSingleton<TVDownloadView>(provider =>
             new TVDownloadView

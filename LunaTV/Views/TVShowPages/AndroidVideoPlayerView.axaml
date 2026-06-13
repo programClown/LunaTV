@@ -1,0 +1,77 @@
+<UserControl
+    x:Class="LunaTV.Views.TVShowPages.AndroidVideoPlayerView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mpv="using:HanumanInstitute.LibMpv.Avalonia"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    Background="Black">
+
+    <Grid>
+        <!-- Video surface -->
+        <mpv:MpvView x:Name="MpvVideoView" />
+
+        <!-- Controls overlay (tap to show/hide) -->
+        <Grid x:Name="ControlsOverlay" Background="#40000000" IsVisible="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top bar: title + back + speed -->
+            <Grid Grid.Row="0" Margin="10,20,10,0" ColumnDefinitions="Auto,*,Auto">
+                <Button x:Name="BackButton" Grid.Column="0"
+                        Content="← 返回"
+                        HorizontalAlignment="Left"
+                        Background="#80000000" Foreground="White"
+                        FontSize="14" Padding="12,8"/>
+                <TextBlock x:Name="TitleText" Grid.Column="1"
+                           Text=""
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="White" FontSize="14"
+                           MaxLines="1" TextTrimming="CharacterEllipsis"/>
+                <Button x:Name="SpeedButton" Grid.Column="2"
+                        Content="1.0x"
+                        HorizontalAlignment="Right"
+                        Background="#80000000" Foreground="White"
+                        FontSize="14" Padding="10,8"
+                        MinWidth="55" MinHeight="44"/>
+            </Grid>
+
+            <!-- Center: play/pause -->
+            <Button x:Name="PlayPauseButton" Grid.Row="1"
+                    Content="▶" FontSize="40"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="#80000000" Foreground="White"
+                    Width="80" Height="80" CornerRadius="40"
+                    Padding="0"/>
+
+            <!-- Bottom bar: volume + progress -->
+            <Grid Grid.Row="2" Margin="10,0,10,20" ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+                <Button x:Name="VolumeDownButton" Grid.Column="0"
+                        Content="−"
+                        Background="#80000000" Foreground="White"
+                        FontSize="18" Padding="0"
+                        Width="44" Height="44" MinWidth="44" MinHeight="44"/>
+                <TextBlock x:Name="PositionText" Grid.Column="1"
+                           Text="00:00" Foreground="White" FontSize="12"
+                           VerticalAlignment="Center" Margin="5,0"/>
+                <Slider x:Name="SeekSlider" Grid.Column="2"
+                        Minimum="0" Maximum="100" Value="0"
+                        VerticalAlignment="Center" Margin="5,0"/>
+                <TextBlock x:Name="DurationText" Grid.Column="3"
+                           Text="00:00" Foreground="White" FontSize="12"
+                           VerticalAlignment="Center" Margin="5,0"/>
+                <Button x:Name="VolumeUpButton" Grid.Column="4"
+                        Content="+"
+                        Background="#80000000" Foreground="White"
+                        FontSize="18" Padding="0"
+                        Width="44" Height="44" MinWidth="44" MinHeight="44"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

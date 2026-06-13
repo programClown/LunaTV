@@ -6,26 +6,27 @@
     x:DataType="tvvm:TVShowSearchViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
-    xmlns:converters="clr-namespace:LunaTV.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:LunaTV.Models"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:tvvm="using:LunaTV.ViewModels.TVShowPages"
     xmlns:u="https://irihi.tech/ursa"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Resources>
-        <converters:ShareWidthConverter x:Key="ShareWidthConverter" />
+        <sys:Double x:Key="SearchInputHeight">60</sys:Double>
     </UserControl.Resources>
     <Grid Margin="20" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
         <TextBox
             Classes="clearButton Large"
             Margin="0,30,0,0"
-            PlaceholderText="爸爸快来"
             Text="{Binding InputMovieTvName}"
-            Width="400">
+            Watermark="搜索影视..."
+            MaxWidth="600"
+            HorizontalAlignment="Stretch">
             <TextBox.KeyBindings>
                 <KeyBinding
-                    Command="{Binding Search}"
+                    Command="{Binding SearchCommand}"
                     CommandParameter="{Binding InputMovieTvName}"
                     Gesture="Enter" />
             </TextBox.KeyBindings>
@@ -33,23 +34,35 @@
                 <CheckBox
                     IsChecked="{Binding IsAdultMode}"
                     IsVisible="{Binding IsAdultVisible}"
-                    ToolTip.Tip="异度世界" />
+                    ToolTip.Tip="成人世界" />
             </TextBox.InnerLeftContent>
 
             <TextBox.InnerRightContent>
-                <Button
-                    Classes="Large"
-                    Command="{Binding Search}"
-                    CommandParameter="{Binding InputMovieTvName}"
-                    Content="搜索"
-                    Margin="0,0,-10,0" />
+                <StackPanel Margin="0,0,-10,0" Orientation="Horizontal" Spacing="4">
+                    <Button
+                        Classes="Large"
+                        Command="{Binding SearchCommand}"
+                        CommandParameter="{Binding InputMovieTvName}"
+                        Content="搜索"
+                        IsEnabled="{Binding CanSearch}" />
+                    <Button
+                        Classes="Large"
+                        Command="{Binding StopSearchCommand}"
+                        Content="停止"
+                        IsVisible="{Binding IsSearching}" />
+                    <Button
+                        Classes="Large"
+                        Command="{Binding ContinueSearchCommand}"
+                        Content="继续"
+                        IsVisible="{Binding IsSearchPaused}" />
+                </StackPanel>
             </TextBox.InnerRightContent>
         </TextBox>
 
         <DockPanel
             Grid.Row="1"
-            HorizontalAlignment="Center"
-            Width="400">
+            HorizontalAlignment="Stretch"
+            MaxWidth="600">
             <TextBlock
                 Classes="Tertiary Small"
                 DockPanel.Dock="Left"
@@ -65,21 +78,22 @@
                 Theme="{DynamicResource BorderlessButton}" />
         </DockPanel>
 
-        <ListBox
+        <ItemsControl
             Grid.Row="2"
             ItemsSource="{Binding HistoryMovies}"
-            Width="600">
-            <ListBox.ItemsPanel>
+            MaxWidth="600"
+            HorizontalAlignment="Stretch">
+            <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel ItemSpacing="4" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <Button
                             Classes="Small"
-                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).Search}"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).SearchCommand}"
                             CommandParameter="{Binding}"
                             Content="{Binding}"
                             CornerRadius="4,0,0,4" />
@@ -97,38 +111,35 @@
 
                     </StackPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <StackPanel
             Grid.Row="3"
             HorizontalAlignment="Right"
             Orientation="Horizontal"
             Spacing="8">
-            <TextBlock VerticalAlignment="Center">
-                <Run Text="共 " />
-                <Run Text="{Binding TotalVideos}" />
-                <Run Text=" 条" />
-            </TextBlock>
-            <ComboBox
-                Classes="Bordered"
-                ItemsSource="{Binding PageSizeOptions}"
-                SelectedItem="{Binding PageSizeSelected}" />
-            <u:IconButton
-                Classes="Secondary"
-                Content="正在搜索..."
-                IsLoading="{Binding IsSearching}"
-                IsVisible="{Binding IsSearching}" />
+            <TextBlock Text="每页" VerticalAlignment="Center" />
+            <CheckBox
+                Content="自动"
+                IsChecked="{Binding IsAutoPageSize}"
+                VerticalAlignment="Center" />
+            <TextBox
+                IsEnabled="{Binding IsManualPageSizeEnabled}"
+                Text="{Binding ManualPageSize}"
+                VerticalAlignment="Center"
+                Width="60" />
+            <TextBlock Text="条" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding SearchCountText}" VerticalAlignment="Center" />
         </StackPanel>
-
-        <ScrollViewer Grid.Row="4">
+        <ScrollViewer Grid.Row="4" Name="SearchResultScrollViewer">
             <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding SearchResults}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="models:SearchResult">
 
                         <Button
                             Classes="MovieCard"
-                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).ShowDetail}"
+                            Command="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).ShowDetailCommand}"
                             CommandParameter="{Binding}"
                             Margin="0,4"
                             Padding="0"
@@ -150,7 +161,7 @@
                                 Height="160"
                                 HorizontalAlignment="Left"
                                 Orientation="Horizontal"
-                                Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Bounds.Width, Converter={StaticResource ShareWidthConverter}, ConverterParameter=300}">
+                                Width="{Binding $parent[UserControl].((tvvm:TVShowSearchViewModel)DataContext).SearchResultCardWidth}">
                                 <Border ClipToBounds="True" CornerRadius="5,0,0,5">
                                     <Image
                                         Stretch="Fill"
@@ -213,7 +224,10 @@
             CurrentPage="{Binding CurrentPage}"
             Grid.Row="5"
             HorizontalAlignment="Center"
-            PageSize="{Binding PageSize, Mode=TwoWay}"
+            Name="page"
+            PageSize="{Binding PageSize, Mode=OneWay}"
+            PageSizeOptions="10, 20, 50, 100"
+            ShowPageSizeSelector="False"
             ShowQuickJump="True"
             TotalCount="{Binding TotalVideos, Mode=OneWay}" />
     </Grid>

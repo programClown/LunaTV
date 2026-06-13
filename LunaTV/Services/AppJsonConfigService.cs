@@ -1,16 +1,31 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json;
 using LunaTV.Constants;
-using LunaTV.Models;
 
 namespace LunaTV.Services;
 
 public class AppJsonConfigService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+
     public T? ReadJson<T>()
     {
+        return ReadJson<T>(GlobalDefine.AppJsonPath);
+    }
+
+    public void WriteJson<T>(T data)
+    {
+        WriteJson(GlobalDefine.AppJsonPath, data);
+    }
+
+    public static T? ReadJson<T>(string path)
+    {
+        var directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
         // 使用FileShare.Read允许其他进程读取但不允许写入
-        using (var stream = new FileStream(GlobalDefine.AppJsonPath, FileMode.OpenOrCreate, FileAccess.Read,
+        using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read,
                    FileShare.Read))
         using (var reader = new StreamReader(stream))
         {
@@ -22,13 +37,17 @@ public class AppJsonConfigService
         }
     }
 
-    public void WriteJson<T>(T data)
+    public static void WriteJson<T>(string path, T data)
     {
+        var directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
         // 使用FileShare.None禁止其他进程访问文件
-        using (var stream = new FileStream(GlobalDefine.AppJsonPath, FileMode.Create, FileAccess.Write, FileShare.None))
+        using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
         using (var writer = new StreamWriter(stream))
         {
-            string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            string json = JsonSerializer.Serialize(data, JsonOptions);
             writer.Write(json);
         }
     }

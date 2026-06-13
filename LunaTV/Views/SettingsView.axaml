@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -9,6 +9,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mic="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:models="using:LunaTV.Models"
     xmlns:vm="using:LunaTV.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -99,6 +100,207 @@
                         SelectedItem="{Binding CurrentFlowDirection}" />
                 </ctrls:OptionsDisplayItem.ActionButton>
 
+            </ctrls:OptionsDisplayItem>
+
+            <ctrls:OptionsDisplayItem
+                Expands="True"
+                Header="存储位置"
+                IsExpanded="False">
+                <ctrls:OptionsDisplayItem.Icon>
+                    <mic:MaterialIcon Kind="FolderCog" />
+                </ctrls:OptionsDisplayItem.Icon>
+                <ctrls:OptionsDisplayItem.Description>
+                    <TextBlock Text="配置数据库、下载、截图、缓存、临时文件和日志保存位置" TextWrapping="Wrap" />
+                </ctrls:OptionsDisplayItem.Description>
+                <ctrls:OptionsDisplayItem.ActionButton>
+                    <Button
+                        Classes="Tertiary"
+                        Command="{Binding ResetAllStoragePathsCommand}"
+                        Content="全部默认" />
+                </ctrls:OptionsDisplayItem.ActionButton>
+                <ctrls:OptionsDisplayItem.Content>
+                    <StackPanel Margin="32,16" Spacing="8">
+                        <TextBlock
+                            Classes="Quaternary"
+                            Text="{Binding StoragePathHint}"
+                            TextWrapping="Wrap" />
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="数据目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="数据库/豆瓣缓存，重启后完全生效"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding DataPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="DataPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="DataPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="下载目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="后续下载保存位置"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding DownloadPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="DownloadPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="DownloadPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="截图目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="播放器截图保存位置"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding ScreenshotPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="ScreenshotPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="ScreenshotPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="下载临时目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="M3U8 分片临时文件"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding TempPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="TempPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="TempPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="日志目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="下载日志保存位置"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding LogsPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="LogsPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="LogsPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="波形缓存目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="音频波形缓存"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding WaveformsPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="WaveformsPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="WaveformsPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="120,*,Auto,Auto" ColumnSpacing="8">
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Classes="H6" Text="频谱缓存目录" />
+                                <TextBlock
+                                    Classes="Quaternary"
+                                    FontSize="11"
+                                    Text="音频频谱缓存"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding SpectrogramsPath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                VerticalAlignment="Center" />
+                            <Button
+                                Command="{Binding BrowseStoragePathCommand}"
+                                CommandParameter="SpectrogramsPath"
+                                Content="选择"
+                                Grid.Column="2" />
+                            <Button
+                                Command="{Binding ResetStoragePathCommand}"
+                                CommandParameter="SpectrogramsPath"
+                                Content="默认"
+                                Grid.Column="3" />
+                        </Grid>
+                    </StackPanel>
+                </ctrls:OptionsDisplayItem.Content>
             </ctrls:OptionsDisplayItem>
             <ctrls:OptionsDisplayItem
                 Expands="True"

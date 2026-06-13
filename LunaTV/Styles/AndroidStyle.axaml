@@ -1,0 +1,66 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Android mobile-friendly overrides: larger fonts, touch targets, responsive layout -->
+
+    <!-- Global font size increase for readability on mobile -->
+    <Style Selector="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- Headers should be larger -->
+    <Style Selector="TextBlock.H5">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style Selector="TextBlock.H6">
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
+
+    <!-- Buttons need larger touch targets -->
+    <Style Selector="Button">
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="MinWidth" Value="44"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- TextBox larger for touch -->
+    <Style Selector="TextBox">
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+
+    <!-- ScrollViewer should not hide scrollbars on touch -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="AllowAutoHide" Value="False"/>
+    </Style>
+
+    <!-- ListBox items need larger touch area -->
+    <Style Selector="ListBoxItem">
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="Padding" Value="12,8"/>
+    </Style>
+
+    <!-- CheckBox larger touch target -->
+    <Style Selector="CheckBox">
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- ToggleSwitch -->
+    <Style Selector="ToggleSwitch">
+        <Setter Property="MinHeight" Value="40"/>
+    </Style>
+
+    <!-- ComboBox -->
+    <Style Selector="ComboBox">
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <!-- Tab items need better spacing on mobile -->
+    <Style Selector="TabItem">
+        <Setter Property="MinHeight" Value="44"/>
+        <Setter Property="Padding" Value="16,8"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+</Styles>

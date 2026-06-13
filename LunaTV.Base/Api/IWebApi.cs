@@ -38,10 +38,4 @@ public interface IWebApi
         [Query] int start = 0,
         [Query] string range = "0,10",
         CancellationToken cancellationToken = default);
-
-    /// 筛选接口
-    [Get("/j/subject_suggest")]
-    Task<string> GetchDoubanSearchSuggestions(
-        [Query] string q, //如红楼梦
-        CancellationToken cancellationToken = default);
 }

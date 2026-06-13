@@ -13,6 +13,7 @@ public class ViewHistory
     [SugarColumn(IsNullable = true)] public string? Episode { get; set; } //剧集
     [SugarColumn(IsNullable = true)] public string? Url { get; set; } //播放地址
     [SugarColumn(IsNullable = true)] public string? Source { get; set; } //来源
+    [SugarColumn(IsNullable = true)] public string? Cover { get; set; } //封面
     public int PlaybackPosition { get; set; } //播放位置
     public int Duration { get; set; } //总时长
     public int TotalEpisodeCount { get; set; } //总集数

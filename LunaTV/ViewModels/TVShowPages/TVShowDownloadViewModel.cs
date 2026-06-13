@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
+using LunaTV.Constants;
 using LunaTV.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -101,10 +102,9 @@ public partial class TVShowDownloadViewModel : ViewModelBase
             using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
 
             // 确定保存路径
-            var downloadPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-                $"{fileName}.mp4"
-            );
+            if (!Directory.Exists(GlobalDefine.DownloadPath))
+                Directory.CreateDirectory(GlobalDefine.DownloadPath);
+            var downloadPath = Path.Combine(GlobalDefine.DownloadPath, $"{fileName}.mp4");
 
             using var fileStream = new FileStream(downloadPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192,
                 true);
@@ -140,6 +140,15 @@ public partial class TVShowDownloadViewModel : ViewModelBase
                 Url = url,
                 LocalPath = downloadPath,
                 IsDownloaded = true,
+                DownloadStatus = 2,
+                Progress = 100,
+                DownloadedBytes = totalBytesRead,
+                TotalBytes = totalBytes > 0 ? totalBytes : totalBytesRead,
+                SizeText = totalBytes > 0 ? $"{totalBytesRead}/{totalBytes}" : $"已下载 {totalBytesRead}",
+                SpeedText = "0 Bps",
+                RemainingTimeText = "--:--:--",
+                ErrorMessage = null,
+                OutputFilePath = downloadPath,
                 CreateTime = DateTime.Now,
                 UpdateTime = DateTime.Now
             };
@@ -166,20 +175,21 @@ public partial class TVShowDownloadViewModel : ViewModelBase
         try
         {
             // 确定下载目录
-            var downloadDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-                "Downloads"
-            );
+            var downloadDir = GlobalDefine.DownloadPath;
 
             if (!Directory.Exists(downloadDir))
                 Directory.CreateDirectory(downloadDir);
 
             var outputPath = Path.Combine(downloadDir, fileName);
+            var logFilePath = Path.Combine(GlobalDefine.LogsPath, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}_{fileName}.log");
 
             // 构建N_m3u8DL-RE命令行参数
             var arguments = $"\"{url}\" " +
                             $"--save-dir \"{downloadDir}\" " +
                             $"--save-name \"{fileName}\" " +
+                            $"--tmp-dir \"{GlobalDefine.TempPath}\" " +
+                            $"--log-file-path \"{logFilePath}\" " +
+                            $"--ffmpeg-binary-path \"{GlobalDefine.FFmpegPath}\" " +
                             $"--auto-select " +
                             $"--thread-count 16 " +
                             $"--download-retry-count 5 " +
@@ -244,6 +254,12 @@ public partial class TVShowDownloadViewModel : ViewModelBase
                     Url = url,
                     LocalPath = Path.Combine(downloadDir, $"{fileName}.mp4"), // 默认输出格式
                     IsDownloaded = true,
+                    DownloadStatus = 2,
+                    Progress = 100,
+                    SpeedText = "0 Bps",
+                    RemainingTimeText = "--:--:--",
+                    ErrorMessage = null,
+                    OutputFilePath = Path.Combine(downloadDir, $"{fileName}.mp4"),
                     CreateTime = DateTime.Now,
                     UpdateTime = DateTime.Now
                 };
@@ -293,7 +309,17 @@ public partial class TVShowDownloadViewModel : ViewModelBase
             Source = "在线视频",
             Name = DownloadName,
             Url = DownloadUrl,
+            LocalPath = GlobalDefine.DownloadPath,
             IsDownloaded = false,
+            DownloadStatus = 0,
+            Progress = 0,
+            DownloadedBytes = 0,
+            TotalBytes = 0,
+            SizeText = "--/--",
+            SpeedText = "0 Bps",
+            RemainingTimeText = "--:--:--",
+            OutputFilePath = null,
+            Cover = null,
             CreateTime = DateTime.Now,
             UpdateTime = DateTime.Now
         };

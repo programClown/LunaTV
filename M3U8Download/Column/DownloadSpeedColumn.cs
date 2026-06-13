@@ -35,11 +35,10 @@ internal sealed class DownloadSpeedColumn : ProgressColumn
         // 一秒汇报一次即可
         if (DateTimeStringDic.TryGetValue(taskId, out var oldTime) && oldTime != now && !flag)
         {
-            speedContainer.NowSpeed = speedContainer.Downloaded;
+            speedContainer.NowSpeed = speedContainer.ConsumeDownloaded();
             // 速度为0，计数增加
-            if (speedContainer.Downloaded <= _stopSpeed) { speedContainer.AddLowSpeedCount(); }
+            if (speedContainer.NowSpeed <= _stopSpeed) { speedContainer.AddLowSpeedCount(); }
             else speedContainer.ResetLowSpeedCount();
-            speedContainer.Reset();
         }
         DateTimeStringDic[taskId] = now;
         var style = flag ? Style.Plain : MyStyle;

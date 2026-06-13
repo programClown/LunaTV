@@ -1,17 +1,7 @@
 ﻿<u:UrsaWindow
-    Icon="/Assets/logo-tv.png"
-    IsFullScreenButtonVisible="True"
-    PointerEntered="OnPointerEntered"
-    PointerMoved="OnPointerMoved"
-    Title="{Binding Title}"
-    WindowStartupLocation="CenterScreen"
-    WindowState="Maximized"
-    d:DesignHeight="450"
-    d:DesignWidth="1000"
-    mc:Ignorable="d"
     x:Class="LunaTV.Views.MpvPlayerWindow"
-    x:DataType="vm:MpvPlayerWindowModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mic="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -20,7 +10,17 @@
     xmlns:u="https://irihi.tech/ursa"
     xmlns:utils="using:LunaTV.Utils"
     xmlns:vm="using:LunaTV.ViewModels"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    Title="{Binding Title}"
+    d:DesignHeight="450"
+    d:DesignWidth="1000"
+    x:DataType="vm:MpvPlayerWindowModel"
+    Icon="/Assets/logo-tv.png"
+    IsFullScreenButtonVisible="True"
+    PointerEntered="OnPointerEntered"
+    PointerMoved="OnPointerMoved"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
+    mc:Ignorable="d">
     <Window.KeyBindings>
         <KeyBinding Command="{Binding PlayPause}" Gesture="Space" />
         <KeyBinding
@@ -58,10 +58,10 @@
         </Style>
 
         <Style Selector="mic|MaterialIcon.MuteIcon">
-            <Setter Property="Kind" Value="VolumeHigh" />
+            <Setter Property="Kind" Value="Speaker" />
         </Style>
         <Style Selector="mic|MaterialIcon.UnmuteIcon">
-            <Setter Property="Kind" Value="VolumeOff" />
+            <Setter Property="Kind" Value="SpeakerOff" />
         </Style>
 
         <Style Selector="Button.TransparentButton:pointerover">
@@ -77,208 +77,227 @@
         </Style>
     </Window.Styles>
 
-
     <Grid ColumnDefinitions="*,Auto">
         <Panel>
-            <TextBlock
-                HorizontalAlignment="Center"
-                IsVisible="{Binding #PlayBar.IsVisible}"
-                Margin="0,8"
-                Text="{Binding Title, Mode=OneWay}"
-                VerticalAlignment="Top"
-                ZIndex="2" />
             <mpv:MpvView MpvContext="{Binding Mpv}" Renderer="OpenGl" />
 
-            <!--  Bottom Toolbar  -->
             <Border
-                HorizontalAlignment="Stretch"
-                Margin="0,0,0,8"
-                Name="PlayBar"
-                VerticalAlignment="Bottom"
+                Name="VideoTitleOverlay"
+                Margin="12,8"
+                Padding="16,6"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Background="{DynamicResource SemiGrey1}"
+                CornerRadius="6"
                 ZIndex="2">
-                <Grid RowDefinitions="Auto,Auto">
-
-                    <!--  Seek Slider  -->
-                    <Slider
-                        Focusable="False"
-                        IsHitTestVisible="True"
-                        LargeChange="10"
-                        Margin="10,0"
-                        Maximum="{Binding Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
-                        Minimum="0"
-                        Name="PART_SeekBar"
-                        SmallChange="1"
-                        Value="{Binding Position, Converter={StaticResource TimeSpanToDoubleConverter}}"
-                        VerticalAlignment="Center" />
-
-                    <Grid ColumnDefinitions="*,*,*" Grid.Row="1">
-                        <StackPanel
-                            Grid.Column="0"
-                            Margin="40,0"
-                            Orientation="Horizontal"
-                            Spacing="4">
-                            <!--  Current Position Display  -->
-                            <TextBlock Text="{Binding Position, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" VerticalAlignment="Center" />
-                            <TextBlock Text="/" VerticalAlignment="Center" />
-                            <!--  Maximum Duration Display  -->
-                            <TextBlock Text="{Binding Duration, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" VerticalAlignment="Center" />
-                        </StackPanel>
-                        <StackPanel
-                            Grid.Column="1"
-                            HorizontalAlignment="Center"
-                            Orientation="Horizontal">
-                            <Button
-                                Command="{Binding Stop}"
-                                Theme="{DynamicResource BorderlessButton}"
-                                ToolTip.Tip="结束">
-                                <mic:MaterialIcon FontSize="18" Kind="Stop" />
-                            </Button>
-                            <Button
-                                Command="{Binding GoHeadCommand}"
-                                Theme="{DynamicResource BorderlessButton}"
-                                ToolTip.Tip="移到开头">
-                                <mic:MaterialIcon FontSize="18" Kind="SkipPrevious" />
-                            </Button>
-                            <Button
-                                Command="{Binding PlayPause}"
-                                Theme="{DynamicResource BorderlessButton}"
-                                ToolTip.Tip="播放/暂停">
-                                <mic:MaterialIcon
-                                    Classes.PauseIcon="{Binding IsPlaying}"
-                                    Classes.PlayIcon="{Binding !IsPlaying}"
-                                    FontSize="32" />
-                            </Button>
-                            <Button
-                                Command="{Binding GoTailCommand}"
-                                Theme="{DynamicResource BorderlessButton}"
-                                ToolTip.Tip="移到结尾">
-                                <mic:MaterialIcon FontSize="18" Kind="SkipNext" />
-                            </Button>
-                        </StackPanel>
-
-                        <StackPanel
-                            Grid.Column="2"
-                            HorizontalAlignment="Right"
-                            Margin="10,0"
-                            Orientation="Horizontal">
-                            <Button
-                                Command="{Binding ScreenshotCommand}"
-                                Padding="2"
-                                Theme="{DynamicResource BorderlessButton}"
-                                ToolTip.Tip="截屏">
-                                <mic:MaterialIcon FontSize="18" Kind="Camera" />
-                            </Button>
-                            <Button
-                                Background="Transparent"
-                                Command="{Binding MuteCommand}"
-                                Margin="10,0"
-                                Padding="2">
-                                <mic:MaterialIcon
-                                    Classes.MuteIcon="{Binding !IsMuted}"
-                                    Classes.UnmuteIcon="{Binding IsMuted}"
-                                    FontSize="18" />
-                            </Button>
-                            <Slider
-                                Focusable="False"
-                                LargeChange="20"
-                                Margin="0,0,20,0"
-                                Maximum="100"
-                                SmallChange="5"
-                                Value="{Binding Volume}"
-                                VerticalAlignment="Center"
-                                Width="150" />
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                Margin="-16,0,8,0"
-                                Text="{Binding Volume, StringFormat={}{0:N0}}"
-                                VerticalAlignment="Center"
-                                Width="30" />
-                            <TextBlock Text="倍速" VerticalAlignment="Center" />
-                            <Button
-                                Classes="TransparentButton Tertiary"
-                                Content="{Binding SpeedText}"
-                                Theme="{DynamicResource BorderlessButton}">
-                                <Button.Flyout>
-                                    <MenuFlyout ItemsSource="{Binding SpeedMenuItems}" Placement="Top" />
-                                </Button.Flyout>
-                                <Button.Styles>
-                                    <Style Selector="MenuItem" x:DataType="vm:SpeedMenuItemViewModel">
-                                        <Setter Property="Header" Value="{Binding Header}" />
-                                        <Setter Property="Command" Value="{Binding Command}" />
-                                        <Setter Property="CommandParameter" Value="{Binding CommandParameter}" />
-                                    </Style>
-                                </Button.Styles>
-                            </Button>
-                            <ToggleButton
-                                Background="Transparent"
-                                Classes="Tertiary"
-                                IsChecked="{Binding IsVideosKanbanChecked}"
-                                Margin="4,0,0,0">
-                                <PathIcon Data="{DynamicResource SemiIconKanban}" FontSize="10" />
-                            </ToggleButton>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
+                <TextBlock Text="{Binding Title, Mode=OneWay}" />
             </Border>
-        </Panel>
 
-        <Border Grid.Column="1" Width="{Binding KanBanWidth}">
-            <Grid RowDefinitions="Auto,*">
-                <TextBlock
-                    FontSize="18"
-                    FontWeight="ExtraBold"
-                    HorizontalAlignment="Left"
-                    IsHitTestVisible="False"
-                    Text="{Binding Title}"
-                    VerticalAlignment="Center">
-                    <TextBlock.Foreground>
-                        <LinearGradientBrush EndPoint="100%,100%" StartPoint="0%,0%">
-                            <GradientStop Color="#FF6094EA" Offset="0" />
-                            <GradientStop Color="#FFF02FC2" Offset="1" />
-                        </LinearGradientBrush>
-                    </TextBlock.Foreground>
-                    <TextBlock.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.1" />
-                    </TextBlock.Effect>
-                </TextBlock>
+            <!--  Bottom Toolbar  -->
+                <Border
+                    Name="PlayBar"
+                    Margin="0,0,0,8"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Bottom"
+                    ZIndex="2">
+                    <Grid RowDefinitions="Auto,Auto">
 
-                <ScrollViewer Grid.Row="1" Margin="4">
-                    <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding Episodes}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="tvShowPages:EpisodeSubjectItem">
+                        <!--  Seek Slider  -->
+                        <Slider
+                            Name="PART_SeekBar"
+                            Margin="10,0"
+                            VerticalAlignment="Center"
+                            Focusable="False"
+                            IsHitTestVisible="True"
+                            LargeChange="10"
+                            Maximum="{Binding Duration, Converter={StaticResource TimeSpanToDoubleConverter}, Mode=OneWay}"
+                            Minimum="0"
+                            SmallChange="1"
+                            Value="{Binding Position, Converter={StaticResource TimeSpanToDoubleConverter}}" />
 
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*,*">
+                            <StackPanel
+                                Grid.Column="0"
+                                Margin="40,0"
+                                Orientation="Horizontal"
+                                Spacing="4">
+                                <!--  Current Position Display  -->
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Position, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
+                                <TextBlock VerticalAlignment="Center" Text="/" />
+                                <!--  Maximum Duration Display  -->
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Duration, Converter={StaticResource TimeSpanToMinutesSecondsConverter}}" />
+                            </StackPanel>
+                            <StackPanel
+                                Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                Orientation="Horizontal">
                                 <Button
-                                    Classes="EpisodeCard"
-                                    Command="{Binding $parent[u:UrsaWindow].((vm:MpvPlayerWindowModel)DataContext).KanbanSelectCommand}"
-                                    CommandParameter="{Binding}"
-                                    Margin="0,4"
-                                    Padding="0"
-                                    Width="100">
+                                    Command="{Binding Stop}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="结束">
+                                    <mic:MaterialIcon FontSize="18" Kind="Stop" />
+                                </Button>
+                                <Button
+                                    Command="{Binding GoHeadCommand}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="移到开头">
+                                    <mic:MaterialIcon FontSize="18" Kind="SkipPrevious" />
+                                </Button>
+                                <Button
+                                    Command="{Binding PlayPause}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="播放/暂停">
+                                    <mic:MaterialIcon
+                                        Classes.PauseIcon="{Binding IsPlaying}"
+                                        Classes.PlayIcon="{Binding !IsPlaying}"
+                                        FontSize="32" />
+                                </Button>
+                                <Button
+                                    Command="{Binding GoTailCommand}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="移到结尾">
+                                    <mic:MaterialIcon FontSize="18" Kind="SkipNext" />
+                                </Button>
+                            </StackPanel>
+
+                            <StackPanel
+                                Grid.Column="2"
+                                Margin="10,0"
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <Button
+                                    Padding="2"
+                                    Command="{Binding ScreenshotCommand}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="截屏">
+                                    <mic:MaterialIcon FontSize="18" Kind="Camera" />
+                                </Button>
+                                <Button
+                                    Margin="10,0"
+                                    Padding="2"
+                                    Background="Transparent"
+                                    Command="{Binding MuteCommand}">
+                                    <mic:MaterialIcon
+                                        Classes.MuteIcon="{Binding !IsMuted}"
+                                        Classes.UnmuteIcon="{Binding IsMuted}"
+                                        FontSize="18" />
+                                </Button>
+                                <Slider
+                                    Width="150"
+                                    Margin="0,0,20,0"
+                                    VerticalAlignment="Center"
+                                    Focusable="False"
+                                    LargeChange="20"
+                                    Maximum="100"
+                                    SmallChange="5"
+                                    Value="{Binding Volume}" />
+                                <TextBlock
+                                    Width="30"
+                                    Margin="-16,0,8,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Text="{Binding Volume, StringFormat={}{0:N0}}" />
+                                <TextBlock VerticalAlignment="Center" Text="倍速" />
+                                <Button
+                                    Classes="TransparentButton Tertiary"
+                                    Content="{Binding SpeedText}"
+                                    Theme="{DynamicResource BorderlessButton}">
+                                    <Button.Flyout>
+                                        <MenuFlyout ItemsSource="{Binding SpeedMenuItems}" Placement="Top" />
+                                    </Button.Flyout>
                                     <Button.Styles>
-                                        <Style Selector="Button.EpisodeCard:pointerover">
-                                            <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                        <Style x:DataType="vm:SpeedMenuItemViewModel" Selector="MenuItem">
+                                            <Setter Property="Header" Value="{Binding Header}" />
+                                            <Setter Property="Command" Value="{Binding Command}" />
+                                            <Setter Property="CommandParameter" Value="{Binding CommandParameter}" />
                                         </Style>
                                     </Button.Styles>
-                                    <TextBlock Classes.Warning="{Binding Watched}" Text="{Binding Name}">
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock.Warning">
-                                                <Setter Property="ToolTip.Tip" Value="已经看过" />
-                                            </Style>
-                                        </TextBlock.Styles>
-                                    </TextBlock>
                                 </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel ItemSpacing="8" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </Border>
-    </Grid>
+                                <ToggleButton
+                                    Margin="4,0,0,0"
+                                    Background="Transparent"
+                                    Classes="Tertiary"
+                                    IsChecked="{Binding IsVideosKanbanChecked}">
+                                    <PathIcon Data="{DynamicResource SemiIconKanban}" FontSize="10" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
 
+                <!--  Exit Fullscreen Button (only visible in fullscreen)  -->
+                <Button
+                    Name="ExitFullScreenButton"
+                    Margin="0,12,12,0"
+                    Padding="6"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Command="{Binding ExitFullScreenCommand}"
+                    Focusable="False"
+                    IsVisible="False"
+                    ZIndex="3">
+                    <mic:MaterialIcon FontSize="24" Kind="FullscreenExit" />
+                </Button>
+            </Panel>
+
+            <Border Grid.Column="1" Width="{Binding KanBanWidth}">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="18"
+                        FontWeight="ExtraBold"
+                        IsHitTestVisible="False"
+                        Text="{Binding Title}">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#FF6094EA" />
+                                <GradientStop Offset="1" Color="#FFF02FC2" />
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                        <TextBlock.Effect>
+                            <DropShadowEffect Opacity="0.1" Color="Black" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <ScrollViewer Grid.Row="1" Margin="4">
+                        <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding Episodes}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="tvShowPages:EpisodeSubjectItem">
+
+                                    <Button
+                                        Width="100"
+                                        Margin="0,4"
+                                        Padding="0"
+                                        Classes="EpisodeCard"
+                                        Command="{Binding $parent[u:UrsaWindow].((vm:MpvPlayerWindowModel)DataContext).KanbanSelectCommand}"
+                                        CommandParameter="{Binding}">
+                                        <Button.Styles>
+                                            <Style Selector="Button.EpisodeCard:pointerover">
+                                                <Setter Property="RenderTransform" Value="scale(1.05,1.05)" />
+                                            </Style>
+                                        </Button.Styles>
+                                        <TextBlock Classes.Warning="{Binding Watched}" Text="{Binding Name}">
+                                            <TextBlock.Styles>
+                                                <Style Selector="TextBlock.Warning">
+                                                    <Setter Property="ToolTip.Tip" Value="已经看过" />
+                                                </Style>
+                                            </TextBlock.Styles>
+                                        </TextBlock>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ItemSpacing="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+    </Grid>
 
 </u:UrsaWindow>

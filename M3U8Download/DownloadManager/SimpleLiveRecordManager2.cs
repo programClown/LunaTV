@@ -161,7 +161,7 @@ internal class SimpleLiveRecordManager2
         var type = streamSpec.MediaType ?? Common.Enum.MediaType.VIDEO;
         var dirName = $"{task.Id}_{OtherUtil.GetValidFileName(streamSpec.GroupId ?? "", "-")}_{streamSpec.Codecs}_{streamSpec.Bandwidth}_{streamSpec.Language}";
         var tmpDir = Path.Combine(DownloaderConfig.DirPrefix, dirName);
-        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
 
         // Use SavePattern if provided, otherwise use SaveName or dirName
         var saveName = dirName;
@@ -494,7 +494,7 @@ internal class SimpleLiveRecordManager2
             /*// 写出m3u8
             if (DownloaderConfig.MyOptions.LiveWriteHLS)
             {
-                var _saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+                var _saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
                 var _saveName = DownloaderConfig.MyOptions.SaveName ?? DateTime.Now.ToString("yyyyMMddHHmmss");
                 await StreamingUtil.WriteStreamListAsync(FileDic, task.Id, 0, _saveName, _saveDir);
             }*/
@@ -796,7 +796,7 @@ internal class SimpleLiveRecordManager2
         /*// 写出master
         if (DownloaderConfig.MyOptions.LiveWriteHLS)
         {
-            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
             var saveName = DownloaderConfig.MyOptions.SaveName ?? DateTime.Now.ToString("yyyyMMddHHmmss");
             await StreamingUtil.WriteMasterListAsync(SelectedSteams, saveName, saveDir);
         }*/
@@ -894,7 +894,7 @@ internal class SimpleLiveRecordManager2
                 OutputFiles.AddRange(DownloaderConfig.MyOptions.MuxImports);
             }
             OutputFiles.ForEach(f => Logger.WarnMarkUp($"[grey]{Path.GetFileName(f.FilePath).EscapeMarkup()}[/]"));
-            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
             var ext = OtherUtil.GetMuxExtension(DownloaderConfig.MyOptions.MuxOptions.MuxFormat);
             var dirName = Path.GetFileName(DownloaderConfig.DirPrefix);
             var outName = $"{dirName}.MUX";
@@ -910,7 +910,7 @@ internal class SimpleLiveRecordManager2
                 {
                     Logger.WarnMarkUp("[grey]Cleaning files...[/]");
                     OutputFiles.ForEach(f => File.Delete(f.FilePath));
-                    var tmpDir = DownloaderConfig.MyOptions.TmpDir ?? Environment.CurrentDirectory;
+                    var tmpDir = DownloaderConfig.MyOptions.TmpDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "tmp");
                     OtherUtil.SafeDeleteDir(tmpDir);
                 }
             }

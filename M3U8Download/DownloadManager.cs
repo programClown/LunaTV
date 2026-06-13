@@ -24,7 +24,7 @@ public class DownloadManager
     {
         AdKeywords = [],
         SavePattern = "<SaveName>_<Id>_<Codecs>_<Language>_<Ext>",
-        TmpDir = Path.Combine(Environment.CurrentDirectory, "tmp"),
+        TmpDir = Path.Combine(Path.GetTempPath(), "LunaTV", "tmp"),
         UILanguage = "zh-CN",
         LogLevel = LogLevel.INFO,
         SubtitleFormat = SubtitleFormat.SRT,
@@ -231,7 +231,7 @@ public class DownloadManager
 
         // 流提取器配置
         var extractor = new StreamExtractor(parserConfig);
-        
+
         try
         {
             // 从链接加载内容
@@ -252,7 +252,7 @@ public class DownloadManager
             };
             return false;
         }
-        
+
         // 解析流信息
         var streams = await extractor.ExtractStreamsAsync();
 
@@ -271,7 +271,7 @@ public class DownloadManager
         if (string.IsNullOrEmpty(Option.SaveName)) Option.SaveName = OtherUtil.GetFileNameFromInput(Option.Input);
 
         // 生成文件夹
-        var tmpDir = Path.Combine(Option.TmpDir ?? Environment.CurrentDirectory,
+        var tmpDir = Path.Combine(Option.TmpDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "tmp"),
             $"{Option.SaveName ?? DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}");
         // 记录文件
         extractor.RawFiles["meta.json"] = GlobalUtil.ConvertToJson(lists);

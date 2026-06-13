@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
-        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+        <RuntimeIdentifiers Condition="'$(TargetFramework)'!='net10.0-android'">win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
         <RootNamespace>Mpv</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'==''">
+    <ItemGroup Condition="('$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'=='') and '$(TargetFramework)'!='net10.0-android'">
         <Content Include="win-x64\**">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

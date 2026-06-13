@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Controls;
+using System;
 using System.Runtime.InteropServices;
 using Ursa.Controls;
 
@@ -11,6 +13,23 @@ public partial class MainWindow : UrsaWindow
         InitializeComponent();
 
         ApplyPlatformSpecificMargin();
+    }
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        base.OnClosing(e);
+#if !ANDROID
+        if (!e.Cancel) DoubanVerifyWindow.CloseAll();
+#endif
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        App.BeginShutdown();
+#if !ANDROID
+        DoubanVerifyWindow.CloseAll();
+#endif
+        base.OnClosed(e);
     }
 
     private void ApplyPlatformSpecificMargin()

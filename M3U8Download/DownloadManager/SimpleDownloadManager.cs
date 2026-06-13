@@ -106,7 +106,7 @@ internal class SimpleDownloadManager
         var type = streamSpec.MediaType ?? Common.Enum.MediaType.VIDEO;
         var dirName = $"{task.Id}_{OtherUtil.GetValidFileName(streamSpec.GroupId ?? "", "-")}_{streamSpec.Codecs}_{streamSpec.Bandwidth}_{streamSpec.Language}";
         var tmpDir = Path.Combine(DownloaderConfig.DirPrefix, dirName);
-        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
 
         // Use SavePattern if provided, otherwise use SaveName or dirName
         var saveName = dirName;
@@ -738,7 +738,7 @@ internal class SimpleDownloadManager
                 OutputFiles.AddRange(DownloaderConfig.MyOptions.MuxImports);
             }
             OutputFiles.ForEach(f => Logger.WarnMarkUp($"[grey]{Path.GetFileName(f.FilePath).EscapeMarkup()}[/]"));
-            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+            var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
             var ext = OtherUtil.GetMuxExtension(DownloaderConfig.MyOptions.MuxOptions.MuxFormat);
             var dirName = Path.GetFileName(DownloaderConfig.DirPrefix);
             var outName = $"{dirName}.MUX";
@@ -754,7 +754,7 @@ internal class SimpleDownloadManager
                 {
                     Logger.WarnMarkUp("[grey]Cleaning files...[/]");
                     OutputFiles.ForEach(f => File.Delete(f.FilePath));
-                    var tmpDir = DownloaderConfig.MyOptions.TmpDir ?? Environment.CurrentDirectory;
+                    var tmpDir = DownloaderConfig.MyOptions.TmpDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "tmp");
                     OtherUtil.SafeDeleteDir(tmpDir);
                 }
             }

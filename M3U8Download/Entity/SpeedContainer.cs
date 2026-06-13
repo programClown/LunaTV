@@ -33,6 +33,11 @@ internal class SpeedContainer
         return Interlocked.Add(ref _downloaded, size);
     }
 
+    public long ConsumeDownloaded()
+    {
+        return Interlocked.Exchange(ref _downloaded, 0);
+    }
+
     public void Reset()
     {
         Interlocked.Exchange(ref _downloaded, 0);

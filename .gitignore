@@ -397,3 +397,16 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Claude Code
+.claude/
+
+# FFmpeg binaries (keep only gitkeep and platform folders with single exe)
+LunaTV/ffmpeg/*.exe
+LunaTV/ffmpeg/*.7z
+
+# Android native libraries (large binaries, downloaded during build)
+LibMPV/MpvDll/android-arm64/*.so
+
+# Generated APK files
+*.apk

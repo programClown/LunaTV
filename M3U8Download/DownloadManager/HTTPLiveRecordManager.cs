@@ -51,7 +51,7 @@ internal class HTTPLiveRecordManager
         var name = streamSpec.ToShortString();
         var dirName =
             $"{DownloaderConfig.MyOptions.SaveName ?? NowDateTime.ToString("yyyy-MM-dd_HH-mm-ss")}_{task.Id}_{OtherUtil.GetValidFileName(streamSpec.GroupId ?? "", "-")}_{streamSpec.Codecs}_{streamSpec.Bandwidth}_{streamSpec.Language}";
-        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Environment.CurrentDirectory;
+        var saveDir = DownloaderConfig.MyOptions.SaveDir ?? Path.Combine(Path.GetTempPath(), "LunaTV", "Downloads");
 
         // Use SavePattern if provided, otherwise use SaveName or dirName
         var saveName = dirName;

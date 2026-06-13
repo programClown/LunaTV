@@ -23,7 +23,7 @@
             <Setter Property="FontSize" Value="20" />
             <Setter Property="Foreground" Value="{DynamicResource SemiBlue6}" />
             <Setter Property="Height" Value="{StaticResource SearchInputHeight}" />
-            <Setter Property="Width" Value="80" />
+            <Setter Property="Width" Value="60" />
         </Style>
     </UserControl.Styles>
 
@@ -86,7 +86,7 @@
                 FontSize="20"
                 Grid.Column="1"
                 Height="{StaticResource SearchInputHeight}"
-                MinWidth="400"
+                MinWidth="200"
                 Name="SearchTextBox"
                 PlaceholderText="搜索你喜欢的视频..."
                 Text="{Binding SearchInputText}">
@@ -108,7 +108,7 @@
         </Grid>
 
         <Grid
-            Margin="80,10,80,0"
+            Margin="12,10,12,0"
             Row="2"
             RowDefinitions="Auto,Auto,*">
             <DockPanel HorizontalSpacing="10">
@@ -196,7 +196,7 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" x:Name="MovieCardScrollViewer">
                 <StackPanel>
                     <ItemsControl HorizontalAlignment="Left" ItemsSource="{Binding MovieCardItems}">
                         <ItemsControl.ItemTemplate>

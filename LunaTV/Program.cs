@@ -1,16 +1,20 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Dialogs;
 using Avalonia.Media;
+using LunaTV.Constants;
 using LunaTV.Extensions;
+using LunaTV.Models;
+using LunaTV.Services;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Runtime.InteropServices;
+
 using System.Text;
 
 namespace LunaTV;
 
 internal sealed class Program
 {
+#if !ANDROID
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -26,10 +30,37 @@ internal sealed class Program
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }
+#endif
 
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
+    /// <summary>
+    ///     Shared host/DI setup and font configuration for both desktop and Android.
+    ///     Call this from your AvaloniaMainActivity.CustomizeAppBuilder before
+    ///     the activity returns.  Does NOT include desktop-only platform options.
+    /// </summary>
+    public static AppBuilder ConfigureSharedAppBuilder(AppBuilder builder)
     {
+        AppJsonConfig appJsonConfig;
+        try
+        {
+            appJsonConfig = AppJsonConfigService.ReadJson<AppJsonConfig>(GlobalDefine.AppJsonPath) ?? new AppJsonConfig();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.WriteLine($"[LunaTV] Config read failed: {ex.Message}");
+            appJsonConfig = new AppJsonConfig();
+        }
+        appJsonConfig.Player ??= new Player();
+        appJsonConfig.StoragePaths ??= new StoragePathsConfig();
+
+        try
+        {
+            GlobalDefine.ApplyStoragePaths(appJsonConfig.StoragePaths);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.WriteLine($"[LunaTV] ApplyStoragePaths failed: {ex.Message}");
+        }
+
         IHost host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
@@ -40,8 +71,26 @@ internal sealed class Program
             }).Build();
         ServiceLocator.Host = host;
 
+        return builder
+            .With(new FontManagerOptions
+            {
+                FontFallbacks = new[]
+                {
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily(GetFontFamily())
+                    }
+                }
+            })
+            .LogToTrace();
+    }
+
+#if !ANDROID
+    // Avalonia configuration, don't remove; also used by visual designer.
+    public static AppBuilder BuildAvaloniaApp()
+    {
+        return ConfigureSharedAppBuilder(AppBuilder.Configure<App>())
 #pragma warning disable CA1416
-        return AppBuilder.Configure<App>()
             .UseManagedSystemDialogs()
 #pragma warning restore CA1416
             .UsePlatformDetect()
@@ -59,31 +108,26 @@ internal sealed class Program
                     AvaloniaNativeRenderingMode.Software
                 ]
             })
-            .With(new Win32PlatformOptions())
-            .With(new FontManagerOptions
-            {
-                FontFallbacks = new[]
-                {
-                    new FontFallback
-                    {
-                        FontFamily = new FontFamily(GetFontFamily())
-                    }
-                }
-            })
-            .LogToTrace();
+            .With(new Win32PlatformOptions());
     }
-    
+#endif
+
     private static string GetFontFamily()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (OperatingSystem.IsWindows())
         {
             // windows下使用微软雅黑
             return "微软雅黑";
         }
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        if (OperatingSystem.IsMacOS())
         {
             // macos下使用pingfang sc
             return "PingFang SC";
+        }
+        if (OperatingSystem.IsAndroid())
+        {
+            // Android uses Noto Sans CJK by default
+            return "Noto Sans CJK SC";
         }
 
         return "";

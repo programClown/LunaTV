@@ -1,0 +1,29 @@
+<Window
+    Height="720"
+    MinHeight="480"
+    MinWidth="720"
+    Title="浏览器"
+    Width="1100"
+    WindowStartupLocation="CenterScreen"
+    x:Class="LunaTV.Views.WebBrowserWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:webview="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.WebView"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid RowDefinitions="Auto,*">
+        <DockPanel Margin="12" LastChildFill="False">
+            <Button
+                Click="CloseButton_OnClick"
+                Content="关闭"
+                DockPanel.Dock="Right"
+                Margin="8,0,0,0" />
+            <TextBlock
+                DockPanel.Dock="Left"
+                Name="TitleTextBlock"
+                Text="浏览器"
+                VerticalAlignment="Center" />
+        </DockPanel>
+        <webview:NativeWebView
+            Grid.Row="1"
+            Name="BrowserWebView" />
+    </Grid>
+</Window>

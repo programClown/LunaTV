@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LunaTV.Base.DB.UnitOfWork;
 using LunaTV.Base.Models;
@@ -40,21 +41,29 @@ public partial class MpvPlayerWindowModel
         {
             var videos = await App.Services.GetRequiredService<MovieTvService>()
                 .SearchDetail(source, vodId, AppConifg.AdultApiSitesConfig.ContainsKey(source));
-            Episodes = new ObservableCollection<EpisodeSubjectItem>(videos.Episodes.Select(ep =>
-                new EpisodeSubjectItem
-                {
-                    Watched = ep.Name == name,
-                    Name = ep.Name,
-                    Url = ep.Url
-                }).ToList());
+            if (videos?.Episodes is not { Count: > 0 }) return;
+
+            var episodes = videos.Episodes.Select(ep => new EpisodeSubjectItem
+            {
+                Watched = ep.Name == name,
+                Name = ep.Name,
+                Url = ep.Url
+            }).ToList();
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Episodes = new ObservableCollection<EpisodeSubjectItem>(episodes);
+            });
         });
     }
 
     private void SaveViewHistory()
     {
+        System.Diagnostics.Trace.WriteLine($"[HIST] SaveViewHistory ENTER Duration={Duration.TotalSeconds} _lastPositionValue={_lastPositionValue} ViewHistory?.Id={ViewHistory?.Id} ViewHistory==null?{ViewHistory is null}");
         if (Duration > TimeSpan.FromSeconds(1) && ViewHistory is not null)
         {
-            ViewHistory.PlaybackPosition = (int)Position.TotalSeconds;
+            System.Diagnostics.Trace.WriteLine($"[HIST] SaveViewHistory WRITE PlaybackPosition={(int)_lastPositionValue} Id={ViewHistory.Id} (Insert? {ViewHistory.Id==0})");
+            ViewHistory.PlaybackPosition = (int)_lastPositionValue;
             ViewHistory.Duration = (int)Duration.TotalSeconds;
             ViewHistory.UpdateTime = DateTime.Now;
             if (ViewHistory.Id == 0)
@@ -65,6 +74,10 @@ public partial class MpvPlayerWindowModel
             {
                 _viewHistoryTable.Update(ViewHistory);
             }
+        }
+        else
+        {
+            System.Diagnostics.Trace.WriteLine("[HIST] SaveViewHistory SKIPPED guard failed");
         }
     }
 
@@ -107,7 +120,7 @@ public partial class MpvPlayerWindowModel
                         ViewHistory.Url = Episodes[Episodes.IndexOf(episode) + 1].Url;
 
                         MediaUrl = Episodes[Episodes.IndexOf(episode) + 1].Url;
-                        Title = $"{ViewHistory?.Name} {Episodes[Episodes.IndexOf(episode) + 1].Name}";
+                        Title = BuildPlayerTitle(ViewHistory?.Name, Episodes[Episodes.IndexOf(episode) + 1].Name);
                         Episodes.ToList().ForEach(episode =>
                             episode.Watched = episode.Name == Episodes[Episodes.IndexOf(episode) + 1].Name);
 

@@ -15,7 +15,7 @@ public class ApiFactory : IApiFactory
 
     public T CreateRefitClient<T>(Uri baseAddress)
     {
-        var httpClient = _httpClientFactory.CreateClient(nameof(T));
+        var httpClient = _httpClientFactory.CreateClient(typeof(T).Name);
 
         httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent.GetRandomUserAgent());
         httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -26,7 +26,7 @@ public class ApiFactory : IApiFactory
 
     public T CreateRefitClient<T>(Uri baseAddress, RefitSettings refitSettings)
     {
-        var httpClient = _httpClientFactory.CreateClient(nameof(T));
+        var httpClient = _httpClientFactory.CreateClient(typeof(T).Name);
         httpClient.BaseAddress = baseAddress;
         List<string> headers =
         [

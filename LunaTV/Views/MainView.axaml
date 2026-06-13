@@ -10,6 +10,12 @@
     d:DesignWidth="800"
     x:DataType="vm:MainViewModel"
     mc:Ignorable="d">
+    <UserControl.Styles>
+        <!-- Android-friendly larger touch targets and fonts -->
+        <Style Selector="u|SelectionList.AndroidNav">
+            <Setter Property="Margin" Value="0,0,0,0"/>
+        </Style>
+    </UserControl.Styles>
     <Grid RowDefinitions="*,Auto">
         <TransitioningContentControl Content="{Binding PageContent}">
             <TransitioningContentControl.PageTransition>
@@ -49,21 +55,21 @@
             <u:SelectionList.ItemTemplate>
                 <DataTemplate DataType="{x:Type vm:TVMenuItem}">
                     <StackPanel
-                        Height="20"
-                        Margin="0,10"
+                        Height="36"
+                        Margin="0,8"
                         Orientation="Vertical">
 
                         <PathIcon
                             BorderBrush="{DynamicResource SemiBlue6}"
                             Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
                             Data="{Binding Data}"
-                            FontSize="10" />
+                            FontSize="16" />
                         <TextBlock
-                            Margin="0,0"
+                            Margin="0,2,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Classes.Active="{Binding $parent[u:SelectionListItem].IsSelected, Mode=OneWay}"
-                            FontSize="10"
+                            FontSize="12"
                             Text="{Binding Name}">
                             <TextBlock.Styles>
                                 <Style Selector="TextBlock.Active">

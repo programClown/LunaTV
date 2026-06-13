@@ -1,18 +1,39 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net10.0</TargetFramework>
-        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <OutputType Condition="'$(TargetFramework)'!='net10.0-android'">WinExe</OutputType>
+        <OutputType Condition="'$(TargetFramework)'=='net10.0-android'">Exe</OutputType>
+        <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+        <RuntimeIdentifiers Condition="'$(TargetFramework)'!='net10.0-android'">win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationManifest Condition="'$(TargetFramework)'!='net10.0-android'">app.manifest</ApplicationManifest>
+        <AndroidManifest Condition="'$(TargetFramework)'=='net10.0-android'">Android\AndroidManifest.xml</AndroidManifest>
+        <ApplicationIcon>Assets\logo-tv.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <!--        <PublishAot>true</PublishAot>-->
         <Version>0.9.5</Version>
         <AssemblyVersion>0.9.5.3</AssemblyVersion>
         <ApplicationIcon>Assets/logo-tv.ico</ApplicationIcon>
     </PropertyGroup>
+
+    <!-- Android packaging -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <ApplicationId>com.lunatv.app</ApplicationId>
+        <AndroidUseAapt2>true</AndroidUseAapt2>
+        <!-- Disable AOT; SdkOnly linking preserves user + third-party assemblies -->
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <PublishTrimmed>true</PublishTrimmed>
+        <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    </PropertyGroup>
+
+    <!-- Preserve assemblies needed by SqlSugar reflection from trimmer -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <TrimmerRootAssembly Include="System.Data.Common" RootMode="all" />
+        <TrimmerRootAssembly Include="Microsoft.Data.Sqlite" RootMode="all" />
+    </ItemGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
@@ -21,7 +42,9 @@
     <ItemGroup>
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.8.0"/>
         <PackageReference Include="Avalonia" Version="12.0.3"/>
-        <PackageReference Include="Avalonia.Desktop" Version="12.0.3"/>
+        <PackageReference Include="Avalonia.Controls.WebView" Version="12.0.1" Condition="'$(TargetFramework)'!='net10.0-android'"/>
+        <PackageReference Include="Avalonia.Desktop" Version="12.0.3" Condition="'$(TargetFramework)'!='net10.0-android'"/>
+        <PackageReference Include="Avalonia.Android" Version="12.0.3" Condition="'$(TargetFramework)'=='net10.0-android'"/>
         <!--Condition below is needed to remove AvaloniaUI.DiagnosticsSupport package from build output in Release configuration.-->
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
@@ -29,7 +52,7 @@
         </PackageReference>
         <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
-        <PackageReference Include="DataChannelDotnet" Version="1.3.1"/>
+        <PackageReference Include="DataChannelDotnet" Version="1.3.1" Condition="'$(TargetFramework)'!='net10.0-android'"/>
         <PackageReference Include="Irihi.Ursa" Version="2.0.0"/>
         <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="2.0.0"/>
         <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2"/>
@@ -45,14 +68,71 @@
         <ProjectReference Include="..\M3U8Download\M3U8Download.csproj"/>
     </ItemGroup>
 
-    <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'==''">
+    <ItemGroup Condition="('$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'=='') and '$(TargetFramework)'!='net10.0-android'">
         <Content Include="ffmpeg\win-x64\**">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
-    <Target Condition="'$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'==''" Name="ExtractZipFiles" AfterTargets="Build">
-        <Exec Command="powershell -Command &quot;Expand-Archive -Path '$(OutputPath)libmpv-2.zip' -DestinationPath '$(OutputPath)' -Force; Remove-Item -Path '$(OutputPath)libmpv-2.zip' -Force&quot;" ContinueOnError="true"/>
+    <!-- Exclude desktop-only views/view-models from android compilation -->
+    <ItemGroup Condition="'$(TargetFramework)'=='net10.0-android'">
+        <Compile Remove="Views\MpvPlayerWindow.axaml.cs"/>
+        <Compile Remove="Views\DoubanVerifyWindow.axaml.cs"/>
+        <Compile Remove="Views\WebBrowserWindow.axaml.cs"/>
+        <Compile Remove="Views\CrashWindow.axaml.cs"/>
+        <Compile Remove="ViewModels\MpvPlayerWindowModel.cs"/>
+        <Compile Remove="ViewModels\MpvPlayerWindowModel_Extension.cs"/>
+        <!-- Remove axaml from Avalonia XAML compilation for android -->
+        <AvaloniaResource Remove="Views\MpvPlayerWindow.axaml"/>
+        <AvaloniaResource Remove="Views\DoubanVerifyWindow.axaml"/>
+        <AvaloniaResource Remove="Views\WebBrowserWindow.axaml"/>
+        <AvaloniaResource Remove="Views\CrashWindow.axaml"/>
+        <AvaloniaXaml Remove="Views\MpvPlayerWindow.axaml"/>
+        <AvaloniaXaml Remove="Views\DoubanVerifyWindow.axaml"/>
+        <AvaloniaXaml Remove="Views\WebBrowserWindow.axaml"/>
+        <AvaloniaXaml Remove="Views\CrashWindow.axaml"/>
+        <AdditionalFiles Remove="Views\MpvPlayerWindow.axaml"/>
+        <AdditionalFiles Remove="Views\DoubanVerifyWindow.axaml"/>
+        <AdditionalFiles Remove="Views\WebBrowserWindow.axaml"/>
+        <AdditionalFiles Remove="Views\CrashWindow.axaml"/>
+    </ItemGroup>
+
+    <!-- Exclude Android head files from desktop compilation -->
+    <ItemGroup Condition="'$(TargetFramework)'!='net10.0-android'">
+        <Compile Remove="Android\**\*.cs"/>
+        <None Remove="Android\**"/>
+        <!-- Android-only video player view -->
+        <Compile Remove="Views\TVShowPages\AndroidVideoPlayerView.axaml.cs"/>
+        <AvaloniaResource Remove="Views\TVShowPages\AndroidVideoPlayerView.axaml"/>
+        <AvaloniaXaml Remove="Views\TVShowPages\AndroidVideoPlayerView.axaml"/>
+        <AdditionalFiles Remove="Views\TVShowPages\AndroidVideoPlayerView.axaml"/>
+    </ItemGroup>
+
+    <!-- Android resources (styles.xml etc.) -->
+    <ItemGroup Condition="'$(TargetFramework)'=='net10.0-android'">
+        <AndroidResource Include="Android\Resources\**\*"/>
+    </ItemGroup>
+
+    <!-- Android native libraries (mpv + ffmpeg) -->
+    <ItemGroup Condition="'$(TargetFramework)'=='net10.0-android'">
+        <AndroidNativeLibrary Include="..\LibMPV\MpvDll\android-arm64\*.so">
+            <Abi>arm64-v8a</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Include="Android\NativeLibs\arm64-v8a\libffmpeg.so">
+            <Abi>arm64-v8a</Abi>
+        </AndroidNativeLibrary>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <MpvWinX64Zip>$(MSBuildThisFileDirectory)..\LibMPV\MpvDll\win-x64\libmpv-2.zip</MpvWinX64Zip>
+    </PropertyGroup>
+
+    <Target Condition="('$(RuntimeIdentifier)'=='win-x64' or '$(RuntimeIdentifier)'=='') and '$(TargetFramework)'!='net10.0-android'" Name="ExtractZipFiles" AfterTargets="Build">
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(MpvWinX64Zip)') { Expand-Archive -Path '$(MpvWinX64Zip)' -DestinationPath '$(OutputPath)' -Force }; $copiedZip = Join-Path '$(OutputPath)' 'libmpv-2.zip'; if (Test-Path $copiedZip) { Remove-Item -Path $copiedZip -Force }&quot;" ContinueOnError="true"/>
+    </Target>
+
+    <Target Condition="'$(RuntimeIdentifier)'=='win-x64' and '$(TargetFramework)'!='net10.0-android'" Name="ExtractPublishZipFiles" AfterTargets="Publish">
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(MpvWinX64Zip)') { Expand-Archive -Path '$(MpvWinX64Zip)' -DestinationPath '$(PublishDir)' -Force }; $copiedZip = Join-Path '$(PublishDir)' 'libmpv-2.zip'; if (Test-Path $copiedZip) { Remove-Item -Path $copiedZip -Force }&quot;" ContinueOnError="true"/>
     </Target>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -6,6 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using LunaTV.Extensions;
 using LunaTV.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Ursa.Controls;
 
 namespace LunaTV.Views;
@@ -59,6 +61,12 @@ public partial class MpvPlayerWindow : UrsaWindow
 
     private readonly MpvPlayerWindowModel _viewModel;
     private readonly DispatcherTimer _overlayTimer;
+    private readonly DispatcherTimer _fullscreenStateGuardTimer;
+    private Point? _lastPointerPosition;
+    private bool _ignorePointerUntilMoved;
+    private bool _isOverlayVisible = true;
+
+    private static readonly Cursor HiddenCursor = new(StandardCursorType.None);
 
     public MpvPlayerWindow()
     {
@@ -77,8 +85,21 @@ public partial class MpvPlayerWindow : UrsaWindow
         _overlayTimer.Tick += (s, e) =>
         {
             _overlayTimer.Stop();
-            PlayBar.IsVisible = false;
+            HideOverlay();
         };
+
+        _fullscreenStateGuardTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(200)
+        };
+        _fullscreenStateGuardTimer.Tick += (_, _) =>
+        {
+            _fullscreenStateGuardTimer.Stop();
+            FixBrokenFullScreenState();
+        };
+
+        PositionChanged += (_, _) => ScheduleFullScreenStateCheck();
+        Resized += (_, _) => ScheduleFullScreenStateCheck();
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -116,8 +137,41 @@ public partial class MpvPlayerWindow : UrsaWindow
     {
         _viewModel?.Stop();
         _overlayTimer.Stop();
+        _fullscreenStateGuardTimer.Stop();
         base.OnClosed(e);
-        (App.VisualRoot as MainWindow)?.Show();
+        if (!App.IsShuttingDown)
+        {
+            (App.VisualRoot as MainWindow)?.Show();
+            App.Services.GetRequiredService<MainViewModel>().RefreshHistory();
+        }
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == WindowStateProperty)
+        {
+            var newState = change.GetNewValue<WindowState>();
+            if (ExitFullScreenButton is not null)
+                ExitFullScreenButton.IsVisible = false;
+
+            if (newState == WindowState.FullScreen)
+            {
+                IsTitleBarVisible = false;
+                _isOverlayVisible = false;
+                PlayBar.IsVisible = false;
+                VideoTitleOverlay.IsVisible = false;
+            }
+            else
+            {
+                IsTitleBarVisible = true;
+                IsCloseButtonVisible = true;
+                IsMinimizeButtonVisible = true;
+                IsRestoreButtonVisible = true;
+                IsFullScreenButtonVisible = true;
+                _isOverlayVisible = true;
+            }
+        }
     }
 
     private void SeekBarPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -130,20 +184,98 @@ public partial class MpvPlayerWindow : UrsaWindow
         _viewModel.IsSeekBarPressed = false;
     }
 
-    private void OnPointerEntered(object? sender, PointerEventArgs e)
+    private void ShowOverlay()
     {
+        if (_isOverlayVisible) return;
+        _isOverlayVisible = true;
+
+        PlayBar.IsVisible = true;
+        VideoTitleOverlay.IsVisible = true;
+        IsCloseButtonVisible = true;
+        IsMinimizeButtonVisible = true;
+        IsRestoreButtonVisible = true;
+        IsFullScreenButtonVisible = true;
+        IsTitleBarVisible = true;
+        if (WindowState == WindowState.FullScreen)
+            ExitFullScreenButton.IsVisible = true;
+        Cursor = null;
+    }
+
+    private void HideOverlay()
+    {
+        if (!_isOverlayVisible) return;
+        _isOverlayVisible = false;
+
+        PlayBar.IsVisible = false;
+        VideoTitleOverlay.IsVisible = false;
+        IsCloseButtonVisible = false;
+        IsMinimizeButtonVisible = false;
+        IsRestoreButtonVisible = false;
+        IsFullScreenButtonVisible = false;
+        ExitFullScreenButton.IsVisible = false;
+        // Do NOT set IsTitleBarVisible = false here — toggling it causes
+        // UrsaWindow layout changes that disrupt MpvView playback.
+        _ignorePointerUntilMoved = true;
+        Cursor = HiddenCursor;
+    }
+
+    private void RestartAutoHideOverlay()
+    {
+        _ignorePointerUntilMoved = false;
+        if (!_isOverlayVisible) ShowOverlay();
         _overlayTimer.Stop();
         _overlayTimer.Start();
-        PlayBar.IsVisible = true;
+    }
+
+    private void ScheduleFullScreenStateCheck()
+    {
+        if (WindowState != WindowState.FullScreen) return;
+
+        _fullscreenStateGuardTimer.Stop();
+        _fullscreenStateGuardTimer.Start();
+    }
+
+    private void FixBrokenFullScreenState()
+    {
+        if (WindowState != WindowState.FullScreen) return;
+
+        var screen = Screens.ScreenFromWindow(this);
+        if (screen is null) return;
+
+        var screenBounds = screen.Bounds;
+        var clientWidth = ClientSize.Width * DesktopScaling;
+        var clientHeight = ClientSize.Height * DesktopScaling;
+        var isStillFullScreenSized = Math.Abs(clientWidth - screenBounds.Width) < 8 &&
+                                     Math.Abs(clientHeight - screenBounds.Height) < 8;
+
+        if (isStillFullScreenSized) return;
+
+        WindowState = WindowState.Maximized;
+        _overlayTimer.Stop();
+        ShowOverlay();
+    }
+
+    private void OnPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (_ignorePointerUntilMoved) return;
+        _lastPointerPosition = e.GetPosition(this);
+        RestartAutoHideOverlay();
     }
 
     private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (!PlayBar.IsVisible)
+        var pointerPosition = e.GetPosition(this);
+        if (_ignorePointerUntilMoved)
         {
-            _overlayTimer.Stop();
-            _overlayTimer.Start();
-            PlayBar.IsVisible = true;
+            if (_lastPointerPosition is { } lastPosition && Math.Abs(pointerPosition.X - lastPosition.X) < 2 && Math.Abs(pointerPosition.Y - lastPosition.Y) < 2)
+            {
+                return;
+            }
+
+            _ignorePointerUntilMoved = false;
         }
+
+        _lastPointerPosition = pointerPosition;
+        if (!PlayBar.IsVisible) RestartAutoHideOverlay();
     }
 }

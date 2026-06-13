@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LunaTV.Views.AndroidCrashView">
+    <Border Background="#FF1A1A2E" Padding="20">
+        <StackPanel VerticalAlignment="Center" Spacing="16">
+            <TextBlock Text="应用发生异常"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="White" HorizontalAlignment="Center"/>
+            <TextBlock Text="以下是错误详情，您可以截图反馈给开发者："
+                       FontSize="14" Foreground="#FFAAAAAA"
+                       HorizontalAlignment="Center"/>
+            <Border Background="#FF0D0D1A" CornerRadius="8" Padding="12" MaxHeight="400">
+                <ScrollViewer>
+                    <TextBlock x:Name="ErrorText"
+                               FontSize="12" Foreground="#FFFF6B6B"
+                               TextWrapping="Wrap" IsVisible="True"/>
+                </ScrollViewer>
+            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                <Button Content="复制错误信息"
+                        x:Name="CopyButton"
+                        Background="#FF3A3A5C" Foreground="White"
+                        Padding="16,10" CornerRadius="6"/>
+                <Button Content="继续使用"
+                        x:Name="ContinueButton"
+                        Background="#FF4CAF50" Foreground="White"
+                        Padding="16,10" CornerRadius="6"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

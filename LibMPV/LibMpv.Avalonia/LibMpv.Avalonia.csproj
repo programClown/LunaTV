@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
         <LangVersion>default</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.0.3"/>
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.8"/>
+        <PackageReference Include="Avalonia.Android" Version="12.0.3" Condition="'$(TargetFramework)'=='net10.0-android'"/>
     </ItemGroup>
 
     <ItemGroup>

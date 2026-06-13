@@ -14,6 +14,16 @@ public class MediaDownload
     [SugarColumn(IsNullable = true)] public string? Url { get; set; } //播放地址
     [SugarColumn(IsNullable = true)] public string? LocalPath { get; set; } // 本地地址
     public bool IsDownloaded { get; set; } // 是否下载完成
+    public int DownloadStatus { get; set; }
+    public double Progress { get; set; }
+    public long DownloadedBytes { get; set; }
+    public long TotalBytes { get; set; }
+    [SugarColumn(IsNullable = true)] public string? SizeText { get; set; }
+    [SugarColumn(IsNullable = true)] public string? SpeedText { get; set; }
+    [SugarColumn(IsNullable = true)] public string? RemainingTimeText { get; set; }
+    [SugarColumn(IsNullable = true)] public string? ErrorMessage { get; set; }
+    [SugarColumn(IsNullable = true)] public string? OutputFilePath { get; set; }
+    [SugarColumn(IsNullable = true)] public string? Cover { get; set; }
     public DateTime UpdateTime { get; set; } = DateTime.Now;
     public DateTime CreateTime { get; set; } = DateTime.Now;
 }

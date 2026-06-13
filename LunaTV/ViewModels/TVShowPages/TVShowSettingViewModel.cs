@@ -126,46 +126,43 @@ public partial class TVShowSettingViewModel : ViewModelBase
         }
 
         SelectedApiCount = index;
+        SyncSelectedApis();
+    }
+
+    private void SyncSelectedApis()
+    {
+        AppConifg.SelectApis.Clear();
+        AppConifg.SelectAdultApis.Clear();
+        foreach (var api in CommonApis)
+            if (api.Enable)
+                AppConifg.SelectApis.Add(api.Source);
+        foreach (var api in AdultApis)
+            if (api.Enable)
+                AppConifg.SelectAdultApis.Add(api.Source);
     }
 
     [RelayCommand]
     private void SelectApi(ApiSourceItem api)
     {
-        if (api.Enable)
-        {
-            AppConifg.SelectApis.Add(api.Source);
-        }
-        else
-        {
-            AppConifg.SelectApis.Remove(api.Source);
-        }
-
         _apiSourceTable.Update(it => new ApiSource
         {
             IsEnable = api.Enable
         }, it => it.Id == api.Id);
 
         SelectedApiCount += api.Enable ? 1 : -1;
+        SyncSelectedApis();
     }
 
     [RelayCommand]
     private void SelectAdultApi(ApiSourceItem api)
     {
-        if (api.Enable)
-        {
-            AppConifg.SelectAdultApis.Add(api.Source);
-        }
-        else
-        {
-            AppConifg.SelectAdultApis.Remove(api.Source);
-        }
-
         _apiSourceTable.Update(it => new ApiSource
         {
             IsEnable = api.Enable
         }, it => it.Id == api.Id);
 
         SelectedApiCount += api.Enable ? 1 : -1;
+        SyncSelectedApis();
     }
 
     [RelayCommand]
@@ -192,6 +189,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
         }
 
         SelectedApiCount = CommonApis.Count + AdultApis.Count;
+        SyncSelectedApis();
     }
 
     [RelayCommand]
@@ -218,6 +216,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
         }
 
         SelectedApiCount = 0;
+        SyncSelectedApis();
     }
 
     [RelayCommand]
@@ -244,6 +243,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
         }
 
         SelectedApiCount = CommonApis.Count;
+        SyncSelectedApis();
     }
 
     [RelayCommand]
@@ -276,6 +276,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
             var apiSourcesDict = new Dictionary<string, object>();
             apiSourcesDict.Add("Version", typeof(App).Assembly.GetName().Version?.ToString());
             apiSourcesDict.Add("ApiSource", apiSources);
+            apiSourcesDict.Add("PlayerConfig", AppConifg.PlayerConfig);
 
             //中文序列化
             var settings = JsonSerializer.Serialize(apiSourcesDict, new JsonSerializerOptions
@@ -335,8 +336,29 @@ public partial class TVShowSettingViewModel : ViewModelBase
                 var version = versionObj.ToString();
             }
 
+            if (apiSourcesDict.TryGetValue("PlayerConfig", out var playerConfigObj))
+            {
+                var playerConfig = JsonSerializer.Deserialize<PlayerConfig>(playerConfigObj.ToString() ?? string.Empty);
+                if (playerConfig is not null)
+                {
+                    var existingPlayerConfig = await _playConfigTable.GetSingleAsync(config => config.Id > 0);
+                    if (existingPlayerConfig is not null)
+                    {
+                        playerConfig.Id = existingPlayerConfig.Id;
+                        await _playConfigTable.UpdateAsync(playerConfig);
+                    }
+                    else
+                    {
+                        playerConfig.Id = await _playConfigTable.Context.Insertable(playerConfig).ExecuteReturnIdentityAsync();
+                    }
+
+                    AppConifg.PlayerConfig = playerConfig;
+                }
+            }
+
             var apiSources1 = await _apiSourceTable.GetListAsync();
             AppConifg.UpdateSites(apiSources1);
+            RefreshSource();
         }
     }
 
@@ -359,8 +381,13 @@ public partial class TVShowSettingViewModel : ViewModelBase
 
 
         var result =
+#if ANDROID
+            // On Android, show the add-API view as a page navigation
+            await ShowAddApiViewAsPage(addCustomApiViewModel);
+#else
             await Dialog.ShowModal<TVShowAddCustomApiView, TVShowAddCustomApiViewModel>(addCustomApiViewModel,
                 options: options);
+#endif
         if (result == DialogResult.OK)
         {
             if (addCustomApiViewModel.ApiSourceErrorVisible ||
@@ -395,6 +422,8 @@ public partial class TVShowSettingViewModel : ViewModelBase
                 App.Notification.Show(new Notification("成功", "添加新的自定义源成功", NotificationType.Success),
                     NotificationType.Success);
                 RefreshSource();
+                var apiSources = await _apiSourceTable.GetListAsync();
+                AppConifg.UpdateSites(apiSources);
             }
         }
     }
@@ -404,6 +433,8 @@ public partial class TVShowSettingViewModel : ViewModelBase
     {
         await _apiSourceTable.DeleteAsync(s => s.Id == api.Id);
         RefreshSource();
+        var apiSources = await _apiSourceTable.GetListAsync();
+        AppConifg.UpdateSites(apiSources);
     }
 
     [RelayCommand]
@@ -434,7 +465,7 @@ public partial class TVShowSettingViewModel : ViewModelBase
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Response: {jsonString}");
+                Trace.WriteLine($"Response: {jsonString}");
 
                 // 解析JSON响应
                 var cloudData = JsonSerializer.Deserialize<CloudApiSourceResponse>(jsonString, new JsonSerializerOptions
@@ -471,12 +502,12 @@ public partial class TVShowSettingViewModel : ViewModelBase
             }
             else
             {
-                Console.WriteLine($"HTTP请求失败: {response.StatusCode}");
+                Trace.WriteLine($"HTTP请求失败: {response.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"加载云端源失败: {ex.Message}");
+            Trace.WriteLine($"加载云端源失败: {ex.Message}");
         }
     }
 
@@ -515,23 +546,74 @@ public partial class TVShowSettingViewModel : ViewModelBase
         }
     }
 
+    private void SavePlayerConfig()
+    {
+        if (AppConifg.PlayerConfig.Id > 0)
+        {
+            _playConfigTable.Update(AppConifg.PlayerConfig);
+            return;
+        }
+
+        AppConifg.PlayerConfig.Id = _playConfigTable.Context.Insertable(AppConifg.PlayerConfig).ExecuteReturnIdentity();
+    }
+
     partial void OnDoubanApiEnabledChanged(bool value)
     {
         AppConifg.PlayerConfig.DoubanApiEnabled = value;
-        _playConfigTable.Update(AppConifg.PlayerConfig);
+        SavePlayerConfig();
     }
 
     partial void OnHomeAutoLoadDoubanEnabledChanged(bool value)
     {
         AppConifg.PlayerConfig.HomeAutoLoadDoubanEnabled = value;
-        _playConfigTable.Update(AppConifg.PlayerConfig);
+        SavePlayerConfig();
     }
 
     partial void OnForceBaseApiNeedCheckedChanged(bool value)
     {
         AppConifg.PlayerConfig.ForceApiNeedSpecialSource = value;
-        _playConfigTable.Update(AppConifg.PlayerConfig);
+        SavePlayerConfig();
     }
+
+#if ANDROID
+    private async Task<DialogResult> ShowAddApiViewAsPage(TVShowAddCustomApiViewModel vm)
+    {
+        // On Android, show as a simple page overlay with a confirm action
+        // Since we can't do proper modal flow, show the view and wait
+        var mainViewModel = App.Services.GetRequiredService<MainViewModel>();
+        var prevPage = mainViewModel.PageContent;
+
+        var view = new LunaTV.Views.TVShowPages.TVShowAddCustomApiView { DataContext = vm };
+
+        // Wrap in a panel with confirm/cancel buttons
+        var panel = new Avalonia.Controls.StackPanel();
+        var btnPanel = new Avalonia.Controls.StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            Margin = new Avalonia.Thickness(0, 10),
+            Spacing = 20
+        };
+
+        var tcs = new TaskCompletionSource<DialogResult>();
+        var confirmBtn = new Avalonia.Controls.Button { Content = "确认添加", MinWidth = 100 };
+        var cancelBtn = new Avalonia.Controls.Button { Content = "取消", MinWidth = 100 };
+        confirmBtn.Click += (_, _) => { mainViewModel.PageContent = prevPage; tcs.TrySetResult(DialogResult.OK); };
+        cancelBtn.Click += (_, _) => { mainViewModel.PageContent = prevPage; tcs.TrySetResult(DialogResult.None); };
+        btnPanel.Children.Add(confirmBtn);
+        btnPanel.Children.Add(cancelBtn);
+
+        panel.Children.Add(view);
+        panel.Children.Add(btnPanel);
+        var wrapper = new Avalonia.Controls.UserControl
+        {
+            Content = new Avalonia.Controls.ScrollViewer { Content = panel, Padding = new Avalonia.Thickness(20) }
+        };
+        mainViewModel.PageContent = wrapper;
+
+        return await tcs.Task;
+    }
+#endif
 }
 
 public partial class ApiSourceItem : ObservableObject

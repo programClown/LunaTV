@@ -62,14 +62,14 @@
                         Classes="ClearButton"
                         PlaceholderText="请输入m3u8链接"
                         Text="{Binding DownloadUrl}"
-                        Width="400"
+                        MaxWidth="400" HorizontalAlignment="Stretch"
                         u:FormItem.IsRequired="True"
                         u:FormItem.Label="链接" />
                     <TextBox
                         Classes="ClearButton"
                         PlaceholderText="请输入保存名字"
                         Text="{Binding DownloadName}"
-                        Width="400"
+                        MaxWidth="400" HorizontalAlignment="Stretch"
                         u:FormItem.IsRequired="True"
                         u:FormItem.Label="名字" />
                 </u:Form>

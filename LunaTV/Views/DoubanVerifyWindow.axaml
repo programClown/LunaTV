@@ -1,0 +1,35 @@
+<Window
+    Height="720"
+    MinHeight="480"
+    MinWidth="720"
+    Title="豆瓣验证"
+    Topmost="True"
+    Width="1100"
+    WindowStartupLocation="CenterScreen"
+    x:Class="LunaTV.Views.DoubanVerifyWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:webview="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.WebView"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid RowDefinitions="Auto,*">
+        <DockPanel Margin="12" LastChildFill="False">
+            <TextBlock
+                DockPanel.Dock="Left"
+                Text="请在此窗口完成豆瓣验证，验证成功后窗口会自动隐藏。"
+                VerticalAlignment="Center" />
+            <Button
+                Click="HideButton_OnClick"
+                Content="隐藏"
+                DockPanel.Dock="Right"
+                Margin="8,0,0,0" />
+            <Button
+                Click="ReloadButton_OnClick"
+                Content="重新加载"
+                DockPanel.Dock="Right"
+                Margin="8,0,0,0" />
+        </DockPanel>
+        <webview:NativeWebView
+            Grid.Row="1"
+            Name="DoubanWebView"
+            Source="https://movie.douban.com/" />
+    </Grid>
+</Window>
