@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -26,6 +27,7 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
 {
     private readonly SugarRepository<ViewHistory> _viewHistoryTable;
     [ObservableProperty] private bool _isDownloadingSelected;
+    [ObservableProperty] private bool _isWebPlay;
     [ObservableProperty] private int _selectedEpisodeCount;
 
 
@@ -74,6 +76,12 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
     {
         if (episode is not EpisodeSubjectItem episodeSubject) return;
 
+        if (IsWebPlay)
+        {
+            WebPlay(episodeSubject);
+            return;
+        }
+
         Episodes.ForEach(episode => episode.Watched = episode.Name == episodeSubject.Name);
 
         var win = new MpvPlayerWindow();
@@ -121,6 +129,19 @@ public partial class TVShowDetailViewModel : ViewModelBase, IDialogContext
         }
 
         Close();
+    }
+
+    private void WebPlay(EpisodeSubjectItem episodeSubject)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(episodeSubject.Url) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            App.Notification?.Show(new Notification("Web播放", $"无法打开浏览器：{ex.Message}", NotificationType.Error),
+                NotificationType.Error);
+        }
     }
 
     [RelayCommand]

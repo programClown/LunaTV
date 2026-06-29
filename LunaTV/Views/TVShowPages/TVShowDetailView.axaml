@@ -123,6 +123,19 @@
                 HorizontalAlignment="Right"
                 Icon="{StaticResource SemiIconDownload}"
                 IsChecked="{Binding IsDownloadingSelected}" />
+            <StackPanel
+                DockPanel.Dock="Right"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="4"
+                VerticalAlignment="Center">
+                <TextBlock Text="Web播放" VerticalAlignment="Center" />
+                <ToggleSwitch
+                    IsChecked="{Binding IsWebPlay}"
+                    OffContent="关"
+                    OnContent="开"
+                    Theme="{StaticResource SimpleToggleSwitch}" />
+            </StackPanel>
             <u:IconButton
                 Command="{Binding CopyLinksCommand}"
                 Content="复制链接"

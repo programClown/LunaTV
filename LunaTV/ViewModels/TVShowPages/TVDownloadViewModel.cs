@@ -307,14 +307,22 @@ public partial class TVDownloadViewModel : ViewModelBase
         if (history == null) return;
 
         // 遍历文件夹
-        var files = Directory.GetFiles(history.LocalPath, "*.mp4", SearchOption.TopDirectoryOnly);
-        foreach (var file in files)
+        try
         {
-            if (Path.GetFileName(file).StartsWith(history.Name))
+            var files = Directory.GetFiles(history.LocalPath, "*.mp4", SearchOption.TopDirectoryOnly);
+            foreach (var file in files)
             {
-                File.Delete(file);
+                if (Path.GetFileName(file).StartsWith(history.Name))
+                {
+                    File.Delete(file);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
 
         await _mediaDownloadTable.DeleteByIdAsync(id);
         MediaHistoryViewModels.Remove(history);
@@ -363,10 +371,17 @@ public partial class MediaDownloadViewModel : ObservableObject
     {
         if (string.IsNullOrEmpty(localPath)) return null;
         // 遍历文件夹
-        var files = Directory.GetFiles(localPath, "*.mp4", SearchOption.TopDirectoryOnly);
-        var match = files.FirstOrDefault(file =>
-            Path.GetFileName(file).StartsWith(name));
-        return match;
+        try
+        {
+            var files = Directory.GetFiles(localPath, "*.mp4", SearchOption.TopDirectoryOnly);
+            var match = files.FirstOrDefault(file =>
+                Path.GetFileName(file).StartsWith(name));
+            return match;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     [RelayCommand]
