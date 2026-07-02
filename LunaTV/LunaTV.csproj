@@ -10,7 +10,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <!--        <PublishAot>true</PublishAot>-->
         <Version>0.9.5</Version>
-        <AssemblyVersion>0.9.5.3</AssemblyVersion>
+        <AssemblyVersion>0.9.5.4</AssemblyVersion>
         <ApplicationIcon>Assets/logo-tv.ico</ApplicationIcon>
     </PropertyGroup>
 
